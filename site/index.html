@@ -17,14 +17,19 @@
   </header>
 
   <section>
-    <h2>I. Problem</h2>
-    <p>Coding agents ask models to “make this SQL faster” and ship the rewrite. They do not read plans. As agent fleets grow, query volume compounds—retries, tool loops, overnight jobs—so blind rewrites burn warehouse latency, API cost, tokens, and accuracy together.</p>
-    <p>On a locked 98-case PostgreSQL bench, open-raw accepts 46.9% of rewrites and returns <strong>11 wrong</strong> answers. The harness uses the same open model but accepts only when sealed fixtures match and paired timing shows ≥20% speedup; otherwise it keeps the original.</p>
+    <h2>Abstract</h2>
+    <p>Coding agents ask models to “make SQL faster” and ship the rewrite. On a locked 98-case PostgreSQL bench, blind open-raw accepts 46.9% and returns 11 wrong answers. A verify-or-abstain harness on the same open model reaches 62.2% accept with 0 wrong returns. McNemar and template-cluster bootstrap agree the harness-vs-raw gains are real; accept vs frontier-raw is not significant at α=0.05.</p>
   </section>
 
   <section>
-    <h2>II. Results</h2>
-    <p class="caption" id="table-caption">TABLE I<br>Development split (n = 98). Accept = fixture-equivalent and ≥20% faster. Opt p50 = optimizer wall time.</p>
+    <h2>I. Problem</h2>
+    <p>Agents do not open <code>EXPLAIN</code>. They prompt a model and run whatever comes back. Query volume compounds with fleets—retries, tool loops, overnight jobs—so bad rewrites burn warehouse latency, API dollars, tokens, and accuracy together.</p>
+    <p>The product gate is simple: accept only if sealed fixtures (including null/skew) match <em>and</em> paired <code>EXPLAIN ANALYZE</code> shows ≥20% median speedup; otherwise keep the original.</p>
+  </section>
+
+  <section>
+    <h2>II. Scoreboard</h2>
+    <p class="caption">TABLE I<br>Development split (n = 98 unless noted). Accept = fixture-equivalent and ≥20% faster.</p>
     <div class="table-wrap">
       <table id="scoreboard">
         <thead>
@@ -34,6 +39,7 @@
             <th class="num">Wrong</th>
             <th class="num">$/case</th>
             <th class="num">Opt p50</th>
+            <th class="num">Cases</th>
           </tr>
         </thead>
         <tbody></tbody>
@@ -43,32 +49,141 @@
   </section>
 
   <section>
-    <p class="caption">Fig. 1. Beneficial acceptance rate by system.</p>
-    <div id="accept" class="bars" aria-label="Accept rate chart"></div>
+    <p class="caption">Fig. 1. Beneficial acceptance rate.</p>
+    <div id="accept" class="bars"></div>
   </section>
 
   <section>
     <p class="caption">Fig. 2. Incorrect queries returned to the caller.</p>
-    <div id="wrong" class="bars" aria-label="Wrong returns chart"></div>
+    <div id="wrong" class="bars"></div>
   </section>
 
   <section>
-    <h2>III. Statistical checks</h2>
-    <p>Paired open-harness vs open-raw on trial 0. A gain is treated as real when McNemar and the template-cluster bootstrap agree.</p>
-    <div id="stats" class="stats"></div>
+    <p class="caption">Fig. 3. API cost per case (USD).</p>
+    <div id="cost" class="bars"></div>
   </section>
 
   <section>
-    <h2>IV. Takeaway</h2>
-    <p>A harness is enough: higher accept than open-raw, <strong>0 wrong</strong> returns, and lower measured API $/case and optimizer p50 than frontier-raw on this board. Fine-tuning is optional.</p>
+    <p class="caption">Fig. 4. Optimizer wall-time p50 (seconds).</p>
+    <div id="latency" class="bars"></div>
+  </section>
+
+  <section>
+    <h2>III. Tests</h2>
+    <p><strong>McNemar (exact two-sided).</strong> On matched trial-0 pairs, only discordant cases vote. Agreements are ignored. Case-level p-values assume independent pairs; related template variants are dependent, so we also report template sensitivity and a cluster bootstrap.</p>
+    <p><strong>Template-cluster bootstrap.</strong> 5,000 resamples of whole templates/families (57 clusters). A gain is called real only when McNemar and the bootstrap 95% CI agree (CI excludes 0).</p>
+  </section>
+
+  <section>
+    <p class="caption">TABLE II<br>McNemar on acceptance — System A = open-harness. Cells are discordant counts (A only / baseline only) and exact p.</p>
+    <div class="table-wrap">
+      <table id="mcnemar-accept">
+        <thead>
+          <tr>
+            <th>Baseline</th>
+            <th class="num">A only</th>
+            <th class="num">Base only</th>
+            <th class="num">Discordant</th>
+            <th class="num">p</th>
+            <th>Call</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <p class="caption">TABLE III<br>McNemar on incorrect returns — fewer incorrect is better.</p>
+    <div class="table-wrap">
+      <table id="mcnemar-wrong">
+        <thead>
+          <tr>
+            <th>Baseline</th>
+            <th class="num">A only</th>
+            <th class="num">Base only</th>
+            <th class="num">Discordant</th>
+            <th class="num">p</th>
+            <th>Call</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <p class="caption">TABLE IV<br>Template-cluster bootstrap on accept-rate gap (A − baseline). 5,000 iterations.</p>
+    <div class="table-wrap">
+      <table id="bootstrap">
+        <thead>
+          <tr>
+            <th>Baseline</th>
+            <th class="num">Mean gap</th>
+            <th class="num">95% CI</th>
+            <th class="num">Clusters</th>
+            <th>Agrees McNemar?</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <p class="caption">TABLE V<br>Template sensitivity (McNemar on complete templates, n = 57) — open-harness vs open-raw.</p>
+    <div class="table-wrap">
+      <table id="template-sens">
+        <thead>
+          <tr>
+            <th>Outcome</th>
+            <th class="num">A only</th>
+            <th class="num">Base only</th>
+            <th class="num">p</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <p class="caption">TABLE VI<br>Paired resource means — open-harness vs open-raw and vs frontier-raw (trial 0, n = 98).</p>
+    <div class="table-wrap">
+      <table id="resources">
+        <thead>
+          <tr>
+            <th>Measure</th>
+            <th class="num">Harness</th>
+            <th class="num">Open-raw</th>
+            <th class="num">Frontier</th>
+            <th class="num">H / raw</th>
+            <th class="num">H / frontier</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <p class="note">Mean optimizer time includes verify; Table I reports median p50. API $ excludes DB compute. Speedup excludes incorrect pairs.</p>
+  </section>
+
+  <section>
+    <h2>IV. Reading the board</h2>
+    <div id="reading"></div>
+  </section>
+
+  <section>
+    <h2>V. Takeaway</h2>
+    <p>A harness is enough for the open-stack story: +15.3 pp accept vs open-raw, 11→0 wrong, with McNemar and bootstrap in agreement. Point estimate also leads frontier-raw on accept, $/case, and p50, but the accept CI vs frontier still includes 0—report the board, do not overclaim the p-value. Fine-tuning is optional.</p>
   </section>
 
   <footer class="refs">
     <h2>References</h2>
     <ol>
-      <li><a href="forge.html">Full Forge write-up</a> (method, McNemar detail, caveats).</li>
-      <li><a href="data/research.json" download>Evidence snapshot</a> (JSON traces used above).</li>
+      <li><a href="forge.html">Full Forge write-up</a> — method narrative and rubric mapping.</li>
+      <li><a href="data/research.json" download>Evidence snapshot</a> — sealed eval_v2 JSON used above.</li>
       <li><a href="https://github.com/ThilakShekharShriyan/database-surgeon">Source repository</a>.</li>
+      <li>McNemar exact test via two-sided binomial on discordant pairs; template-cluster bootstrap 5,000 resamples.</li>
     </ol>
   </footer>
 </article>
