@@ -4,7 +4,6 @@ const MAIN = [
   'rules-only', 'open-raw', 'fw-fast-raw', 'fw-fast-harness',
   'frontier-raw', 'open-harness', 'oss20b-raw', 'oss20b-harness',
 ];
-const CORE = ['rules-only', 'open-raw', 'frontier-raw', 'open-harness'];
 const DETAIL = ['rules-only', 'open-raw', 'frontier-raw', 'open-harness-nocache', 'open-harness'];
 const PAIRS = [
   ['gpt-oss-120b (Fireworks)', 'open-raw', 'open-harness'],
@@ -120,17 +119,6 @@ function scoreboard(rows, rawRate) {
   }), 8);
 }
 
-function bars(id, rows, valueFn, formatFn) {
-  const max = Math.max(0.01, ...rows.map((r) => valueFn(r) || 0));
-  $(id).innerHTML = rows.map((r) => {
-    const v = valueFn(r) || 0;
-    return `<div class="bar-row">
-      <div class="bar-label"><b>${esc(name(r.system))}</b><span>${esc(formatFn(r))}</span></div>
-      <div class="track"><span class="fill" style="width:${(v / max) * 100}%"></span></div>
-    </div>`;
-  }).join('');
-}
-
 function safety(rows) {
   fill('safety', rows.map((r) => `<tr${rowClass(r)}>
     <td>${esc(name(r.system))}${marks(r)}</td>
@@ -210,7 +198,6 @@ function families(by, dev) {
 
 function ablation(by) {
   const rows = [];
-  const fig = [];
   for (const [label, rawId, harnessId] of PAIRS) {
     const raw = by[rawId];
     const har = by[harnessId];
@@ -229,16 +216,8 @@ function ablation(by) {
       rows.push(line(by['open-harness-nocache'], 'Harness, no cache'));
     }
     rows.push(line(har, 'Harness'));
-    fig.push({ label, raw: raw.incorrect_returned_count, har: har.incorrect_returned_count });
   }
   fill('ablation', rows, 6);
-
-  const max = Math.max(1, ...fig.map((f) => f.raw));
-  $('pairs-fig').innerHTML = fig.map((f) => `<div class="bar-row">
-      <div class="bar-label"><b>${esc(f.label)}</b><span>${f.raw} → ${f.har}</span></div>
-      <div class="track"><span class="fill" style="width:${(f.raw / max) * 100}%"></span></div>
-      <div class="track"><span class="fill" style="width:${(f.har / max) * 100}%"></span></div>
-    </div>`).join('');
 }
 
 function cacheText(by) {
@@ -495,13 +474,8 @@ function render(data, pareto) {
 
   composition(dev);
   const main = pick(by, MAIN);
-  const core = pick(by, CORE);
   const detail = pick(by, DETAIL);
   scoreboard(main, raw?.accepted_rate);
-  bars('accept', core, (r) => r.accepted_rate, (r) => pct(r.accepted_rate));
-  bars('wrong', core, (r) => r.incorrect_returned_count, (r) => String(r.incorrect_returned_count));
-  bars('cost', core, (r) => (r.cost_per_case_usd || 0) * 1000, (r) => money2((r.cost_per_case_usd || 0) * 1000));
-  bars('latency', core, (r) => (r.latency_p50_ms || 0) / 1000, (r) => sec(r.latency_p50_ms));
   safety(detail);
   efficiency(detail);
   outcomes(detail);

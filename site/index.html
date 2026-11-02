@@ -126,25 +126,25 @@
     <p class="note" id="stamp"></p>
   </section>
 
-  <section>
-    <p class="caption">Fig. 1. Beneficial acceptance rate.</p>
-    <div id="accept" class="bars"></div>
-  </section>
+  <figure class="fig">
+    <img src="figures/fig_accept_ci.svg" alt="Accept rate with 95% confidence intervals per system">
+    <figcaption>Fig. 1. Beneficial accept rate with 95% case-bootstrap intervals. Open-harness is highest; its interval overlaps frontier-raw but not open-raw’s point estimate.</figcaption>
+  </figure>
 
-  <section>
-    <p class="caption">Fig. 2. Incorrect queries returned to the caller.</p>
-    <div id="wrong" class="bars"></div>
-  </section>
+  <figure class="fig">
+    <img src="figures/fig_outcomes.svg" alt="Stacked outcome shares per system">
+    <figcaption>Fig. 2. Where every case ends up. Open-raw is the only system shown that returns incorrect results (red). Both raw systems also return regressions (dark gray); the harness never does, because slower or wrong candidates fall back to the original.</figcaption>
+  </figure>
 
-  <section>
-    <p class="caption">Fig. 3. API cost per 1,000 cases (USD).</p>
-    <div id="cost" class="bars"></div>
-  </section>
+  <figure class="fig">
+    <img src="figures/fig_accept_vs_cost.svg" alt="Accept rate versus API cost scatter">
+    <figcaption>Fig. 3. Accept rate versus API cost. Hollow red markers returned wrong answers. The dashed line is the best accept achievable at each budget without returning a wrong answer; open-harness sits at its top.</figcaption>
+  </figure>
 
-  <section>
-    <p class="caption">Fig. 4. Optimizer wall-time p50 (seconds).</p>
-    <div id="latency" class="bars"></div>
-  </section>
+  <figure class="fig">
+    <img src="figures/fig_latency_cdf.svg" alt="Cumulative distribution of optimizer latency">
+    <figcaption>Fig. 4. Cumulative optimizer latency. 48% of open-harness cases finish in under 0.6&nbsp;s (cache, rules, early abstain); the rest pay for model calls, verification and repair, which produces the long tail.</figcaption>
+  </figure>
 
   <section>
     <h3>B. Safety and quality</h3>
@@ -169,6 +169,11 @@
     </div>
   </section>
 
+  <figure class="fig">
+    <img src="figures/fig_speedup_cdf.svg" alt="Distribution of speedups among accepted rewrites">
+    <figcaption>Fig. 5. Speedup of accepted rewrites. Each curve counts accepted rewrites at least as fast as the x value. The harness accepts more rewrites at every speedup level up to about 8×; above that it roughly tracks frontier-raw.</figcaption>
+  </figure>
+
   <section>
     <h3>C. Latency, calls, and tokens</h3>
     <p>The harness spends more model calls than raw (best-of, repair), but the positive cache and early abstain keep its median low. Its tail (p95) is longer because hard cases go through repair.</p>
@@ -192,6 +197,11 @@
       </table>
     </div>
   </section>
+
+  <figure class="fig">
+    <img src="figures/fig_tokens_vs_accept.svg" alt="Accept rate versus output tokens">
+    <figcaption>Fig. 6. Accept rate versus output tokens per case. Cheap-token raw models cluster at lower accept and return wrong answers; the harness spends about 4.5× open-raw’s tokens for +15 points and zero wrong, and fewer tokens than the uncached harness.</figcaption>
+  </figure>
 
   <section>
     <h3>D. Outcomes</h3>
@@ -251,6 +261,10 @@
       </table>
     </div>
     <p class="note">The abstention family is designed so that no rewrite should be accepted; 0% is the correct score there.</p>
+    <figure class="fig narrow">
+      <img src="figures/fig_family_heatmap.svg" alt="Heatmap of accept rate by family and system">
+      <figcaption>Fig. 7. Accept rate (%) by family. The harness gains most on correlation, semijoin and null-semantics shapes, where raw rewrites tend to break semantics. Frontier-raw is stronger on Calcite rule cases.</figcaption>
+    </figure>
   </section>
 
   <section>
@@ -274,15 +288,20 @@
     </div>
   </section>
 
-  <section>
-    <p class="caption">Fig. 5. Wrong returns, raw (top bar) versus harness (bottom bar), per model.</p>
-    <div id="pairs-fig" class="bars"></div>
-  </section>
+  <figure class="fig">
+    <img src="figures/fig_wrong_pairs.svg" alt="Wrong answers raw versus harness per model">
+    <figcaption>Fig. 8. Wrong answers returned, raw versus harness, for each model. The harness returns 0 wrong for every model, from 0–28 wrong when raw.</figcaption>
+  </figure>
 
   <section>
     <h3>A. Cache ablation</h3>
     <p id="cache-text">Loading…</p>
   </section>
+
+  <figure class="fig">
+    <img src="figures/fig_cache_ablation.svg" alt="Cache ablation slope charts">
+    <figcaption>Fig. 9. Raw → harness without cache → harness with cache. Verification alone removes wrong answers but costs latency and tokens; the verified-positive cache wins most of that back.</figcaption>
+  </figure>
 
   <section>
     <h2>VI. Statistical Tests</h2>
@@ -299,6 +318,11 @@
       </table>
     </div>
     <p id="contingency-note" class="note"></p>
+
+    <figure class="fig">
+      <img src="figures/fig_mcnemar.svg" alt="McNemar discordant counts per comparison">
+      <figcaption>Fig. 10. McNemar discordant cases. Bars to the right are cases only system A accepted; to the left, only the baseline. Bold p-values are below 0.05.</figcaption>
+    </figure>
 
     <p class="caption">TABLE XI<br>McNemar on acceptance across baselines.</p>
     <div class="table-wrap">
@@ -337,6 +361,10 @@
 
     <h3>B. Template-cluster bootstrap</h3>
     <p>5,000 resamples of whole templates. A gain is called <em>real</em> only when McNemar (p&nbsp;&lt;&nbsp;0.05) and the bootstrap 95% CI agree (interval excludes 0).</p>
+    <figure class="fig">
+      <img src="figures/fig_bootstrap_forest.svg" alt="Bootstrap forest plot of accept-rate gaps">
+      <figcaption>Fig. 11. Accept-rate gap with template-cluster 95% intervals. Blue intervals exclude zero (real gain); the gray frontier comparison crosses zero.</figcaption>
+    </figure>
     <p class="caption">TABLE XIII<br>Bootstrap accept-rate gap (A − baseline).</p>
     <div class="table-wrap">
       <table id="bootstrap">

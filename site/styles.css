@@ -155,6 +155,21 @@ td .sub {
 .bad { color: #000; font-weight: 700; }
 .good { color: #000; }
 
+.fig {
+  margin: 0.4rem 0 1.6rem;
+}
+.fig img {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 0 auto;
+}
+.fig.narrow img { max-width: 34rem; }
+.fig figcaption {
+  font: 9pt/1.4 var(--font);
+  text-align: justify;
+  margin-top: 0.45rem;
+}
 .bars {
   display: grid;
   gap: 0.55rem;
