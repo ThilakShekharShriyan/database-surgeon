@@ -1,0 +1,20 @@
+{
+  "cases_sha256": "288dd2b628a8c51935c90e07594cf43fc5bbee173f42fbf7c05ab5b1c12a003b",
+  "systems": {
+    "cascade-local": "5423af43eabe4651",
+    "cascade-nemotron": "f734b718b15bfd3a",
+    "cascade-open-fw": "fbc14b5bbca64975",
+    "cascade-surgeon": "3e6ce63df2431e33",
+    "frontier-raw": "4f1958c3ad837c1c",
+    "fw-fast-harness": "857857e026faaf0f",
+    "fw-nemotron-harness": "f96880152cd0d32a",
+    "ollama-gpt-oss-20b-harness": "61b1b6bfeb633d46",
+    "ollama-gpt-oss-20b-raw": "25743cdc6b2989da",
+    "open-harness": "0cb1ab359815b4a9",
+    "open-raw": "ea7850ec4ba5809b",
+    "oss120b-raw": "1fe375d29c94369d",
+    "oss20b-harness": "23071ee49b279d6e",
+    "oss20b-raw": "1f800ad1d183a57e",
+    "rules-only": "835c070462062b37"
+  }
+}

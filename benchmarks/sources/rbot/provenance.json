@@ -1,0 +1,35 @@
+{
+  "retrieved_at": "2026-11-02",
+  "license": "See LICENSE; upstream Apache-2.0",
+  "data_policy": "Public SQL inputs on our synthetic microfixtures; not official TPC-H/Calcite performance reproduction",
+  "files": [
+    {
+      "repository": "curtis-sun/LLM4Rewrite",
+      "commit": "c9c90e5d7867888c3aaba86e4fc9e6d48f53b375",
+      "path": "tpch/query17/query17_0.sql",
+      "local_path": "benchmarks/sources/rbot/tpch_q17_0.sql",
+      "sha256": "b2829c302ae876fda6399c6fc1d2c678de033a7ff85f20e74dd0457ce89fa99a"
+    },
+    {
+      "repository": "curtis-sun/LLM4Rewrite",
+      "commit": "c9c90e5d7867888c3aaba86e4fc9e6d48f53b375",
+      "path": "tpch/query17/query17_1.sql",
+      "local_path": "benchmarks/sources/rbot/tpch_q17_1.sql",
+      "sha256": "6943393c4bcd8e6470fd3f5e0fd6ef46ce9ea0cc393ee8703a95e7c5c6c5508a"
+    },
+    {
+      "repository": "curtis-sun/LLM4Rewrite",
+      "commit": "c9c90e5d7867888c3aaba86e4fc9e6d48f53b375",
+      "path": "calcite/calcite.jsonl",
+      "local_path": "benchmarks/sources/rbot/calcite.jsonl",
+      "sha256": "48f58e43e16a3a54ccbce1e84d5b571ab1ed5a22255d1a33badf45e16e5c4d07"
+    },
+    {
+      "repository": "curtis-sun/LLM4Rewrite",
+      "commit": "c9c90e5d7867888c3aaba86e4fc9e6d48f53b375",
+      "path": "LICENSE",
+      "local_path": "benchmarks/sources/rbot/LICENSE",
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+    }
+  ]
+}

@@ -1,0 +1,1182 @@
+{
+  "split": "dev",
+  "systems": [
+    {
+      "cases": 17,
+      "trials": 1,
+      "outcomes": {
+        "accepted": 0.8235,
+        "no_change": 0.1765
+      },
+      "accepted_rate": 0.8235294117647058,
+      "accepted_ci95": [
+        0.6470588235294118,
+        1.0
+      ],
+      "incorrect_returned_rate": 0.0,
+      "incorrect_ci95": [
+        0.0,
+        0.0
+      ],
+      "incorrect_returned_count": 0,
+      "wrong_candidates_caught": 1,
+      "geomean_speedup": 19.111475296621474,
+      "geomean_speedup_ci95": [
+        8.243910540769457,
+        41.490547611145935
+      ],
+      "decoy_safe_rate": 1.0,
+      "trap_incorrect_rate": 0.0,
+      "latency_p50_ms": 354.4603339978494,
+      "latency_p95_ms": 111176.94087600103,
+      "cost_per_case_usd": 0.0,
+      "cost_known": true,
+      "calls_per_case": 0.35294117647058826,
+      "output_tokens_per_case": 262.7647058823529,
+      "errors_per_case": 0,
+      "accepted_by_family": {
+        "abstention": 0.0,
+        "aggregation": 0.0,
+        "null_semantics": 0.0,
+        "sargability": 1.0
+      },
+      "system": "cascade-local",
+      "vs_frontier-raw": {
+        "mean": -0.058823529411764705,
+        "ci95": [
+          -0.17647058823529413,
+          0.0
+        ],
+        "cases": 17
+      }
+    },
+    {
+      "cases": 92,
+      "trials": 1,
+      "outcomes": {
+        "accepted": 0.6304,
+        "no_change": 0.337,
+        "not_faster": 0.0326
+      },
+      "accepted_rate": 0.6304347826086957,
+      "accepted_ci95": [
+        0.532608695652174,
+        0.7282608695652174
+      ],
+      "incorrect_returned_rate": 0.0,
+      "incorrect_ci95": [
+        0.0,
+        0.0
+      ],
+      "incorrect_returned_count": 0,
+      "wrong_candidates_caught": 25,
+      "geomean_speedup": 4.341995663496114,
+      "geomean_speedup_ci95": [
+        3.025992503554638,
+        6.402426733138498
+      ],
+      "decoy_safe_rate": 1.0,
+      "trap_incorrect_rate": 0.0,
+      "latency_p50_ms": 8501.881749980384,
+      "latency_p95_ms": 118724.66504303156,
+      "cost_per_case_usd": 0.009664562173913043,
+      "cost_known": true,
+      "calls_per_case": 8.282608695652174,
+      "output_tokens_per_case": 6299.315217391304,
+      "errors_per_case": 0.391304347826087,
+      "accepted_by_family": {
+        "abstention": 0.0,
+        "aggregation": 0.625,
+        "calcite": 0.778,
+        "correlated_aggregate": 1.0,
+        "correlation": 0.6,
+        "disjunction": 0.0,
+        "null_semantics": 0.556,
+        "redundancy": 0.667,
+        "sargability": 1.0,
+        "semijoin": 0.571,
+        "set_semantics": 1.0
+      },
+      "system": "cascade-nemotron",
+      "vs_frontier-raw": {
+        "mean": 0.043478260869565216,
+        "ci95": [
+          -0.021739130434782605,
+          0.11231884057971016
+        ],
+        "cases": 92
+      }
+    },
+    {
+      "cases": 98,
+      "trials": 1,
+      "outcomes": {
+        "accepted": 0.5714,
+        "no_change": 0.398,
+        "not_faster": 0.0306
+      },
+      "accepted_rate": 0.5714285714285714,
+      "accepted_ci95": [
+        0.47959183673469385,
+        0.673469387755102
+      ],
+      "incorrect_returned_rate": 0.0,
+      "incorrect_ci95": [
+        0.0,
+        0.0
+      ],
+      "incorrect_returned_count": 0,
+      "wrong_candidates_caught": 35,
+      "geomean_speedup": 3.8688839487088433,
+      "geomean_speedup_ci95": [
+        2.736758107236938,
+        5.628543886663372
+      ],
+      "decoy_safe_rate": 1.0,
+      "trap_incorrect_rate": 0.0,
+      "latency_p50_ms": 6989.9808340123855,
+      "latency_p95_ms": 28349.448918030248,
+      "cost_per_case_usd": 0.0027505836734693875,
+      "cost_known": true,
+      "calls_per_case": 5.418367346938775,
+      "output_tokens_per_case": 3752.3571428571427,
+      "errors_per_case": 0,
+      "accepted_by_family": {
+        "abstention": 0.0,
+        "aggregation": 0.5,
+        "calcite": 0.583,
+        "correlated_aggregate": 1.0,
+        "correlation": 0.5,
+        "disjunction": 0.0,
+        "null_semantics": 0.556,
+        "redundancy": 0.667,
+        "sargability": 1.0,
+        "semijoin": 0.571,
+        "set_semantics": 1.0
+      },
+      "system": "cascade-open-fw",
+      "vs_frontier-raw": {
+        "mean": 1.699320956058913e-18,
+        "ci95": [
+          -0.06802721088435375,
+          0.06462585034013606
+        ],
+        "cases": 98
+      }
+    },
+    {
+      "cases": 98,
+      "trials": 1,
+      "outcomes": {
+        "accepted": 0.5714,
+        "no_change": 0.398,
+        "not_faster": 0.0306
+      },
+      "accepted_rate": 0.5714285714285714,
+      "accepted_ci95": [
+        0.47959183673469385,
+        0.673469387755102
+      ],
+      "incorrect_returned_rate": 0.0,
+      "incorrect_ci95": [
+        0.0,
+        0.0
+      ],
+      "incorrect_returned_count": 0,
+      "wrong_candidates_caught": 35,
+      "geomean_speedup": 3.8688839487088433,
+      "geomean_speedup_ci95": [
+        2.736758107236938,
+        5.628543886663372
+      ],
+      "decoy_safe_rate": 1.0,
+      "trap_incorrect_rate": 0.0,
+      "latency_p50_ms": 6989.9808340123855,
+      "latency_p95_ms": 28349.448918030248,
+      "cost_per_case_usd": 0.0027505836734693875,
+      "cost_known": true,
+      "calls_per_case": 5.418367346938775,
+      "output_tokens_per_case": 3752.3571428571427,
+      "errors_per_case": 0,
+      "accepted_by_family": {
+        "abstention": 0.0,
+        "aggregation": 0.5,
+        "calcite": 0.583,
+        "correlated_aggregate": 1.0,
+        "correlation": 0.5,
+        "disjunction": 0.0,
+        "null_semantics": 0.556,
+        "redundancy": 0.667,
+        "sargability": 1.0,
+        "semijoin": 0.571,
+        "set_semantics": 1.0
+      },
+      "system": "cascade-oss-fw",
+      "vs_frontier-raw": {
+        "mean": 1.699320956058913e-18,
+        "ci95": [
+          -0.06802721088435375,
+          0.06462585034013606
+        ],
+        "cases": 98
+      }
+    },
+    {
+      "cases": 98,
+      "trials": 3,
+      "outcomes": {
+        "accepted": 0.5714,
+        "invalid": 0.0034,
+        "no_change": 0.3435,
+        "not_faster": 0.0612,
+        "regression": 0.0204
+      },
+      "accepted_rate": 0.5714285714285714,
+      "accepted_ci95": [
+        0.46938775510204084,
+        0.6632653061224489
+      ],
+      "incorrect_returned_rate": 0.0,
+      "incorrect_ci95": [
+        0.0,
+        0.0
+      ],
+      "incorrect_returned_count": 0,
+      "wrong_candidates_caught": 0,
+      "geomean_speedup": 3.8734993424046507,
+      "geomean_speedup_ci95": [
+        2.7284226818698545,
+        5.563430814230859
+      ],
+      "decoy_safe_rate": 1.0,
+      "trap_incorrect_rate": 0.0,
+      "latency_p50_ms": 3714.8270409961697,
+      "latency_p95_ms": 10968.61391600396,
+      "cost_per_case_usd": 0.0026928843537414966,
+      "cost_known": true,
+      "calls_per_case": 1,
+      "output_tokens_per_case": 159.63945578231292,
+      "errors_per_case": 0,
+      "accepted_by_family": {
+        "abstention": 0.0,
+        "aggregation": 0.5,
+        "calcite": 0.764,
+        "correlated_aggregate": 0.5,
+        "correlation": 0.3,
+        "disjunction": 0.0,
+        "null_semantics": 0.407,
+        "redundancy": 0.667,
+        "sargability": 1.0,
+        "semijoin": 0.571,
+        "set_semantics": 1.0
+      },
+      "system": "frontier-raw"
+    },
+    {
+      "cases": 28,
+      "trials": 1,
+      "outcomes": {
+        "accepted": 0.7857,
+        "no_change": 0.2143
+      },
+      "accepted_rate": 0.7857142857142857,
+      "accepted_ci95": [
+        0.6428571428571429,
+        0.9285714285714286
+      ],
+      "incorrect_returned_rate": 0.0,
+      "incorrect_ci95": [
+        0.0,
+        0.0
+      ],
+      "incorrect_returned_count": 0,
+      "wrong_candidates_caught": 0,
+      "geomean_speedup": 11.742072470954504,
+      "geomean_speedup_ci95": [
+        6.18341176754658,
+        23.51378713224678
+      ],
+      "decoy_safe_rate": null,
+      "trap_incorrect_rate": 0.0,
+      "latency_p50_ms": 5986.878374009393,
+      "latency_p95_ms": 139684.70279000758,
+      "cost_per_case_usd": 0.00461972,
+      "cost_known": true,
+      "calls_per_case": 3,
+      "output_tokens_per_case": 8669.92857142857,
+      "errors_per_case": 0.2857142857142857,
+      "accepted_by_family": {
+        "correlation": 0.667,
+        "null_semantics": 0.5,
+        "sargability": 1.0,
+        "semijoin": 1.0
+      },
+      "system": "fw-fast-harness",
+      "vs_frontier-raw": {
+        "mean": 0.15476190476190477,
+        "ci95": [
+          0.03571428571428571,
+          0.3095238095238095
+        ],
+        "cases": 28
+      }
+    },
+    {
+      "cases": 66,
+      "trials": 1,
+      "outcomes": {
+        "accepted": 0.5152,
+        "no_change": 0.4394,
+        "not_faster": 0.0303,
+        "regression": 0.0152
+      },
+      "accepted_rate": 0.5151515151515151,
+      "accepted_ci95": [
+        0.3939393939393939,
+        0.6363636363636364
+      ],
+      "incorrect_returned_rate": 0.0,
+      "incorrect_ci95": [
+        0.0,
+        0.0
+      ],
+      "incorrect_returned_count": 0,
+      "wrong_candidates_caught": 0,
+      "geomean_speedup": 3.421401979768777,
+      "geomean_speedup_ci95": [
+        2.2826929248151244,
+        5.208977382708841
+      ],
+      "decoy_safe_rate": 1.0,
+      "trap_incorrect_rate": 0.0,
+      "latency_p50_ms": 7721.933084001648,
+      "latency_p95_ms": 28869.0905419935,
+      "cost_per_case_usd": 0.00094721,
+      "cost_known": true,
+      "calls_per_case": 1,
+      "output_tokens_per_case": 1701.7272727272727,
+      "errors_per_case": 0,
+      "accepted_by_family": {
+        "abstention": 0.0,
+        "aggregation": 0.429,
+        "correlation": 0.556,
+        "disjunction": 0.0,
+        "null_semantics": 0.5,
+        "redundancy": 0.667,
+        "sargability": 1.0,
+        "semijoin": 0.286
+      },
+      "system": "fw-fast-raw",
+      "vs_frontier-raw": {
+        "mean": 0.005050505050505051,
+        "ci95": [
+          -0.08585858585858586,
+          0.09090909090909091
+        ],
+        "cases": 66
+      }
+    },
+    {
+      "cases": 98,
+      "trials": 1,
+      "outcomes": {
+        "accepted": 0.5714,
+        "no_change": 0.398,
+        "not_faster": 0.0306
+      },
+      "accepted_rate": 0.5714285714285714,
+      "accepted_ci95": [
+        0.47959183673469385,
+        0.673469387755102
+      ],
+      "incorrect_returned_rate": 0.0,
+      "incorrect_ci95": [
+        0.0,
+        0.0
+      ],
+      "incorrect_returned_count": 0,
+      "wrong_candidates_caught": 35,
+      "geomean_speedup": 3.8688839487088433,
+      "geomean_speedup_ci95": [
+        2.736758107236938,
+        5.628543886663372
+      ],
+      "decoy_safe_rate": 1.0,
+      "trap_incorrect_rate": 0.0,
+      "latency_p50_ms": 6989.8329180141445,
+      "latency_p95_ms": 28349.150043024565,
+      "cost_per_case_usd": 0.0027505836734693875,
+      "cost_known": true,
+      "calls_per_case": 5.418367346938775,
+      "output_tokens_per_case": 3752.3571428571427,
+      "errors_per_case": 0,
+      "accepted_by_family": {
+        "abstention": 0.0,
+        "aggregation": 0.5,
+        "calcite": 0.583,
+        "correlated_aggregate": 1.0,
+        "correlation": 0.5,
+        "disjunction": 0.0,
+        "null_semantics": 0.556,
+        "redundancy": 0.667,
+        "sargability": 1.0,
+        "semijoin": 0.571,
+        "set_semantics": 1.0
+      },
+      "system": "fw-gpt-oss-harness",
+      "vs_frontier-raw": {
+        "mean": 1.699320956058913e-18,
+        "ci95": [
+          -0.06802721088435375,
+          0.06462585034013606
+        ],
+        "cases": 98
+      }
+    },
+    {
+      "cases": 98,
+      "trials": 1,
+      "outcomes": {
+        "accepted": 0.602,
+        "incorrect": 0.0306,
+        "no_change": 0.3469,
+        "not_faster": 0.0204
+      },
+      "accepted_rate": 0.6020408163265306,
+      "accepted_ci95": [
+        0.5,
+        0.7040816326530612
+      ],
+      "incorrect_returned_rate": 0.030612244897959183,
+      "incorrect_ci95": [
+        0.0,
+        0.07142857142857142
+      ],
+      "incorrect_returned_count": 3,
+      "wrong_candidates_caught": 12,
+      "geomean_speedup": 4.169667560317809,
+      "geomean_speedup_ci95": [
+        2.964481724138035,
+        6.0468498521672265
+      ],
+      "decoy_safe_rate": 1.0,
+      "trap_incorrect_rate": 0.0,
+      "latency_p50_ms": 22625.019707993488,
+      "latency_p95_ms": 101959.65654106112,
+      "cost_per_case_usd": 0.011398305306122448,
+      "cost_known": true,
+      "calls_per_case": 4.928571428571429,
+      "output_tokens_per_case": 7785.775510204082,
+      "errors_per_case": 0.5306122448979592,
+      "accepted_by_family": {
+        "abstention": 0.0,
+        "aggregation": 0.625,
+        "calcite": 0.667,
+        "correlated_aggregate": 1.0,
+        "correlation": 0.6,
+        "disjunction": 0.0,
+        "null_semantics": 0.556,
+        "redundancy": 0.667,
+        "sargability": 1.0,
+        "semijoin": 0.571,
+        "set_semantics": 0.5
+      },
+      "system": "fw-nemotron-harness",
+      "vs_frontier-raw": {
+        "mean": 0.030612244897959186,
+        "ci95": [
+          -0.04081632653061224,
+          0.10204081632653061
+        ],
+        "cases": 98
+      }
+    },
+    {
+      "cases": 48,
+      "trials": 1,
+      "outcomes": {
+        "accepted": 0.6042,
+        "no_change": 0.2083,
+        "not_faster": 0.125,
+        "regression": 0.0625
+      },
+      "accepted_rate": 0.6041666666666666,
+      "accepted_ci95": [
+        0.4583333333333333,
+        0.7291666666666666
+      ],
+      "incorrect_returned_rate": 0.0,
+      "incorrect_ci95": [
+        0.0,
+        0.0
+      ],
+      "incorrect_returned_count": 0,
+      "wrong_candidates_caught": 0,
+      "geomean_speedup": 3.9562183224610394,
+      "geomean_speedup_ci95": [
+        2.297807704062529,
+        6.880383595529338
+      ],
+      "decoy_safe_rate": 1.0,
+      "trap_incorrect_rate": 0.0,
+      "latency_p50_ms": 10853.249207983026,
+      "latency_p95_ms": 36693.61812499119,
+      "cost_per_case_usd": 0.001676575,
+      "cost_known": true,
+      "calls_per_case": 1,
+      "output_tokens_per_case": 1062.9375,
+      "errors_per_case": 0,
+      "accepted_by_family": {
+        "aggregation": 1.0,
+        "correlation": 0.444,
+        "disjunction": 0.0,
+        "null_semantics": 0.333,
+        "redundancy": 0.667,
+        "sargability": 1.0,
+        "semijoin": 0.333
+      },
+      "system": "fw-nemotron-raw",
+      "vs_frontier-raw": {
+        "mean": 0.006944444444444445,
+        "ci95": [
+          -0.08333333333333333,
+          0.09027777777777778
+        ],
+        "cases": 48
+      }
+    },
+    {
+      "cases": 98,
+      "trials": 1,
+      "outcomes": {
+        "accepted": 0.5714,
+        "no_change": 0.398,
+        "not_faster": 0.0306
+      },
+      "accepted_rate": 0.5714285714285714,
+      "accepted_ci95": [
+        0.47959183673469385,
+        0.673469387755102
+      ],
+      "incorrect_returned_rate": 0.0,
+      "incorrect_ci95": [
+        0.0,
+        0.0
+      ],
+      "incorrect_returned_count": 0,
+      "wrong_candidates_caught": 35,
+      "geomean_speedup": 3.8688839487088433,
+      "geomean_speedup_ci95": [
+        2.736758107236938,
+        5.628543886663372
+      ],
+      "decoy_safe_rate": 1.0,
+      "trap_incorrect_rate": 0.0,
+      "latency_p50_ms": 6989.8329180141445,
+      "latency_p95_ms": 28349.150043024565,
+      "cost_per_case_usd": 0.0027505836734693875,
+      "cost_known": true,
+      "calls_per_case": 5.418367346938775,
+      "output_tokens_per_case": 3752.3571428571427,
+      "errors_per_case": 0,
+      "accepted_by_family": {
+        "abstention": 0.0,
+        "aggregation": 0.5,
+        "calcite": 0.583,
+        "correlated_aggregate": 1.0,
+        "correlation": 0.5,
+        "disjunction": 0.0,
+        "null_semantics": 0.556,
+        "redundancy": 0.667,
+        "sargability": 1.0,
+        "semijoin": 0.571,
+        "set_semantics": 1.0
+      },
+      "system": "fw-open-harness",
+      "vs_frontier-raw": {
+        "mean": 1.699320956058913e-18,
+        "ci95": [
+          -0.06802721088435375,
+          0.06462585034013606
+        ],
+        "cases": 98
+      }
+    },
+    {
+      "cases": 5,
+      "trials": 1,
+      "outcomes": {
+        "accepted": 0.4,
+        "no_change": 0.6
+      },
+      "accepted_rate": 0.4,
+      "accepted_ci95": [
+        0.0,
+        0.8
+      ],
+      "incorrect_returned_rate": 0.0,
+      "incorrect_ci95": [
+        0.0,
+        0.0
+      ],
+      "incorrect_returned_count": 0,
+      "wrong_candidates_caught": 1,
+      "geomean_speedup": 4.286254925556761,
+      "geomean_speedup_ci95": [
+        1.0,
+        33.823495140282866
+      ],
+      "decoy_safe_rate": 1.0,
+      "trap_incorrect_rate": 0.0,
+      "latency_p50_ms": 21574.719625990838,
+      "latency_p95_ms": 111176.09225100023,
+      "cost_per_case_usd": 0.0,
+      "cost_known": true,
+      "calls_per_case": 1.2,
+      "output_tokens_per_case": 893.4,
+      "errors_per_case": 0,
+      "accepted_by_family": {
+        "abstention": 0.0,
+        "aggregation": 0.0,
+        "null_semantics": 0.0,
+        "sargability": 1.0
+      },
+      "system": "ollama-gpt-oss-20b-harness",
+      "vs_frontier-raw": {
+        "mean": -0.2,
+        "ci95": [
+          -0.6,
+          0.0
+        ],
+        "cases": 5
+      }
+    },
+    {
+      "cases": 98,
+      "trials": 1,
+      "outcomes": {
+        "accepted": 0.4184,
+        "incorrect": 0.0918,
+        "invalid": 0.0102,
+        "no_change": 0.2347,
+        "not_faster": 0.1531,
+        "regression": 0.0918
+      },
+      "accepted_rate": 0.41836734693877553,
+      "accepted_ci95": [
+        0.3163265306122449,
+        0.5204081632653061
+      ],
+      "incorrect_returned_rate": 0.09183673469387756,
+      "incorrect_ci95": [
+        0.04081632653061224,
+        0.15306122448979592
+      ],
+      "incorrect_returned_count": 9,
+      "wrong_candidates_caught": 0,
+      "geomean_speedup": 2.7952698833094165,
+      "geomean_speedup_ci95": [
+        1.95406352851605,
+        4.198277290804694
+      ],
+      "decoy_safe_rate": 1.0,
+      "trap_incorrect_rate": 0.0,
+      "latency_p50_ms": 35143.566667014966,
+      "latency_p95_ms": 136553.65920902113,
+      "cost_per_case_usd": 0.0,
+      "cost_known": true,
+      "calls_per_case": 1,
+      "output_tokens_per_case": 718.704081632653,
+      "errors_per_case": 0,
+      "accepted_by_family": {
+        "abstention": 0.0,
+        "aggregation": 0.125,
+        "calcite": 0.292,
+        "correlated_aggregate": 1.0,
+        "correlation": 0.3,
+        "disjunction": 0.0,
+        "null_semantics": 0.333,
+        "redundancy": 0.667,
+        "sargability": 1.0,
+        "semijoin": 0.571,
+        "set_semantics": 0.5
+      },
+      "system": "ollama-gpt-oss-20b-raw",
+      "vs_frontier-raw": {
+        "mean": -0.15306122448979592,
+        "ci95": [
+          -0.23809523809523808,
+          -0.07482993197278912
+        ],
+        "cases": 98
+      }
+    },
+    {
+      "cases": 98,
+      "trials": 1,
+      "outcomes": {
+        "accepted": 0.2041,
+        "incorrect": 0.2449,
+        "invalid": 0.0612,
+        "no_change": 0.1633,
+        "not_faster": 0.2551,
+        "regression": 0.0714
+      },
+      "accepted_rate": 0.20408163265306123,
+      "accepted_ci95": [
+        0.12244897959183673,
+        0.2857142857142857
+      ],
+      "incorrect_returned_rate": 0.24489795918367346,
+      "incorrect_ci95": [
+        0.17346938775510204,
+        0.32653061224489793
+      ],
+      "incorrect_returned_count": 24,
+      "wrong_candidates_caught": 0,
+      "geomean_speedup": 1.561621010895425,
+      "geomean_speedup_ci95": [
+        1.203378515134504,
+        2.1077254748770673
+      ],
+      "decoy_safe_rate": 0.7692307692307693,
+      "trap_incorrect_rate": 0.42857142857142855,
+      "latency_p50_ms": 6750.544208014617,
+      "latency_p95_ms": 12526.235500001349,
+      "cost_per_case_usd": 0.0,
+      "cost_known": true,
+      "calls_per_case": 1,
+      "output_tokens_per_case": 101.24489795918367,
+      "errors_per_case": 0,
+      "accepted_by_family": {
+        "abstention": 0.0,
+        "aggregation": 0.125,
+        "calcite": 0.083,
+        "correlated_aggregate": 0.0,
+        "correlation": 0.1,
+        "disjunction": 0.0,
+        "null_semantics": 0.0,
+        "redundancy": 0.556,
+        "sargability": 0.786,
+        "semijoin": 0.0,
+        "set_semantics": 0.0
+      },
+      "system": "ollama-qwen25-coder-7b-raw",
+      "vs_frontier-raw": {
+        "mean": -0.3673469387755102,
+        "ci95": [
+          -0.46258503401360546,
+          -0.272108843537415
+        ],
+        "cases": 98
+      }
+    },
+    {
+      "cases": 98,
+      "trials": 1,
+      "outcomes": {
+        "accepted": 0.2653,
+        "incorrect": 0.1224,
+        "no_change": 0.2041,
+        "not_faster": 0.3469,
+        "regression": 0.0612
+      },
+      "accepted_rate": 0.2653061224489796,
+      "accepted_ci95": [
+        0.17346938775510204,
+        0.35714285714285715
+      ],
+      "incorrect_returned_rate": 0.12244897959183673,
+      "incorrect_ci95": [
+        0.061224489795918366,
+        0.19387755102040816
+      ],
+      "incorrect_returned_count": 12,
+      "wrong_candidates_caught": 0,
+      "geomean_speedup": 1.937118877936945,
+      "geomean_speedup_ci95": [
+        1.4635599899250966,
+        2.626697481429542
+      ],
+      "decoy_safe_rate": 1.0,
+      "trap_incorrect_rate": 0.14285714285714285,
+      "latency_p50_ms": 8935.748417003197,
+      "latency_p95_ms": 14381.758584000636,
+      "cost_per_case_usd": 0.0,
+      "cost_known": true,
+      "calls_per_case": 1,
+      "output_tokens_per_case": 120.1938775510204,
+      "errors_per_case": 0,
+      "accepted_by_family": {
+        "abstention": 0.0,
+        "aggregation": 0.0,
+        "calcite": 0.042,
+        "correlated_aggregate": 0.0,
+        "correlation": 0.0,
+        "disjunction": 0.0,
+        "null_semantics": 0.333,
+        "redundancy": 0.667,
+        "sargability": 1.0,
+        "semijoin": 0.286,
+        "set_semantics": 0.0
+      },
+      "system": "ollama-qwen3-8b-raw",
+      "vs_frontier-raw": {
+        "mean": -0.30612244897959184,
+        "ci95": [
+          -0.3979591836734694,
+          -0.21428571428571427
+        ],
+        "cases": 98
+      }
+    },
+    {
+      "cases": 98,
+      "trials": 1,
+      "outcomes": {
+        "accepted": 0.5714,
+        "no_change": 0.398,
+        "not_faster": 0.0306
+      },
+      "accepted_rate": 0.5714285714285714,
+      "accepted_ci95": [
+        0.47959183673469385,
+        0.673469387755102
+      ],
+      "incorrect_returned_rate": 0.0,
+      "incorrect_ci95": [
+        0.0,
+        0.0
+      ],
+      "incorrect_returned_count": 0,
+      "wrong_candidates_caught": 35,
+      "geomean_speedup": 3.8688839487088433,
+      "geomean_speedup_ci95": [
+        2.736758107236938,
+        5.628543886663372
+      ],
+      "decoy_safe_rate": 1.0,
+      "trap_incorrect_rate": 0.0,
+      "latency_p50_ms": 6989.8329180141445,
+      "latency_p95_ms": 28349.150043024565,
+      "cost_per_case_usd": 0.0027505836734693875,
+      "cost_known": true,
+      "calls_per_case": 5.418367346938775,
+      "output_tokens_per_case": 3752.3571428571427,
+      "errors_per_case": 0,
+      "accepted_by_family": {
+        "abstention": 0.0,
+        "aggregation": 0.5,
+        "calcite": 0.583,
+        "correlated_aggregate": 1.0,
+        "correlation": 0.5,
+        "disjunction": 0.0,
+        "null_semantics": 0.556,
+        "redundancy": 0.667,
+        "sargability": 1.0,
+        "semijoin": 0.571,
+        "set_semantics": 1.0
+      },
+      "system": "open-harness",
+      "vs_frontier-raw": {
+        "mean": 1.699320956058913e-18,
+        "ci95": [
+          -0.06802721088435375,
+          0.06462585034013606
+        ],
+        "cases": 98
+      }
+    },
+    {
+      "cases": 98,
+      "trials": 1,
+      "outcomes": {
+        "accepted": 0.4694,
+        "incorrect": 0.1122,
+        "no_change": 0.2347,
+        "not_faster": 0.1224,
+        "regression": 0.0612
+      },
+      "accepted_rate": 0.46938775510204084,
+      "accepted_ci95": [
+        0.3673469387755102,
+        0.5714285714285714
+      ],
+      "incorrect_returned_rate": 0.11224489795918367,
+      "incorrect_ci95": [
+        0.05102040816326531,
+        0.17346938775510204
+      ],
+      "incorrect_returned_count": 11,
+      "wrong_candidates_caught": 0,
+      "geomean_speedup": 2.8656981669290738,
+      "geomean_speedup_ci95": [
+        2.001147187906552,
+        4.204320137132679
+      ],
+      "decoy_safe_rate": 1.0,
+      "trap_incorrect_rate": 0.0,
+      "latency_p50_ms": 2426.183834002586,
+      "latency_p95_ms": 4843.194500004756,
+      "cost_per_case_usd": 0.0004242434693877551,
+      "cost_known": true,
+      "calls_per_case": 1,
+      "output_tokens_per_case": 545.5510204081633,
+      "errors_per_case": 0,
+      "accepted_by_family": {
+        "abstention": 0.0,
+        "aggregation": 0.5,
+        "calcite": 0.333,
+        "correlated_aggregate": 1.0,
+        "correlation": 0.3,
+        "disjunction": 0.0,
+        "null_semantics": 0.444,
+        "redundancy": 0.667,
+        "sargability": 1.0,
+        "semijoin": 0.429,
+        "set_semantics": 1.0
+      },
+      "system": "open-raw",
+      "vs_frontier-raw": {
+        "mean": -0.10204081632653061,
+        "ci95": [
+          -0.18027210884353742,
+          -0.02380952380952381
+        ],
+        "cases": 98
+      }
+    },
+    {
+      "cases": 98,
+      "trials": 3,
+      "outcomes": {
+        "accepted": 0.4859,
+        "incorrect": 0.088,
+        "invalid": 0.0035,
+        "no_change": 0.2042,
+        "not_faster": 0.1127,
+        "regression": 0.1056
+      },
+      "accepted_rate": 0.48299319727891155,
+      "accepted_ci95": [
+        0.3843537414965986,
+        0.5714285714285714
+      ],
+      "incorrect_returned_rate": 0.08673469387755102,
+      "incorrect_ci95": [
+        0.044217687074829926,
+        0.141156462585034
+      ],
+      "incorrect_returned_count": 25,
+      "wrong_candidates_caught": 0,
+      "geomean_speedup": 2.935845241260818,
+      "geomean_speedup_ci95": [
+        2.0406526411931942,
+        4.209601888366993
+      ],
+      "decoy_safe_rate": 0.9743589743589743,
+      "trap_incorrect_rate": 0.10714285714285714,
+      "latency_p50_ms": 1740.293333326311,
+      "latency_p95_ms": 3642.563000665785,
+      "cost_per_case_usd": 0.0003692007042253521,
+      "cost_known": true,
+      "calls_per_case": 1,
+      "output_tokens_per_case": 484.61619718309856,
+      "errors_per_case": 0.0035211267605633804,
+      "accepted_by_family": {
+        "abstention": 0.0,
+        "aggregation": 0.458,
+        "calcite": 0.361,
+        "correlated_aggregate": 1.0,
+        "correlation": 0.3,
+        "disjunction": 0.0,
+        "null_semantics": 0.593,
+        "redundancy": 0.63,
+        "sargability": 1.0,
+        "semijoin": 0.476,
+        "set_semantics": 0.833
+      },
+      "system": "oss120b-raw",
+      "vs_frontier-raw": {
+        "mean": -0.08843537414965986,
+        "ci95": [
+          -0.1564625850340136,
+          -0.02380952380952381
+        ],
+        "cases": 98
+      }
+    },
+    {
+      "cases": 28,
+      "trials": 1,
+      "outcomes": {
+        "accepted": 0.8571,
+        "no_change": 0.1429
+      },
+      "accepted_rate": 0.8571428571428571,
+      "accepted_ci95": [
+        0.7142857142857143,
+        0.9642857142857143
+      ],
+      "incorrect_returned_rate": 0.0,
+      "incorrect_ci95": [
+        0.0,
+        0.0
+      ],
+      "incorrect_returned_count": 0,
+      "wrong_candidates_caught": 0,
+      "geomean_speedup": 15.016388122075018,
+      "geomean_speedup_ci95": [
+        7.776580295034364,
+        28.746619815334487
+      ],
+      "decoy_safe_rate": null,
+      "trap_incorrect_rate": 0.0,
+      "latency_p50_ms": 621.5344999945955,
+      "latency_p95_ms": 8849.804832653415,
+      "cost_per_case_usd": 0.0009142940357142857,
+      "cost_known": true,
+      "calls_per_case": 2.6785714285714284,
+      "output_tokens_per_case": 2066.035714285714,
+      "errors_per_case": 0.03571428571428571,
+      "accepted_by_family": {
+        "aggregation": 0.0,
+        "correlation": 0.714,
+        "null_semantics": 0.75,
+        "redundancy": 1.0,
+        "sargability": 1.0,
+        "semijoin": 1.0
+      },
+      "system": "oss20b-harness",
+      "vs_frontier-raw": {
+        "mean": 0.11904761904761905,
+        "ci95": [
+          0.011904761904761906,
+          0.25
+        ],
+        "cases": 28
+      }
+    },
+    {
+      "cases": 98,
+      "trials": 3,
+      "outcomes": {
+        "accepted": 0.4388,
+        "incorrect": 0.0952,
+        "no_change": 0.2517,
+        "not_faster": 0.1224,
+        "regression": 0.0918
+      },
+      "accepted_rate": 0.4387755102040816,
+      "accepted_ci95": [
+        0.3435374149659864,
+        0.5340136054421769
+      ],
+      "incorrect_returned_rate": 0.09523809523809523,
+      "incorrect_ci95": [
+        0.05102040816326531,
+        0.14285714285714285
+      ],
+      "incorrect_returned_count": 28,
+      "wrong_candidates_caught": 0,
+      "geomean_speedup": 2.9652137717787674,
+      "geomean_speedup_ci95": [
+        2.0891923823118193,
+        4.283549873541273
+      ],
+      "decoy_safe_rate": 1.0,
+      "trap_incorrect_rate": 0.16666666666666666,
+      "latency_p50_ms": 1508.3505419897847,
+      "latency_p95_ms": 3021.560082997894,
+      "cost_per_case_usd": 0.00023285047619047618,
+      "cost_known": true,
+      "calls_per_case": 1,
+      "output_tokens_per_case": 633.6700680272108,
+      "errors_per_case": 0.003401360544217687,
+      "accepted_by_family": {
+        "abstention": 0.0,
+        "aggregation": 0.208,
+        "calcite": 0.319,
+        "correlated_aggregate": 1.0,
+        "correlation": 0.3,
+        "disjunction": 0.0,
+        "null_semantics": 0.556,
+        "redundancy": 0.667,
+        "sargability": 1.0,
+        "semijoin": 0.381,
+        "set_semantics": 0.5
+      },
+      "system": "oss20b-raw",
+      "vs_frontier-raw": {
+        "mean": -0.1326530612244898,
+        "ci95": [
+          -0.21428571428571427,
+          -0.05102040816326531
+        ],
+        "cases": 98
+      }
+    },
+    {
+      "cases": 98,
+      "trials": 1,
+      "outcomes": {
+        "accepted": 0.1429,
+        "no_change": 0.8571
+      },
+      "accepted_rate": 0.14285714285714285,
+      "accepted_ci95": [
+        0.08163265306122448,
+        0.21428571428571427
+      ],
+      "incorrect_returned_rate": 0.0,
+      "incorrect_ci95": [
+        0.0,
+        0.0
+      ],
+      "incorrect_returned_count": 0,
+      "wrong_candidates_caught": 0,
+      "geomean_speedup": 1.6682660920373218,
+      "geomean_speedup_ci95": [
+        1.3079807919578341,
+        2.1882169966488134
+      ],
+      "decoy_safe_rate": 1.0,
+      "trap_incorrect_rate": 0.0,
+      "latency_p50_ms": 0.3643340023700148,
+      "latency_p95_ms": 362.3857080092421,
+      "cost_per_case_usd": 0,
+      "cost_known": true,
+      "calls_per_case": 0,
+      "output_tokens_per_case": 0,
+      "errors_per_case": 0,
+      "accepted_by_family": {
+        "abstention": 0.0,
+        "aggregation": 0.0,
+        "calcite": 0.0,
+        "correlated_aggregate": 0.0,
+        "correlation": 0.0,
+        "disjunction": 0.0,
+        "null_semantics": 0.0,
+        "redundancy": 0.0,
+        "sargability": 1.0,
+        "semijoin": 0.0,
+        "set_semantics": 0.0
+      },
+      "system": "rules-only",
+      "vs_frontier-raw": {
+        "mean": -0.42857142857142855,
+        "ci95": [
+          -0.5204081632653061,
+          -0.32653061224489793
+        ],
+        "cases": 98
+      }
+    }
+  ],
+  "pareto_safe": [
+    "cascade-local",
+    "oss20b-harness",
+    "rules-only"
+  ],
+  "note": "Synthetic microfixtures on PostgreSQL 16 (development data). Accepted = same rows on 8 databases (3 hidden) and >=20% faster by median paired EXPLAIN ANALYZE."
+}

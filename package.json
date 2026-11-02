@@ -1,0 +1,12 @@
+{
+  "name": "database-surgeon",
+  "private": true,
+  "scripts": {
+    "dev": "bash scripts/workbench.sh",
+    "build": "npm --prefix web run build",
+    "test": "python3 -m unittest discover -s tests -v",
+    "ui:verify": "node scripts/verify_workbench.mjs",
+    "ui:research": "node scripts/verify_research.mjs",
+    "research:export": ".venv/bin/python scripts/export_research.py"
+  }
+}

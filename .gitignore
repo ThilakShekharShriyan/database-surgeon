@@ -1,0 +1,18 @@
+.env
+.env.local
+__pycache__/
+.venv/
+results/
+.local/
+*.pyc
+
+# Editor / local agent state
+.cursor/
+
+# Local workbench
+web/node_modules/
+web/.next/
+web/.next-*/
+web/*.tsbuildinfo
+.copilotkit/
+.taste-skill/

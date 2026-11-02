@@ -1,0 +1,284 @@
+{
+  "cases_sha256": "288dd2b628a8c51935c90e07594cf43fc5bbee173f42fbf7c05ab5b1c12a003b",
+  "counts": {
+    "dev": 98,
+    "heldout": 73
+  },
+  "dropped": [
+    {
+      "id": "calcite_testDistinctWithGrouping",
+      "reason": "Duplicate result column names are unsupported."
+    },
+    {
+      "id": "calcite_testJoinConditionPushdown6",
+      "reason": "Duplicate result column names are unsupported."
+    },
+    {
+      "id": "calcite_testReduceConstantsCalc",
+      "reason": "Candidate contains a disallowed operation or function."
+    },
+    {
+      "id": "calcite_testSumAndDistinctSumWithExpandSumType",
+      "reason": "Duplicate result column names are unsupported."
+    },
+    {
+      "id": "calcite_testPushAggregateThroughOuterJoin14",
+      "reason": "Duplicate result column names are unsupported."
+    },
+    {
+      "id": "calcite_testDistinctCountWithExpandSumType",
+      "reason": "Duplicate result column names are unsupported."
+    },
+    {
+      "id": "calcite_testRemoveDistinctOnAgg",
+      "reason": "Duplicate result column names are unsupported."
+    }
+  ],
+  "families": {
+    "abstention": 18,
+    "aggregation": 16,
+    "calcite": 33,
+    "correlated_aggregate": 2,
+    "correlation": 18,
+    "disjunction": 7,
+    "null_semantics": 17,
+    "redundancy": 17,
+    "sargability": 26,
+    "semijoin": 15,
+    "set_semantics": 2
+  },
+  "fixtures": {
+    "bench": {
+      "customers": {
+        "md5": "c17972abc65e60c83f867f31af0939e2",
+        "rows": 1000
+      },
+      "dept": {
+        "md5": "ff117b741fe9ac9e2017369159f5132d",
+        "rows": 12
+      },
+      "emp": {
+        "md5": "69bf61dc73795d8d2462a391bf4a7a27",
+        "rows": 10000
+      },
+      "lineitem": {
+        "md5": "96ee88014da3cd9847271ec07fce730c",
+        "rows": 50000
+      },
+      "orders": {
+        "md5": "c2f4f52f95900c20c1ae49ca2bb178b5",
+        "rows": 50000
+      },
+      "part": {
+        "md5": "824c2fb25cd4ef830a112e5c0af7bda6",
+        "rows": 200
+      }
+    },
+    "check_a": {
+      "customers": {
+        "md5": "c17972abc65e60c83f867f31af0939e2",
+        "rows": 1000
+      },
+      "dept": {
+        "md5": "ff117b741fe9ac9e2017369159f5132d",
+        "rows": 12
+      },
+      "emp": {
+        "md5": "e25735c8f8bd4edd058c3f52703ea21e",
+        "rows": 150
+      },
+      "lineitem": {
+        "md5": "c73f25068bbe41c391a5018bb19f281b",
+        "rows": 350
+      },
+      "orders": {
+        "md5": "704c15f0c808167b922ccbc5d7ee59b1",
+        "rows": 204
+      },
+      "part": {
+        "md5": "824c2fb25cd4ef830a112e5c0af7bda6",
+        "rows": 200
+      }
+    },
+    "check_b": {
+      "customers": {
+        "md5": "c17972abc65e60c83f867f31af0939e2",
+        "rows": 1000
+      },
+      "dept": {
+        "md5": "ff117b741fe9ac9e2017369159f5132d",
+        "rows": 12
+      },
+      "emp": {
+        "md5": "e25735c8f8bd4edd058c3f52703ea21e",
+        "rows": 150
+      },
+      "lineitem": {
+        "md5": "c73f25068bbe41c391a5018bb19f281b",
+        "rows": 350
+      },
+      "orders": {
+        "md5": "de2f0d895e9039f46fe1ff1c322e515f",
+        "rows": 354
+      },
+      "part": {
+        "md5": "824c2fb25cd4ef830a112e5c0af7bda6",
+        "rows": 200
+      }
+    },
+    "check_empty": {
+      "customers": {
+        "md5": "c17972abc65e60c83f867f31af0939e2",
+        "rows": 1000
+      },
+      "dept": {
+        "md5": "ff117b741fe9ac9e2017369159f5132d",
+        "rows": 12
+      },
+      "emp": {
+        "md5": "d41d8cd98f00b204e9800998ecf8427e",
+        "rows": 0
+      },
+      "lineitem": {
+        "md5": "d41d8cd98f00b204e9800998ecf8427e",
+        "rows": 0
+      },
+      "orders": {
+        "md5": "d41d8cd98f00b204e9800998ecf8427e",
+        "rows": 0
+      },
+      "part": {
+        "md5": "824c2fb25cd4ef830a112e5c0af7bda6",
+        "rows": 200
+      }
+    },
+    "check_nonnull": {
+      "customers": {
+        "md5": "c17972abc65e60c83f867f31af0939e2",
+        "rows": 1000
+      },
+      "dept": {
+        "md5": "ff117b741fe9ac9e2017369159f5132d",
+        "rows": 12
+      },
+      "emp": {
+        "md5": "e25735c8f8bd4edd058c3f52703ea21e",
+        "rows": 150
+      },
+      "lineitem": {
+        "md5": "c73f25068bbe41c391a5018bb19f281b",
+        "rows": 350
+      },
+      "orders": {
+        "md5": "a952553d69a49d0f5404713b676fd230",
+        "rows": 350
+      },
+      "part": {
+        "md5": "824c2fb25cd4ef830a112e5c0af7bda6",
+        "rows": 200
+      }
+    },
+    "check_nulls": {
+      "customers": {
+        "md5": "589e8156f22f2dcf46841a25b221429a",
+        "rows": 300
+      },
+      "dept": {
+        "md5": "ff117b741fe9ac9e2017369159f5132d",
+        "rows": 12
+      },
+      "emp": {
+        "md5": "33184d98fdef89811a01c56b3fdd764a",
+        "rows": 400
+      },
+      "lineitem": {
+        "md5": "0f4bf6049f47833cf0d3cfe50d6f684b",
+        "rows": 600
+      },
+      "orders": {
+        "md5": "730224325612e4b2711ff9fb073dd7f9",
+        "rows": 2200
+      },
+      "part": {
+        "md5": "1808764c1657f9ac80673ae1b7cfb9a4",
+        "rows": 100
+      }
+    },
+    "check_rand1": {
+      "customers": {
+        "md5": "f5dcb47381df2d087dd1436181e6e35f",
+        "rows": 500
+      },
+      "dept": {
+        "md5": "ff117b741fe9ac9e2017369159f5132d",
+        "rows": 12
+      },
+      "emp": {
+        "md5": "172f5df999da6d3619a36f45a02ff0d4",
+        "rows": 600
+      },
+      "lineitem": {
+        "md5": "9c4494b79e62b84725a5043eaea827d6",
+        "rows": 900
+      },
+      "orders": {
+        "md5": "71c4fe5b205ed989571e1e6a76d4d4b6",
+        "rows": 3300
+      },
+      "part": {
+        "md5": "e437b4d1baffd672b17a78c54d7dd106",
+        "rows": 100
+      }
+    },
+    "check_rand2": {
+      "customers": {
+        "md5": "24074c709e40a5609376b0f92e244fc4",
+        "rows": 200
+      },
+      "dept": {
+        "md5": "2dd2eb2d9db93c628fc16e11b1da5b24",
+        "rows": 6
+      },
+      "emp": {
+        "md5": "a0bab33444e469d0ed05ecb0a4f15513",
+        "rows": 300
+      },
+      "lineitem": {
+        "md5": "69d46adfb6cf55e10144e291a745031e",
+        "rows": 500
+      },
+      "orders": {
+        "md5": "b7e23a2e94f4725117d5dd5ccdbd38c1",
+        "rows": 1650
+      },
+      "part": {
+        "md5": "d24f5d842d53d4689dbc787bf94ca634",
+        "rows": 100
+      }
+    }
+  },
+  "heldout_templates": [
+    "agg_count_column",
+    "agg_group_then_filter",
+    "corr_max_threshold",
+    "corr_q17_small_quantity",
+    "dec_day_range",
+    "dec_top_n",
+    "null_notin_notnull_col",
+    "null_notin_nullable",
+    "or_same_column",
+    "red_distinct_pk",
+    "red_sorted_subquery",
+    "sarg_arith_key",
+    "sarg_coalesce_key",
+    "sarg_to_char_range",
+    "semi_distinct_join",
+    "semi_in_distinct"
+  ],
+  "kinds": {
+    "decoy": 33,
+    "rewrite": 120,
+    "trap": 18
+  },
+  "note": "Synthetic microfixtures on PostgreSQL 16; not benchmark-scale data."
+}

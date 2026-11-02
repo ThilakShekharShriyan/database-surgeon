@@ -1,0 +1,20 @@
+services:
+  postgres:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: surgeon
+      POSTGRES_USER: surgeon_admin
+      POSTGRES_PASSWORD: local-admin-only
+    ports:
+      - "127.0.0.1:55432:5432"
+    volumes:
+      - surgeon_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U surgeon_admin -d surgeon"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+volumes:
+  surgeon_pgdata:
+

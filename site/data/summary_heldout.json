@@ -1,0 +1,100 @@
+{
+  "split": "heldout",
+  "systems": [
+    {
+      "cases": 1,
+      "trials": 1,
+      "outcomes": {
+        "no_change": 1.0
+      },
+      "accepted_rate": 0.0,
+      "accepted_ci95": [
+        0.0,
+        0.0
+      ],
+      "incorrect_returned_rate": 0.0,
+      "incorrect_ci95": [
+        0.0,
+        0.0
+      ],
+      "incorrect_returned_count": 0,
+      "wrong_candidates_caught": 0,
+      "geomean_speedup": 1.0,
+      "geomean_speedup_ci95": [
+        1.0,
+        1.0
+      ],
+      "decoy_safe_rate": null,
+      "trap_incorrect_rate": null,
+      "latency_p50_ms": 9244.809541007271,
+      "latency_p95_ms": 9244.809541007271,
+      "cost_per_case_usd": 0.00325,
+      "cost_known": true,
+      "calls_per_case": 1,
+      "output_tokens_per_case": 234,
+      "errors_per_case": 0,
+      "accepted_by_family": {
+        "sargability": 0.0
+      },
+      "system": "frontier-raw"
+    },
+    {
+      "cases": 73,
+      "trials": 1,
+      "outcomes": {
+        "accepted": 0.2055,
+        "no_change": 0.7945
+      },
+      "accepted_rate": 0.2054794520547945,
+      "accepted_ci95": [
+        0.1232876712328767,
+        0.3013698630136986
+      ],
+      "incorrect_returned_rate": 0.0,
+      "incorrect_ci95": [
+        0.0,
+        0.0
+      ],
+      "incorrect_returned_count": 0,
+      "wrong_candidates_caught": 0,
+      "geomean_speedup": 1.5363992765170926,
+      "geomean_speedup_ci95": [
+        1.252528895361554,
+        1.9413169078738928
+      ],
+      "decoy_safe_rate": 1.0,
+      "trap_incorrect_rate": 0.0,
+      "latency_p50_ms": 0.9884169994620606,
+      "latency_p95_ms": 2537.260208002408,
+      "cost_per_case_usd": 0,
+      "cost_known": true,
+      "calls_per_case": 0,
+      "output_tokens_per_case": 0,
+      "errors_per_case": 0,
+      "accepted_by_family": {
+        "abstention": 0.0,
+        "aggregation": 0.0,
+        "calcite": 0.111,
+        "correlation": 0.0,
+        "disjunction": 0.0,
+        "null_semantics": 0.0,
+        "redundancy": 0.75,
+        "sargability": 0.667,
+        "semijoin": 0.0
+      },
+      "system": "rules-only",
+      "vs_frontier-raw": {
+        "mean": 1.0,
+        "ci95": [
+          1.0,
+          1.0
+        ],
+        "cases": 1
+      }
+    }
+  ],
+  "pareto_safe": [
+    "rules-only"
+  ],
+  "note": "Synthetic microfixtures on PostgreSQL 16 (development data). Accepted = same rows on 8 databases (3 hidden) and >=20% faster by median paired EXPLAIN ANALYZE."
+}

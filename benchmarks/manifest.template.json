@@ -1,0 +1,395 @@
+{
+  "manifest_version": 1,
+  "status": "NOT_FROZEN",
+  "executable": false,
+  "prepared_date_local": "2026-11-01",
+  "timezone": "America/Los_Angeles",
+  "purpose": "Source-inspected benchmark onboarding template. It cannot drive an evaluation until sources, data, contracts, split groups and budgets are resolved.",
+  "source_policy": {
+    "require_commit_pin": true,
+    "require_raw_sha256": true,
+    "require_terms_review": true,
+    "exclude_reference_rewrites_from_model_inputs": true,
+    "check_cross_repository_lineage": true
+  },
+  "evaluation": {
+    "postgresql_major": 16,
+    "primary_track": "cold_public_reproduction",
+    "sealed_final_cases_in_this_file": false,
+    "exposed_queries_are_not_blind_test": true,
+    "model_ids": null,
+    "rates_snapshot": null,
+    "calls_per_online_optimization_max": 2,
+    "output_token_ceiling": null,
+    "total_api_call_cap": null,
+    "total_api_cost_usd_cap": null,
+    "total_db_time_seconds_cap": null,
+    "repeats": null,
+    "run_seeds": null
+  },
+  "cases": [
+    {
+      "case_id": "rbot_tpch_q17_variant0",
+      "source": {
+        "repository": "https://github.com/curtis-sun/LLM4Rewrite",
+        "branch_at_inspection": "main",
+        "commit_sha": null,
+        "path": "tpch/query17/query17_0.sql",
+        "raw_url": "https://raw.githubusercontent.com/curtis-sun/LLM4Rewrite/main/tpch/query17/query17_0.sql",
+        "sha256": null,
+        "selector": null
+      },
+      "lineage_group": "tpch_q17",
+      "schema_family": "tpch",
+      "semantic_tags": [
+        "correlated_aggregate",
+        "decimal",
+        "scalar_aggregate",
+        "limit"
+      ],
+      "result_contract": "scalar_row",
+      "prerequisites": [
+        "load_tpch",
+        "constraint_contract",
+        "type_contract"
+      ],
+      "split": "public_reproduction_development",
+      "admission_status": "NOT_ADMITTED",
+      "data_instance": null,
+      "checker_version": null,
+      "observed_baseline_ms": null
+    },
+    {
+      "case_id": "rbot_tpch_q17_variant1",
+      "source": {
+        "repository": "https://github.com/curtis-sun/LLM4Rewrite",
+        "branch_at_inspection": "main",
+        "commit_sha": null,
+        "path": "tpch/query17/query17_1.sql",
+        "raw_url": "https://raw.githubusercontent.com/curtis-sun/LLM4Rewrite/main/tpch/query17/query17_1.sql",
+        "sha256": null,
+        "selector": null
+      },
+      "lineage_group": "tpch_q17",
+      "schema_family": "tpch",
+      "semantic_tags": [
+        "parameter_variant",
+        "correlated_aggregate"
+      ],
+      "result_contract": "scalar_row",
+      "prerequisites": [
+        "same_split_as_variant0",
+        "load_tpch",
+        "type_contract"
+      ],
+      "split": "public_reproduction_development",
+      "admission_status": "NOT_ADMITTED",
+      "data_instance": null,
+      "checker_version": null,
+      "observed_baseline_ms": null
+    },
+    {
+      "case_id": "rbot_dsb_q001",
+      "source": {
+        "repository": "https://github.com/curtis-sun/LLM4Rewrite",
+        "branch_at_inspection": "main",
+        "commit_sha": null,
+        "path": "dsb/query001/query001_0.sql",
+        "raw_url": "https://raw.githubusercontent.com/curtis-sun/LLM4Rewrite/main/dsb/query001/query001_0.sql",
+        "sha256": null,
+        "selector": null
+      },
+      "lineage_group": "dsb_q001",
+      "schema_family": "dsb",
+      "semantic_tags": [
+        "cte",
+        "correlated_aggregate",
+        "dimension_joins",
+        "order_by",
+        "limit"
+      ],
+      "result_contract": "ordered_requires_contract",
+      "prerequisites": [
+        "load_correlated_dsb",
+        "ordered_limit_contract",
+        "numeric_semantics"
+      ],
+      "split": "public_reproduction_development",
+      "admission_status": "NOT_ADMITTED",
+      "data_instance": null,
+      "checker_version": null,
+      "observed_baseline_ms": null
+    },
+    {
+      "case_id": "rbot_calcite_correlated_not_in",
+      "source": {
+        "repository": "https://github.com/curtis-sun/LLM4Rewrite",
+        "branch_at_inspection": "main",
+        "commit_sha": null,
+        "path": "calcite/calcite.jsonl",
+        "raw_url": "https://raw.githubusercontent.com/curtis-sun/LLM4Rewrite/main/calcite/calcite.jsonl",
+        "sha256": null,
+        "selector": {
+          "format": "jsonl",
+          "record_identification": {
+            "rewrite_name": "testWhereNotInCorrelated"
+          },
+          "model_input_field": "input_sql",
+          "forbidden_model_fields": [
+            "rewrites"
+          ]
+        }
+      },
+      "lineage_group": "calcite_correlated_not_in",
+      "schema_family": "calcite",
+      "semantic_tags": [
+        "null_semantics",
+        "correlation",
+        "not_in"
+      ],
+      "result_contract": "unordered_bag",
+      "prerequisites": [
+        "load_exact_calcite_schema",
+        "generate_distinguishing_fixtures",
+        "separate_reference_fields"
+      ],
+      "split": "public_reproduction_development",
+      "admission_status": "NOT_ADMITTED",
+      "data_instance": null,
+      "checker_version": null,
+      "observed_baseline_ms": null
+    },
+    {
+      "case_id": "quite_tpch_record4",
+      "source": {
+        "repository": "https://github.com/Yuyang-Song/QUITE",
+        "branch_at_inspection": "main",
+        "commit_sha": null,
+        "path": "dataset/queries/tpch_queries.json",
+        "raw_url": "https://raw.githubusercontent.com/Yuyang-Song/QUITE/main/dataset/queries/tpch_queries.json",
+        "sha256": null,
+        "selector": {
+          "format": "json",
+          "record_identification": {
+            "id": "4"
+          },
+          "model_input_field": "query"
+        }
+      },
+      "lineage_group": "tpch_q02",
+      "schema_family": "tpch",
+      "semantic_tags": [
+        "correlated_min",
+        "multiway_join",
+        "order_by",
+        "limit",
+        "parameter_family"
+      ],
+      "result_contract": "ordered_requires_contract",
+      "prerequisites": [
+        "load_tpch",
+        "deduplicate_other_tpch_q02_sources",
+        "ordered_limit_contract"
+      ],
+      "split": "public_reproduction_development",
+      "admission_status": "NOT_ADMITTED",
+      "data_instance": null,
+      "checker_version": null,
+      "observed_baseline_ms": null
+    },
+    {
+      "case_id": "sqlrewritebench_equiv001",
+      "source": {
+        "repository": "https://github.com/SQL-RewriteBench/benchmark",
+        "branch_at_inspection": "main",
+        "commit_sha": null,
+        "path": "benchmark/benchmark_inputs packages/cases/EQUIV-001/sql/benchmark_input.sql",
+        "raw_url": "https://raw.githubusercontent.com/SQL-RewriteBench/benchmark/main/benchmark/benchmark_inputs%20packages/cases/EQUIV-001/sql/benchmark_input.sql",
+        "sha256": null,
+        "selector": null
+      },
+      "lineage_group": "srb_equiv001_lineage_to_resolve",
+      "schema_family": "tpcds",
+      "semantic_tags": [
+        "aggregate",
+        "joins",
+        "order_by",
+        "limit"
+      ],
+      "result_contract": "ordered_requires_contract",
+      "prerequisites": [
+        "resolve_source_lineage",
+        "load_tpcds_sf10_or_declared_variant",
+        "schema_profile",
+        "ordered_contract"
+      ],
+      "split": "public_reproduction_development",
+      "admission_status": "NOT_ADMITTED",
+      "data_instance": null,
+      "checker_version": null,
+      "observed_baseline_ms": null
+    },
+    {
+      "case_id": "sqlrewritebench_perf001",
+      "source": {
+        "repository": "https://github.com/SQL-RewriteBench/benchmark",
+        "branch_at_inspection": "main",
+        "commit_sha": null,
+        "path": "benchmark/benchmark_inputs packages/cases/PERF-001/sql/benchmark_input.sql",
+        "raw_url": "https://raw.githubusercontent.com/SQL-RewriteBench/benchmark/main/benchmark/benchmark_inputs%20packages/cases/PERF-001/sql/benchmark_input.sql",
+        "sha256": null,
+        "selector": null
+      },
+      "lineage_group": "srb_perf001_lineage_to_resolve",
+      "schema_family": "tpcds_or_dsb_per_case_contract",
+      "semantic_tags": [
+        "synthetic_degradation",
+        "materialized_cte",
+        "repeated_scans",
+        "aggregate",
+        "nested_limit"
+      ],
+      "result_contract": "case_checker_required",
+      "prerequisites": [
+        "resolve_declared_database",
+        "load_correct_data",
+        "separate_degraded_cohort",
+        "resolve_result_contract"
+      ],
+      "split": "public_reproduction_development",
+      "admission_status": "NOT_ADMITTED",
+      "data_instance": null,
+      "checker_version": null,
+      "observed_baseline_ms": null
+    },
+    {
+      "case_id": "sqlrewritebench_robust001",
+      "source": {
+        "repository": "https://github.com/SQL-RewriteBench/benchmark",
+        "branch_at_inspection": "main",
+        "commit_sha": null,
+        "path": "benchmark/benchmark_inputs packages/cases/ROBUST-001/sql/benchmark_input.sql",
+        "raw_url": "https://raw.githubusercontent.com/SQL-RewriteBench/benchmark/main/benchmark/benchmark_inputs%20packages/cases/ROBUST-001/sql/benchmark_input.sql",
+        "sha256": null,
+        "selector": null
+      },
+      "lineage_group": "srb_robust001_lineage_to_resolve",
+      "schema_family": "tpcds_or_dsb_per_case_contract",
+      "semantic_tags": [
+        "nested_cte",
+        "correlation",
+        "template_like_literal",
+        "nested_order_limit"
+      ],
+      "result_contract": "case_checker_required",
+      "prerequisites": [
+        "check_result_activity",
+        "resolve_source_lineage",
+        "load_correct_data",
+        "resolve_result_contract"
+      ],
+      "split": "public_reproduction_development",
+      "admission_status": "NOT_ADMITTED",
+      "data_instance": null,
+      "checker_version": null,
+      "observed_baseline_ms": null
+    },
+    {
+      "case_id": "sqlrewritebench_pgaware001",
+      "source": {
+        "repository": "https://github.com/SQL-RewriteBench/benchmark",
+        "branch_at_inspection": "main",
+        "commit_sha": null,
+        "path": "benchmark/benchmark_inputs packages/cases/PG-AWARE-001/sql/benchmark_input.sql",
+        "raw_url": "https://raw.githubusercontent.com/SQL-RewriteBench/benchmark/main/benchmark/benchmark_inputs%20packages/cases/PG-AWARE-001/sql/benchmark_input.sql",
+        "sha256": null,
+        "selector": null
+      },
+      "lineage_group": "srb_pgaware001_lineage_to_resolve",
+      "schema_family": "tpcds_or_dsb_per_case_contract",
+      "semantic_tags": [
+        "substring_from_for",
+        "postgres_cast",
+        "intersect",
+        "nulls_last",
+        "order_by",
+        "limit"
+      ],
+      "result_contract": "ordered_requires_contract",
+      "prerequisites": [
+        "ast_guard_support",
+        "resolve_declared_database",
+        "ordered_limit_contract"
+      ],
+      "split": "public_reproduction_development",
+      "admission_status": "NOT_ADMITTED",
+      "data_instance": null,
+      "checker_version": null,
+      "observed_baseline_ms": null
+    },
+    {
+      "case_id": "sqlstorm_tpch100",
+      "source": {
+        "repository": "https://github.com/SQL-Storm/SQLStorm",
+        "branch_at_inspection": "master",
+        "commit_sha": null,
+        "path": "v1.0/tpch/queries/100.sql",
+        "raw_url": "https://raw.githubusercontent.com/SQL-Storm/SQLStorm/master/v1.0/tpch/queries/100.sql",
+        "sha256": null,
+        "selector": null
+      },
+      "lineage_group": "sqlstorm_v1_tpch100",
+      "schema_family": "tpch",
+      "semantic_tags": [
+        "cte",
+        "window_rank",
+        "full_outer_join",
+        "count",
+        "order_by"
+      ],
+      "result_contract": "ordered_requires_contract",
+      "prerequisites": [
+        "load_tpch",
+        "outer_join_fixtures",
+        "window_order_contract"
+      ],
+      "split": "public_reproduction_development",
+      "admission_status": "NOT_ADMITTED",
+      "data_instance": null,
+      "checker_version": null,
+      "observed_baseline_ms": null
+    },
+    {
+      "case_id": "job_1a",
+      "source": {
+        "repository": "https://github.com/gregrahn/join-order-benchmark",
+        "branch_at_inspection": "master",
+        "commit_sha": null,
+        "path": "1a.sql",
+        "raw_url": "https://raw.githubusercontent.com/gregrahn/join-order-benchmark/master/1a.sql",
+        "sha256": null,
+        "selector": null
+      },
+      "lineage_group": "job_family1",
+      "schema_family": "imdb_job",
+      "semantic_tags": [
+        "five_way_join",
+        "like",
+        "disjunction",
+        "min_aggregate"
+      ],
+      "result_contract": "scalar_row",
+      "prerequisites": [
+        "data_terms_and_snapshot",
+        "load_imdb_schema",
+        "index_configuration",
+        "type_contract"
+      ],
+      "split": "public_reproduction_development",
+      "admission_status": "NOT_ADMITTED",
+      "data_instance": null,
+      "checker_version": null,
+      "observed_baseline_ms": null
+    }
+  ]
+}
