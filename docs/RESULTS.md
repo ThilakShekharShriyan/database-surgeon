@@ -2,7 +2,7 @@
 
 **Rubric:** 40% Benchmark (171 fixed cases) · 25% Business · 20% Tech · 10% Demo · 5% Docs. *Harness enough; fine-tuning optional.*
 
-**Crazy harness:** [CRAZY_HARNESS.md](CRAZY_HARNESS.md) · research: [CRAZY_HARNESS_DEEP_RESEARCH.md](CRAZY_HARNESS_DEEP_RESEARCH.md) · **all-round scoreboard:** [ADVANTAGES.md](ADVANTAGES.md)
+**Judge research write-up:** [FORGE_RESEARCH.md](FORGE_RESEARCH.md) · **all-round scoreboard:** [ADVANTAGES.md](ADVANTAGES.md) · crazy harness: [CRAZY_HARNESS.md](CRAZY_HARNESS.md) · priors: [CRAZY_HARNESS_DEEP_RESEARCH.md](CRAZY_HARNESS_DEEP_RESEARCH.md)
 
 **Full bench (durable):** `bash scripts/run_all_advantages_bench.sh` · launchd `com.databasesurgeon.fullbench` · live log `.local/eval_v2/all_advantages.out`
 

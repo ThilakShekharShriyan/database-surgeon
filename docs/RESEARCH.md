@@ -1,9 +1,10 @@
 # Database Surgeon: research and reuse guide
 
-Prepared November 1, 2026, America/Los_Angeles; official Fireworks documentation checked November 2 UTC.
-Status: research and proposed integration decisions, not implemented capabilities or a model-performance claim.
+**Judge packet (Nov 2):** [FORGE_RESEARCH.md](FORGE_RESEARCH.md) — measured six-step write-up with McNemar + template-cluster bootstrap on sealed eval_v2.
+
+This longer guide mixes early design notes with reuse references. Official Fireworks documentation checked November 2 UTC.
 Companion: [Architecture and execution plan](ARCHITECTURE.md).
-Original research: [TinyFish deep-research report](https://agent.tinyfish.ai/playground/research/share/01a19a29-6e7d-76e5-a134-e0e4b25888c7).
+Industry priors (not our numbers): [TinyFish deep-research report](https://agent.tinyfish.ai/playground/research/share/01a19a29-6e7d-76e5-a134-e0e4b25888c7) · [CRAZY_HARNESS_DEEP_RESEARCH.md](CRAZY_HARNESS_DEEP_RESEARCH.md).
 
 ## 1. Decision in one paragraph
 

@@ -1,3 +1,4 @@
+import threading
 import unittest
 
 from surgeon.eval.llm import extract_json, price
@@ -18,11 +19,18 @@ def record(case, outcome, speedup=1.0, kind="rewrite", latency=1000.0, cost=0.00
 
 class FakeClient:
     def __init__(self, answers):
+        # Assign answers in first-seen sample order (locked) so parallel best_of
+        # and sequential repair both stay deterministic per sample id.
         self.answers, self.calls = list(answers), 0
+        self._map, self._lock = {}, threading.Lock()
 
     def complete(self, system, user, sample=0):
-        self.calls += 1
-        sql = self.answers.pop(0) if self.answers else None
+        with self._lock:
+            self.calls += 1
+            if sample not in self._map:
+                used = len(self._map)
+                self._map[sample] = self.answers[used] if used < len(self.answers) else None
+            sql = self._map[sample]
         return {"sql": sql, "latency_ms": 100.0, "cost_usd": 0.001, "error": None if sql else "unparseable output"}
 
 
@@ -39,8 +47,14 @@ class FakeVerifier:
     def plan_text(self, sql):
         return "Seq Scan", 1.0
 
+    def plan_json(self, sql):
+        return {"Plan": {"Node Type": "Seq Scan", "Total Cost": 100.0, "Plan Rows": 1000}}, 1.0
+
     def plan_cost(self, sql):
         return 100.0, 1.0
+
+    def looks_already_optimal(self, plan):
+        return False
 
 
 CASE = {"id": "c", "sql": "SELECT 1 AS a", "schema_context": "t(a int)"}
@@ -72,10 +86,44 @@ class PipelineTests(unittest.TestCase):
         self.assertEqual(system.client.calls, 2)
 
     def test_best_of_returns_the_verified_sample(self):
-        system = build(SystemConfig("b", "local", "m", verify=True, best_of=3),
+        system = build(SystemConfig("b", "local", "m", verify=True, best_of=3, adaptive_best_of=True),
                        ["SELECT 2 AS a", "SELECT 4 AS a", "SELECT 2 AS a"], {"SELECT 4 AS a"})
         self.assertEqual(system.run(CASE, 0)["result_sql"], "SELECT 4 AS a")
+        # Adaptive: first sample fails verify, then remaining two are drawn.
         self.assertEqual(system.verifier.seen.count("SELECT 2 AS a"), 1)
+        self.assertIn("SELECT 4 AS a", system.verifier.seen)
+
+    def test_first_win_stops_after_first_verified(self):
+        system = build(
+            SystemConfig("fw", "local", "m", verify=True, first_win=True),
+            [],
+            {"SELECT 4 AS a", "SELECT 5 AS a", "SELECT 6 AS a"},
+        )
+        trace = {"candidates": [], "verify_ms": 0.0}
+        feedback = []
+        ok = system._accepts(CASE, [
+            {"sql": "SELECT 4 AS a", "origin": "model"},
+            {"sql": "SELECT 5 AS a", "origin": "model"},
+            {"sql": "SELECT 6 AS a", "origin": "model"},
+        ], trace, feedback)
+        self.assertTrue(ok)
+        self.assertEqual(trace["accepted"], "SELECT 4 AS a")
+        self.assertEqual(system.verifier.seen, ["SELECT 4 AS a"])
+
+    def test_early_abstain_skips_model_on_index_lookup(self):
+        class OptimalVerifier(FakeVerifier):
+            def looks_already_optimal(self, plan):
+                return True
+
+        config = SystemConfig(
+            "ea", "local", "m", verify=True, early_abstain=True, workload_cache=False,
+        )
+        system = System(config, OptimalVerifier(set()))
+        system.client = FakeClient(["SELECT 2 AS a"])
+        trace = system.run(CASE, 0)
+        self.assertEqual(trace["result_sql"], CASE["sql"])
+        self.assertEqual(system.client.calls, 0)
+        self.assertTrue(any(c.get("stage") == "early_abstain" for c in trace["candidates"]))
 
     def test_cascade_stops_at_first_stage_that_changes_the_query(self):
         first = build(SystemConfig("s1", "local", "m", verify=True), ["SELECT 2 AS a"], set())

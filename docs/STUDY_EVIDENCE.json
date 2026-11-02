@@ -1,0 +1,2143 @@
+{
+  "captured_at_utc": "2026-11-02T21:41:07.233005+00:00",
+  "primary_trial": 0,
+  "source_files": {
+    "surgeon/eval/systems.py": "598946b86b1063a8df8aae1a5fbb26a6fe385e9501776ab88468c75b26339d57",
+    "surgeon/eval/registry.py": "b22cea94984aa5a274b54a7919fdf131a695eb68a9d89f1f089fd3daff993cd6",
+    "surgeon/eval/runner.py": "78284b11db69532ae1f355291339e48361681721ee351e82c1116fb4c39a57bc",
+    "surgeon/eval/judge.py": "1967253a3dbd1390e452a5c44022fbc40a9bfb67f0e89cd89abfb7b4250d4b7f",
+    "surgeon/eval/workload_cache.py": "5ad1ca91af38d8f5ddb73165f269fd987b6deb18f2c696b606c47606ce0b8480",
+    "surgeon/eval/comparison.py": "eb9d92d4f95f36af5bb7b9098e9ba6ccd9d5cdfddacdcae2e43e205406fdb63a",
+    "scripts/build_specialist_dataset.py": "0ac339bfd2fd7030b1c6842931f187514c4aa983d314b331e3efab81d241ccce",
+    "scripts/measure_cache_ab.py": "503b38ab8f8f5f9cffc7863fc56694156c6af853e56a5c29b5bbc6163f071696",
+    "scripts/pg_stat_workload_slice.py": "ad21e710ff7c1fef0cd937e5b8512aaac496a1fc12b2a01400ece24b582588c0",
+    "benchmarks/eval_v2/cases.jsonl": "288dd2b628a8c51935c90e07594cf43fc5bbee173f42fbf7c05ab5b1c12a003b"
+  },
+  "splits": {
+    "dev": {
+      "cases": 98,
+      "templates": 57,
+      "families": {
+        "sargability": 14,
+        "correlation": 10,
+        "null_semantics": 9,
+        "semijoin": 7,
+        "disjunction": 3,
+        "redundancy": 9,
+        "aggregation": 8,
+        "abstention": 10,
+        "correlated_aggregate": 2,
+        "set_semantics": 2,
+        "calcite": 24
+      },
+      "under_10_ms_at_build": 81,
+      "cases_sha256": "288dd2b628a8c51935c90e07594cf43fc5bbee173f42fbf7c05ab5b1c12a003b",
+      "systems": {
+        "cascade-local": {
+          "cases": 40,
+          "trials": 1,
+          "outcomes": {
+            "accepted": 0.625,
+            "no_change": 0.375
+          },
+          "accepted_rate": 0.625,
+          "accepted_ci95": [
+            0.475,
+            0.775
+          ],
+          "incorrect_returned_rate": 0.0,
+          "incorrect_ci95": [
+            0.0,
+            0.0
+          ],
+          "incorrect_returned_count": 0,
+          "wrong_candidates_caught": 9,
+          "geomean_speedup": 7.345016594492621,
+          "geomean_speedup_ci95": [
+            3.9898267793119304,
+            12.694535680884227
+          ],
+          "decoy_safe_rate": 1.0,
+          "trap_incorrect_rate": 0.0,
+          "latency_p50_ms": 21574.878792991512,
+          "latency_p95_ms": 141779.96483298193,
+          "optimizer_llm_p50_ms": 21347.81804200611,
+          "optimizer_llm_p95_ms": 141537.77758400247,
+          "optimizer_verify_p50_ms": 355.39337500813417,
+          "optimizer_verify_p95_ms": 2139.764459017897,
+          "cost_per_case_usd": 0.0,
+          "cost_known": true,
+          "calls_per_case": 0.9,
+          "output_tokens_per_case": 777.675,
+          "errors_per_case": 0,
+          "accepted_by_family": {
+            "abstention": 0.0,
+            "aggregation": 0.0,
+            "correlation": 0.556,
+            "disjunction": 0.0,
+            "null_semantics": 0.6,
+            "redundancy": 1.0,
+            "sargability": 1.0,
+            "semijoin": 0.333
+          },
+          "expected_cases": 98,
+          "complete": false,
+          "record_count": 40,
+          "skipped_malformed_lines": 0,
+          "trace_path": "benchmarks/eval_v2/runs/cascade-local/dev_t0.jsonl",
+          "trace_sha256": "affc643368051f02ceb5c7e3e37e841657ec9b474683763d99c95ca93ac58fd1",
+          "config_hashes": {
+            "835c070462062b37": 14,
+            "5d42d77d90a416da": 23,
+            "61b1b6bfeb633d46": 3
+          },
+          "simulated_records": 40
+        },
+        "cascade-open-fw": {
+          "cases": 98,
+          "trials": 1,
+          "outcomes": {
+            "accepted": 0.5714,
+            "no_change": 0.398,
+            "not_faster": 0.0306
+          },
+          "accepted_rate": 0.5714285714285714,
+          "accepted_ci95": [
+            0.47959183673469385,
+            0.673469387755102
+          ],
+          "incorrect_returned_rate": 0.0,
+          "incorrect_ci95": [
+            0.0,
+            0.0
+          ],
+          "incorrect_returned_count": 0,
+          "wrong_candidates_caught": 35,
+          "geomean_speedup": 3.8688839487088433,
+          "geomean_speedup_ci95": [
+            2.736758107236938,
+            5.628543886663372
+          ],
+          "decoy_safe_rate": 1.0,
+          "trap_incorrect_rate": 0.0,
+          "latency_p50_ms": 6989.9808340123855,
+          "latency_p95_ms": 28349.448918030248,
+          "optimizer_llm_p50_ms": 5972.851375001483,
+          "optimizer_llm_p95_ms": 26749.740373998065,
+          "optimizer_verify_p50_ms": 324.71895799972117,
+          "optimizer_verify_p95_ms": 3257.727250995231,
+          "cost_per_case_usd": 0.0027505836734693875,
+          "cost_known": true,
+          "calls_per_case": 5.418367346938775,
+          "output_tokens_per_case": 3752.3571428571427,
+          "errors_per_case": 0,
+          "accepted_by_family": {
+            "abstention": 0.0,
+            "aggregation": 0.5,
+            "calcite": 0.583,
+            "correlated_aggregate": 1.0,
+            "correlation": 0.5,
+            "disjunction": 0.0,
+            "null_semantics": 0.556,
+            "redundancy": 0.667,
+            "sargability": 1.0,
+            "semijoin": 0.571,
+            "set_semantics": 1.0
+          },
+          "expected_cases": 98,
+          "complete": true,
+          "record_count": 98,
+          "skipped_malformed_lines": 0,
+          "trace_path": "benchmarks/eval_v2/runs/cascade-open-fw/dev_t0.jsonl",
+          "trace_sha256": "810717a11206d700a87a1719317f1a23a12fc7fdff1434707a8dffdae51a7ec0",
+          "config_hashes": {
+            "835c070462062b37": 14,
+            "0cb1ab359815b4a9": 84
+          },
+          "simulated_records": 98
+        },
+        "cascade-oss-fw": {
+          "cases": 98,
+          "trials": 1,
+          "outcomes": {
+            "accepted": 0.5714,
+            "no_change": 0.398,
+            "not_faster": 0.0306
+          },
+          "accepted_rate": 0.5714285714285714,
+          "accepted_ci95": [
+            0.47959183673469385,
+            0.673469387755102
+          ],
+          "incorrect_returned_rate": 0.0,
+          "incorrect_ci95": [
+            0.0,
+            0.0
+          ],
+          "incorrect_returned_count": 0,
+          "wrong_candidates_caught": 35,
+          "geomean_speedup": 3.8688839487088433,
+          "geomean_speedup_ci95": [
+            2.736758107236938,
+            5.628543886663372
+          ],
+          "decoy_safe_rate": 1.0,
+          "trap_incorrect_rate": 0.0,
+          "latency_p50_ms": 6989.9808340123855,
+          "latency_p95_ms": 28349.448918030248,
+          "optimizer_llm_p50_ms": 5972.851375001483,
+          "optimizer_llm_p95_ms": 26749.740373998065,
+          "optimizer_verify_p50_ms": 324.71895799972117,
+          "optimizer_verify_p95_ms": 3257.727250995231,
+          "cost_per_case_usd": 0.0027505836734693875,
+          "cost_known": true,
+          "calls_per_case": 5.418367346938775,
+          "output_tokens_per_case": 3752.3571428571427,
+          "errors_per_case": 0,
+          "accepted_by_family": {
+            "abstention": 0.0,
+            "aggregation": 0.5,
+            "calcite": 0.583,
+            "correlated_aggregate": 1.0,
+            "correlation": 0.5,
+            "disjunction": 0.0,
+            "null_semantics": 0.556,
+            "redundancy": 0.667,
+            "sargability": 1.0,
+            "semijoin": 0.571,
+            "set_semantics": 1.0
+          },
+          "expected_cases": 98,
+          "complete": true,
+          "record_count": 98,
+          "skipped_malformed_lines": 0,
+          "trace_path": "benchmarks/eval_v2/runs/cascade-oss-fw/dev_t0.jsonl",
+          "trace_sha256": "f9eac61ea95af6400d2ce96ab86b49c78fad2e5840b4470268c6771138c8786c",
+          "config_hashes": {
+            "835c070462062b37": 14,
+            "0cb1ab359815b4a9": 84
+          },
+          "simulated_records": 98
+        },
+        "frontier-raw": {
+          "cases": 98,
+          "trials": 1,
+          "outcomes": {
+            "accepted": 0.5612,
+            "invalid": 0.0102,
+            "no_change": 0.3571,
+            "not_faster": 0.051,
+            "regression": 0.0204
+          },
+          "accepted_rate": 0.5612244897959183,
+          "accepted_ci95": [
+            0.4489795918367347,
+            0.6530612244897959
+          ],
+          "incorrect_returned_rate": 0.0,
+          "incorrect_ci95": [
+            0.0,
+            0.0
+          ],
+          "incorrect_returned_count": 0,
+          "wrong_candidates_caught": 0,
+          "geomean_speedup": 3.869947297845024,
+          "geomean_speedup_ci95": [
+            2.6916166420357808,
+            5.567671852905669
+          ],
+          "decoy_safe_rate": 1.0,
+          "trap_incorrect_rate": 0.0,
+          "latency_p50_ms": 3800.159459002316,
+          "latency_p95_ms": 11995.672874996671,
+          "optimizer_llm_p50_ms": 3706.2615409959108,
+          "optimizer_llm_p95_ms": 11863.33912498958,
+          "optimizer_verify_p50_ms": 0,
+          "optimizer_verify_p95_ms": 0,
+          "cost_per_case_usd": 0.002673326530612245,
+          "cost_known": true,
+          "calls_per_case": 1,
+          "output_tokens_per_case": 157.68367346938774,
+          "errors_per_case": 0,
+          "accepted_by_family": {
+            "abstention": 0.0,
+            "aggregation": 0.5,
+            "calcite": 0.75,
+            "correlated_aggregate": 0.5,
+            "correlation": 0.3,
+            "disjunction": 0.0,
+            "null_semantics": 0.333,
+            "redundancy": 0.667,
+            "sargability": 1.0,
+            "semijoin": 0.571,
+            "set_semantics": 1.0
+          },
+          "expected_cases": 98,
+          "complete": true,
+          "record_count": 98,
+          "skipped_malformed_lines": 0,
+          "trace_path": "benchmarks/eval_v2/runs/frontier-raw/dev_t0.jsonl",
+          "trace_sha256": "474b0c5c86a880c51b9150ce372c3a585b548bb50d0f20522714591ef44bb148",
+          "config_hashes": {
+            "4f1958c3ad837c1c": 98
+          },
+          "simulated_records": 0
+        },
+        "fw-fast-harness": {
+          "cases": 98,
+          "trials": 1,
+          "outcomes": {
+            "accepted": 0.5714,
+            "no_change": 0.4082,
+            "not_faster": 0.0102,
+            "regression": 0.0102
+          },
+          "accepted_rate": 0.5714285714285714,
+          "accepted_ci95": [
+            0.46938775510204084,
+            0.673469387755102
+          ],
+          "incorrect_returned_rate": 0.0,
+          "incorrect_ci95": [
+            0.0,
+            0.0
+          ],
+          "incorrect_returned_count": 0,
+          "wrong_candidates_caught": 1,
+          "geomean_speedup": 3.644712118197469,
+          "geomean_speedup_ci95": [
+            2.6228305646187575,
+            5.306189546720806
+          ],
+          "decoy_safe_rate": 1.0,
+          "trap_incorrect_rate": 0.0,
+          "latency_p50_ms": 28772.91495903046,
+          "latency_p95_ms": 100400.58112304541,
+          "optimizer_llm_p50_ms": 25463.035709020915,
+          "optimizer_llm_p95_ms": 96197.8684180358,
+          "optimizer_verify_p50_ms": 336.5013330039801,
+          "optimizer_verify_p95_ms": 5501.937041000929,
+          "cost_per_case_usd": 0.007406610510204081,
+          "cost_known": true,
+          "calls_per_case": 5.26530612244898,
+          "output_tokens_per_case": 13654.602040816326,
+          "errors_per_case": 0.1836734693877551,
+          "accepted_by_family": {
+            "abstention": 0.0,
+            "aggregation": 0.625,
+            "calcite": 0.583,
+            "correlated_aggregate": 0.0,
+            "correlation": 0.6,
+            "disjunction": 0.0,
+            "null_semantics": 0.556,
+            "redundancy": 0.667,
+            "sargability": 1.0,
+            "semijoin": 0.571,
+            "set_semantics": 1.0
+          },
+          "expected_cases": 98,
+          "complete": true,
+          "record_count": 98,
+          "skipped_malformed_lines": 0,
+          "trace_path": "benchmarks/eval_v2/runs/fw-fast-harness/dev_t0.jsonl",
+          "trace_sha256": "49286e0002c1729eeb812d7dea54648de192164eb77b63e04c9df9395ac36add",
+          "config_hashes": {
+            "857857e026faaf0f": 98
+          },
+          "simulated_records": 0
+        },
+        "fw-fast-raw": {
+          "cases": 98,
+          "trials": 1,
+          "outcomes": {
+            "accepted": 0.4796,
+            "no_change": 0.449,
+            "not_faster": 0.0612,
+            "regression": 0.0102
+          },
+          "accepted_rate": 0.47959183673469385,
+          "accepted_ci95": [
+            0.37755102040816324,
+            0.5816326530612245
+          ],
+          "incorrect_returned_rate": 0.0,
+          "incorrect_ci95": [
+            0.0,
+            0.0
+          ],
+          "incorrect_returned_count": 0,
+          "wrong_candidates_caught": 0,
+          "geomean_speedup": 3.0917110778363415,
+          "geomean_speedup_ci95": [
+            2.2271348619091853,
+            4.412071138665982
+          ],
+          "decoy_safe_rate": 1.0,
+          "trap_incorrect_rate": 0.0,
+          "latency_p50_ms": 11709.069665987045,
+          "latency_p95_ms": 30779.95029100566,
+          "optimizer_llm_p50_ms": 11671.859915993991,
+          "optimizer_llm_p95_ms": 30726.991083007306,
+          "optimizer_verify_p50_ms": 0,
+          "optimizer_verify_p95_ms": 0,
+          "cost_per_case_usd": 0.0011062066326530612,
+          "cost_known": true,
+          "calls_per_case": 1,
+          "output_tokens_per_case": 2037.908163265306,
+          "errors_per_case": 0.02040816326530612,
+          "accepted_by_family": {
+            "abstention": 0.0,
+            "aggregation": 0.5,
+            "calcite": 0.375,
+            "correlated_aggregate": 0.0,
+            "correlation": 0.5,
+            "disjunction": 0.0,
+            "null_semantics": 0.556,
+            "redundancy": 0.667,
+            "sargability": 1.0,
+            "semijoin": 0.286,
+            "set_semantics": 1.0
+          },
+          "expected_cases": 98,
+          "complete": true,
+          "record_count": 98,
+          "skipped_malformed_lines": 0,
+          "trace_path": "benchmarks/eval_v2/runs/fw-fast-raw/dev_t0.jsonl",
+          "trace_sha256": "b7e47ca4b9c009a463060e0dd47d52a69c8b00f0bf937625aa64f15fe498a87d",
+          "config_hashes": {
+            "7530522158dce772": 98
+          },
+          "simulated_records": 0
+        },
+        "fw-gpt-oss-harness": {
+          "cases": 98,
+          "trials": 1,
+          "outcomes": {
+            "accepted": 0.5714,
+            "no_change": 0.398,
+            "not_faster": 0.0306
+          },
+          "accepted_rate": 0.5714285714285714,
+          "accepted_ci95": [
+            0.47959183673469385,
+            0.673469387755102
+          ],
+          "incorrect_returned_rate": 0.0,
+          "incorrect_ci95": [
+            0.0,
+            0.0
+          ],
+          "incorrect_returned_count": 0,
+          "wrong_candidates_caught": 35,
+          "geomean_speedup": 3.8688839487088433,
+          "geomean_speedup_ci95": [
+            2.736758107236938,
+            5.628543886663372
+          ],
+          "decoy_safe_rate": 1.0,
+          "trap_incorrect_rate": 0.0,
+          "latency_p50_ms": 6989.8329180141445,
+          "latency_p95_ms": 28349.150043024565,
+          "optimizer_llm_p50_ms": 5972.851375001483,
+          "optimizer_llm_p95_ms": 26749.740373998065,
+          "optimizer_verify_p50_ms": 323.9350829971954,
+          "optimizer_verify_p95_ms": 3257.727250995231,
+          "cost_per_case_usd": 0.0027505836734693875,
+          "cost_known": true,
+          "calls_per_case": 5.418367346938775,
+          "output_tokens_per_case": 3752.3571428571427,
+          "errors_per_case": 0,
+          "accepted_by_family": {
+            "abstention": 0.0,
+            "aggregation": 0.5,
+            "calcite": 0.583,
+            "correlated_aggregate": 1.0,
+            "correlation": 0.5,
+            "disjunction": 0.0,
+            "null_semantics": 0.556,
+            "redundancy": 0.667,
+            "sargability": 1.0,
+            "semijoin": 0.571,
+            "set_semantics": 1.0
+          },
+          "expected_cases": 98,
+          "complete": true,
+          "record_count": 98,
+          "skipped_malformed_lines": 0,
+          "trace_path": "benchmarks/eval_v2/runs/fw-gpt-oss-harness/dev_t0.jsonl",
+          "trace_sha256": "72ddb90f389f53e974d96d4c72c644c807dbfded83e26e508914c595dac53c5b",
+          "config_hashes": {
+            "0cb1ab359815b4a9": 98
+          },
+          "simulated_records": 0
+        },
+        "fw-nemotron-harness": {
+          "cases": 68,
+          "trials": 1,
+          "outcomes": {
+            "accepted": 0.5294,
+            "no_change": 0.4412,
+            "not_faster": 0.0294
+          },
+          "accepted_rate": 0.5294117647058824,
+          "accepted_ci95": [
+            0.4117647058823529,
+            0.6470588235294118
+          ],
+          "incorrect_returned_rate": 0.0,
+          "incorrect_ci95": [
+            0.0,
+            0.0
+          ],
+          "incorrect_returned_count": 0,
+          "wrong_candidates_caught": 28,
+          "geomean_speedup": 3.6733302777973407,
+          "geomean_speedup_ci95": [
+            2.494464247845204,
+            5.713847028817823
+          ],
+          "decoy_safe_rate": 1.0,
+          "trap_incorrect_rate": 0.0,
+          "latency_p50_ms": 24198.860832024366,
+          "latency_p95_ms": 108261.70041898149,
+          "optimizer_llm_p50_ms": 23764.773998991586,
+          "optimizer_llm_p95_ms": 107993.3726679883,
+          "optimizer_verify_p50_ms": 446.3938330009114,
+          "optimizer_verify_p95_ms": 3657.17291701003,
+          "cost_per_case_usd": 0.011352485882352941,
+          "cost_known": true,
+          "calls_per_case": 4.544117647058823,
+          "output_tokens_per_case": 7767.720588235294,
+          "errors_per_case": 0.6764705882352942,
+          "accepted_by_family": {
+            "abstention": 0.0,
+            "aggregation": 0.5,
+            "correlation": 0.667,
+            "disjunction": 0.0,
+            "null_semantics": 0.5,
+            "redundancy": 0.556,
+            "sargability": 1.0,
+            "semijoin": 0.429
+          },
+          "expected_cases": 98,
+          "complete": false,
+          "record_count": 68,
+          "skipped_malformed_lines": 0,
+          "trace_path": "benchmarks/eval_v2/runs/fw-nemotron-harness/dev_t0.jsonl",
+          "trace_sha256": "a81fa81fc456babd9f22092991eb6e878ed35a400b63d1697ff39cab08e17525",
+          "config_hashes": {
+            "8240b9e7e913e975": 68
+          },
+          "simulated_records": 0
+        },
+        "fw-nemotron-raw": {
+          "cases": 98,
+          "trials": 1,
+          "outcomes": {
+            "accepted": 0.5,
+            "incorrect": 0.0306,
+            "invalid": 0.0102,
+            "no_change": 0.3163,
+            "not_faster": 0.102,
+            "regression": 0.0408
+          },
+          "accepted_rate": 0.5,
+          "accepted_ci95": [
+            0.3979591836734694,
+            0.6020408163265306
+          ],
+          "incorrect_returned_rate": 0.030612244897959183,
+          "incorrect_ci95": [
+            0.0,
+            0.07142857142857142
+          ],
+          "incorrect_returned_count": 3,
+          "wrong_candidates_caught": 0,
+          "geomean_speedup": 3.1058652066570045,
+          "geomean_speedup_ci95": [
+            2.179642901229557,
+            4.585310338398475
+          ],
+          "decoy_safe_rate": 1.0,
+          "trap_incorrect_rate": 0.0,
+          "latency_p50_ms": 11262.494207010604,
+          "latency_p95_ms": 39662.9362499807,
+          "optimizer_llm_p50_ms": 10959.718041005544,
+          "optimizer_llm_p95_ms": 39602.13204199681,
+          "optimizer_verify_p50_ms": 0,
+          "optimizer_verify_p95_ms": 0,
+          "cost_per_case_usd": 0.00199954693877551,
+          "cost_known": true,
+          "calls_per_case": 1,
+          "output_tokens_per_case": 1335.6326530612246,
+          "errors_per_case": 0.05102040816326531,
+          "accepted_by_family": {
+            "abstention": 0.0,
+            "aggregation": 0.625,
+            "calcite": 0.458,
+            "correlated_aggregate": 1.0,
+            "correlation": 0.4,
+            "disjunction": 0.0,
+            "null_semantics": 0.333,
+            "redundancy": 0.667,
+            "sargability": 1.0,
+            "semijoin": 0.429,
+            "set_semantics": 0.5
+          },
+          "expected_cases": 98,
+          "complete": true,
+          "record_count": 98,
+          "skipped_malformed_lines": 0,
+          "trace_path": "benchmarks/eval_v2/runs/fw-nemotron-raw/dev_t0.jsonl",
+          "trace_sha256": "104c175af54526d85a6e452fba6f9385d357cce2b9e117063703a96311833611",
+          "config_hashes": {
+            "5df85758a3da5e10": 98
+          },
+          "simulated_records": 0
+        },
+        "fw-open-harness": {
+          "cases": 98,
+          "trials": 1,
+          "outcomes": {
+            "accepted": 0.5714,
+            "no_change": 0.398,
+            "not_faster": 0.0306
+          },
+          "accepted_rate": 0.5714285714285714,
+          "accepted_ci95": [
+            0.47959183673469385,
+            0.673469387755102
+          ],
+          "incorrect_returned_rate": 0.0,
+          "incorrect_ci95": [
+            0.0,
+            0.0
+          ],
+          "incorrect_returned_count": 0,
+          "wrong_candidates_caught": 35,
+          "geomean_speedup": 3.8688839487088433,
+          "geomean_speedup_ci95": [
+            2.736758107236938,
+            5.628543886663372
+          ],
+          "decoy_safe_rate": 1.0,
+          "trap_incorrect_rate": 0.0,
+          "latency_p50_ms": 6989.8329180141445,
+          "latency_p95_ms": 28349.150043024565,
+          "optimizer_llm_p50_ms": 5972.851375001483,
+          "optimizer_llm_p95_ms": 26749.740373998065,
+          "optimizer_verify_p50_ms": 323.9350829971954,
+          "optimizer_verify_p95_ms": 3257.727250995231,
+          "cost_per_case_usd": 0.0027505836734693875,
+          "cost_known": true,
+          "calls_per_case": 5.418367346938775,
+          "output_tokens_per_case": 3752.3571428571427,
+          "errors_per_case": 0,
+          "accepted_by_family": {
+            "abstention": 0.0,
+            "aggregation": 0.5,
+            "calcite": 0.583,
+            "correlated_aggregate": 1.0,
+            "correlation": 0.5,
+            "disjunction": 0.0,
+            "null_semantics": 0.556,
+            "redundancy": 0.667,
+            "sargability": 1.0,
+            "semijoin": 0.571,
+            "set_semantics": 1.0
+          },
+          "expected_cases": 98,
+          "complete": true,
+          "record_count": 98,
+          "skipped_malformed_lines": 0,
+          "trace_path": "benchmarks/eval_v2/runs/fw-open-harness/dev_t0.jsonl",
+          "trace_sha256": "72ddb90f389f53e974d96d4c72c644c807dbfded83e26e508914c595dac53c5b",
+          "config_hashes": {
+            "0cb1ab359815b4a9": 98
+          },
+          "simulated_records": 0
+        },
+        "ollama-gpt-oss-20b-harness": {
+          "cases": 53,
+          "trials": 1,
+          "outcomes": {
+            "accepted": 0.6226,
+            "no_change": 0.3774
+          },
+          "accepted_rate": 0.6226415094339622,
+          "accepted_ci95": [
+            0.49056603773584906,
+            0.7547169811320755
+          ],
+          "incorrect_returned_rate": 0.0,
+          "incorrect_ci95": [
+            0.0,
+            0.0
+          ],
+          "incorrect_returned_count": 0,
+          "wrong_candidates_caught": 23,
+          "geomean_speedup": 4.976901487373352,
+          "geomean_speedup_ci95": [
+            3.0837960740767563,
+            8.517558060392894
+          ],
+          "decoy_safe_rate": 1.0,
+          "trap_incorrect_rate": 0.0,
+          "latency_p50_ms": 27502.633166033775,
+          "latency_p95_ms": 248362.41562498617,
+          "optimizer_llm_p50_ms": 26211.664542002836,
+          "optimizer_llm_p95_ms": 247823.4663340263,
+          "optimizer_verify_p50_ms": 510.06083299580496,
+          "optimizer_verify_p95_ms": 2139.764459017897,
+          "cost_per_case_usd": 0.0,
+          "cost_known": true,
+          "calls_per_case": 0.9622641509433962,
+          "output_tokens_per_case": 758.6792452830189,
+          "errors_per_case": 0,
+          "accepted_by_family": {
+            "abstention": 0.0,
+            "aggregation": 0.667,
+            "correlation": 0.556,
+            "disjunction": 0.0,
+            "null_semantics": 0.6,
+            "redundancy": 0.625,
+            "sargability": 1.0,
+            "semijoin": 0.333
+          },
+          "expected_cases": 98,
+          "complete": false,
+          "record_count": 53,
+          "skipped_malformed_lines": 0,
+          "trace_path": "benchmarks/eval_v2/runs/ollama-gpt-oss-20b-harness/dev_t0.jsonl",
+          "trace_sha256": "104d5cba71ca4e368f10e33e22115c4ca54a1414c7237d8a5b6cfe4b18095311",
+          "config_hashes": {
+            "61b1b6bfeb633d46": 5,
+            "5d42d77d90a416da": 48
+          },
+          "simulated_records": 0
+        },
+        "ollama-gpt-oss-20b-raw": {
+          "cases": 98,
+          "trials": 1,
+          "outcomes": {
+            "accepted": 0.4184,
+            "incorrect": 0.0918,
+            "invalid": 0.0102,
+            "no_change": 0.2347,
+            "not_faster": 0.1531,
+            "regression": 0.0918
+          },
+          "accepted_rate": 0.41836734693877553,
+          "accepted_ci95": [
+            0.3163265306122449,
+            0.5204081632653061
+          ],
+          "incorrect_returned_rate": 0.09183673469387756,
+          "incorrect_ci95": [
+            0.04081632653061224,
+            0.15306122448979592
+          ],
+          "incorrect_returned_count": 9,
+          "wrong_candidates_caught": 0,
+          "geomean_speedup": 2.7952698833094165,
+          "geomean_speedup_ci95": [
+            1.95406352851605,
+            4.198277290804694
+          ],
+          "decoy_safe_rate": 1.0,
+          "trap_incorrect_rate": 0.0,
+          "latency_p50_ms": 35143.566667014966,
+          "latency_p95_ms": 136553.65920902113,
+          "optimizer_llm_p50_ms": 35046.593167004175,
+          "optimizer_llm_p95_ms": 136476.48712500813,
+          "optimizer_verify_p50_ms": 0,
+          "optimizer_verify_p95_ms": 0,
+          "cost_per_case_usd": 0.0,
+          "cost_known": true,
+          "calls_per_case": 1,
+          "output_tokens_per_case": 718.704081632653,
+          "errors_per_case": 0,
+          "accepted_by_family": {
+            "abstention": 0.0,
+            "aggregation": 0.125,
+            "calcite": 0.292,
+            "correlated_aggregate": 1.0,
+            "correlation": 0.3,
+            "disjunction": 0.0,
+            "null_semantics": 0.333,
+            "redundancy": 0.667,
+            "sargability": 1.0,
+            "semijoin": 0.571,
+            "set_semantics": 0.5
+          },
+          "expected_cases": 98,
+          "complete": true,
+          "record_count": 98,
+          "skipped_malformed_lines": 0,
+          "trace_path": "benchmarks/eval_v2/runs/ollama-gpt-oss-20b-raw/dev_t0.jsonl",
+          "trace_sha256": "ad988bb34a7b2dc90a1f111140b4f9ef410c95c2e62c6b49787dc53460d52027",
+          "config_hashes": {
+            "25743cdc6b2989da": 98
+          },
+          "simulated_records": 0
+        },
+        "ollama-qwen25-coder-7b-raw": {
+          "cases": 98,
+          "trials": 1,
+          "outcomes": {
+            "accepted": 0.2041,
+            "incorrect": 0.2449,
+            "invalid": 0.0612,
+            "no_change": 0.1633,
+            "not_faster": 0.2551,
+            "regression": 0.0714
+          },
+          "accepted_rate": 0.20408163265306123,
+          "accepted_ci95": [
+            0.12244897959183673,
+            0.2857142857142857
+          ],
+          "incorrect_returned_rate": 0.24489795918367346,
+          "incorrect_ci95": [
+            0.17346938775510204,
+            0.32653061224489793
+          ],
+          "incorrect_returned_count": 24,
+          "wrong_candidates_caught": 0,
+          "geomean_speedup": 1.561621010895425,
+          "geomean_speedup_ci95": [
+            1.203378515134504,
+            2.1077254748770673
+          ],
+          "decoy_safe_rate": 0.7692307692307693,
+          "trap_incorrect_rate": 0.42857142857142855,
+          "latency_p50_ms": 6750.544208014617,
+          "latency_p95_ms": 12526.235500001349,
+          "optimizer_llm_p50_ms": 6680.006000009598,
+          "optimizer_llm_p95_ms": 12439.906542000244,
+          "optimizer_verify_p50_ms": 0,
+          "optimizer_verify_p95_ms": 0,
+          "cost_per_case_usd": 0.0,
+          "cost_known": true,
+          "calls_per_case": 1,
+          "output_tokens_per_case": 101.24489795918367,
+          "errors_per_case": 0,
+          "accepted_by_family": {
+            "abstention": 0.0,
+            "aggregation": 0.125,
+            "calcite": 0.083,
+            "correlated_aggregate": 0.0,
+            "correlation": 0.1,
+            "disjunction": 0.0,
+            "null_semantics": 0.0,
+            "redundancy": 0.556,
+            "sargability": 0.786,
+            "semijoin": 0.0,
+            "set_semantics": 0.0
+          },
+          "expected_cases": 98,
+          "complete": true,
+          "record_count": 98,
+          "skipped_malformed_lines": 0,
+          "trace_path": "benchmarks/eval_v2/runs/ollama-qwen25-coder-7b-raw/dev_t0.jsonl",
+          "trace_sha256": "3866f04e2f20c275ff282791a07061956d26dbe93b3d4ae37ab946b525fded16",
+          "config_hashes": {
+            "6ecc8876464f9a3f": 98
+          },
+          "simulated_records": 0
+        },
+        "ollama-qwen3-8b-raw": {
+          "cases": 98,
+          "trials": 1,
+          "outcomes": {
+            "accepted": 0.2653,
+            "incorrect": 0.1224,
+            "no_change": 0.2041,
+            "not_faster": 0.3469,
+            "regression": 0.0612
+          },
+          "accepted_rate": 0.2653061224489796,
+          "accepted_ci95": [
+            0.17346938775510204,
+            0.35714285714285715
+          ],
+          "incorrect_returned_rate": 0.12244897959183673,
+          "incorrect_ci95": [
+            0.061224489795918366,
+            0.19387755102040816
+          ],
+          "incorrect_returned_count": 12,
+          "wrong_candidates_caught": 0,
+          "geomean_speedup": 1.937118877936945,
+          "geomean_speedup_ci95": [
+            1.4635599899250966,
+            2.626697481429542
+          ],
+          "decoy_safe_rate": 1.0,
+          "trap_incorrect_rate": 0.14285714285714285,
+          "latency_p50_ms": 8935.748417003197,
+          "latency_p95_ms": 14381.758584000636,
+          "optimizer_llm_p50_ms": 8847.767708997708,
+          "optimizer_llm_p95_ms": 14301.315834003617,
+          "optimizer_verify_p50_ms": 0,
+          "optimizer_verify_p95_ms": 0,
+          "cost_per_case_usd": 0.0,
+          "cost_known": true,
+          "calls_per_case": 1,
+          "output_tokens_per_case": 120.1938775510204,
+          "errors_per_case": 0,
+          "accepted_by_family": {
+            "abstention": 0.0,
+            "aggregation": 0.0,
+            "calcite": 0.042,
+            "correlated_aggregate": 0.0,
+            "correlation": 0.0,
+            "disjunction": 0.0,
+            "null_semantics": 0.333,
+            "redundancy": 0.667,
+            "sargability": 1.0,
+            "semijoin": 0.286,
+            "set_semantics": 0.0
+          },
+          "expected_cases": 98,
+          "complete": true,
+          "record_count": 98,
+          "skipped_malformed_lines": 0,
+          "trace_path": "benchmarks/eval_v2/runs/ollama-qwen3-8b-raw/dev_t0.jsonl",
+          "trace_sha256": "36f51d6f22eba744af7652d57a864215f8ae754b3d636bf2531f8611483b28f0",
+          "config_hashes": {
+            "f61462d7a9db5720": 98
+          },
+          "simulated_records": 0
+        },
+        "open-harness": {
+          "cases": 98,
+          "trials": 1,
+          "outcomes": {
+            "accepted": 0.5714,
+            "no_change": 0.398,
+            "not_faster": 0.0306
+          },
+          "accepted_rate": 0.5714285714285714,
+          "accepted_ci95": [
+            0.47959183673469385,
+            0.673469387755102
+          ],
+          "incorrect_returned_rate": 0.0,
+          "incorrect_ci95": [
+            0.0,
+            0.0
+          ],
+          "incorrect_returned_count": 0,
+          "wrong_candidates_caught": 35,
+          "geomean_speedup": 3.8688839487088433,
+          "geomean_speedup_ci95": [
+            2.736758107236938,
+            5.628543886663372
+          ],
+          "decoy_safe_rate": 1.0,
+          "trap_incorrect_rate": 0.0,
+          "latency_p50_ms": 6989.8329180141445,
+          "latency_p95_ms": 28349.150043024565,
+          "optimizer_llm_p50_ms": 5972.851375001483,
+          "optimizer_llm_p95_ms": 26749.740373998065,
+          "optimizer_verify_p50_ms": 323.9350829971954,
+          "optimizer_verify_p95_ms": 3257.727250995231,
+          "cost_per_case_usd": 0.0027505836734693875,
+          "cost_known": true,
+          "calls_per_case": 5.418367346938775,
+          "output_tokens_per_case": 3752.3571428571427,
+          "errors_per_case": 0,
+          "accepted_by_family": {
+            "abstention": 0.0,
+            "aggregation": 0.5,
+            "calcite": 0.583,
+            "correlated_aggregate": 1.0,
+            "correlation": 0.5,
+            "disjunction": 0.0,
+            "null_semantics": 0.556,
+            "redundancy": 0.667,
+            "sargability": 1.0,
+            "semijoin": 0.571,
+            "set_semantics": 1.0
+          },
+          "expected_cases": 98,
+          "complete": true,
+          "record_count": 98,
+          "skipped_malformed_lines": 0,
+          "trace_path": "benchmarks/eval_v2/runs/open-harness/dev_t0.jsonl",
+          "trace_sha256": "72ddb90f389f53e974d96d4c72c644c807dbfded83e26e508914c595dac53c5b",
+          "config_hashes": {
+            "0cb1ab359815b4a9": 98
+          },
+          "simulated_records": 0
+        },
+        "open-raw": {
+          "cases": 98,
+          "trials": 1,
+          "outcomes": {
+            "accepted": 0.4694,
+            "incorrect": 0.1122,
+            "no_change": 0.2347,
+            "not_faster": 0.1224,
+            "regression": 0.0612
+          },
+          "accepted_rate": 0.46938775510204084,
+          "accepted_ci95": [
+            0.3673469387755102,
+            0.5714285714285714
+          ],
+          "incorrect_returned_rate": 0.11224489795918367,
+          "incorrect_ci95": [
+            0.05102040816326531,
+            0.17346938775510204
+          ],
+          "incorrect_returned_count": 11,
+          "wrong_candidates_caught": 0,
+          "geomean_speedup": 2.8656981669290738,
+          "geomean_speedup_ci95": [
+            2.001147187906552,
+            4.204320137132679
+          ],
+          "decoy_safe_rate": 1.0,
+          "trap_incorrect_rate": 0.0,
+          "latency_p50_ms": 2426.183834002586,
+          "latency_p95_ms": 4843.194500004756,
+          "optimizer_llm_p50_ms": 2373.950125009287,
+          "optimizer_llm_p95_ms": 4804.627042001812,
+          "optimizer_verify_p50_ms": 0,
+          "optimizer_verify_p95_ms": 0,
+          "cost_per_case_usd": 0.0004242434693877551,
+          "cost_known": true,
+          "calls_per_case": 1,
+          "output_tokens_per_case": 545.5510204081633,
+          "errors_per_case": 0,
+          "accepted_by_family": {
+            "abstention": 0.0,
+            "aggregation": 0.5,
+            "calcite": 0.333,
+            "correlated_aggregate": 1.0,
+            "correlation": 0.3,
+            "disjunction": 0.0,
+            "null_semantics": 0.444,
+            "redundancy": 0.667,
+            "sargability": 1.0,
+            "semijoin": 0.429,
+            "set_semantics": 1.0
+          },
+          "expected_cases": 98,
+          "complete": true,
+          "record_count": 98,
+          "skipped_malformed_lines": 0,
+          "trace_path": "benchmarks/eval_v2/runs/open-raw/dev_t0.jsonl",
+          "trace_sha256": "af3a225c3bced38dbbd1933c4cfbde565c28239559c99783146e27df719c7c60",
+          "config_hashes": {
+            "ea7850ec4ba5809b": 98
+          },
+          "simulated_records": 0
+        },
+        "oss120b-raw": {
+          "cases": 98,
+          "trials": 1,
+          "outcomes": {
+            "accepted": 0.4796,
+            "incorrect": 0.102,
+            "no_change": 0.2041,
+            "not_faster": 0.102,
+            "regression": 0.1122
+          },
+          "accepted_rate": 0.47959183673469385,
+          "accepted_ci95": [
+            0.37755102040816324,
+            0.5714285714285714
+          ],
+          "incorrect_returned_rate": 0.10204081632653061,
+          "incorrect_ci95": [
+            0.04081632653061224,
+            0.16326530612244897
+          ],
+          "incorrect_returned_count": 10,
+          "wrong_candidates_caught": 0,
+          "geomean_speedup": 2.929423615367793,
+          "geomean_speedup_ci95": [
+            2.016812418626526,
+            4.294957926185353
+          ],
+          "decoy_safe_rate": 1.0,
+          "trap_incorrect_rate": 0.21428571428571427,
+          "latency_p50_ms": 1428.950248999172,
+          "latency_p95_ms": 3020.205833003274,
+          "optimizer_llm_p50_ms": 1390.6930410012137,
+          "optimizer_llm_p95_ms": 2987.0833329914603,
+          "optimizer_verify_p50_ms": 0,
+          "optimizer_verify_p95_ms": 0,
+          "cost_per_case_usd": 0.0003740816326530612,
+          "cost_known": true,
+          "calls_per_case": 1,
+          "output_tokens_per_case": 472.3469387755102,
+          "errors_per_case": 0,
+          "accepted_by_family": {
+            "abstention": 0.0,
+            "aggregation": 0.5,
+            "calcite": 0.375,
+            "correlated_aggregate": 1.0,
+            "correlation": 0.3,
+            "disjunction": 0.0,
+            "null_semantics": 0.556,
+            "redundancy": 0.667,
+            "sargability": 1.0,
+            "semijoin": 0.429,
+            "set_semantics": 0.5
+          },
+          "expected_cases": 98,
+          "complete": true,
+          "record_count": 98,
+          "skipped_malformed_lines": 0,
+          "trace_path": "benchmarks/eval_v2/runs/oss120b-raw/dev_t0.jsonl",
+          "trace_sha256": "4574872758dfdf20127de25176e38c0c98fd777e7a9040a6ebcdb1e7717b7933",
+          "config_hashes": {
+            "1fe375d29c94369d": 98
+          },
+          "simulated_records": 0
+        },
+        "oss20b-harness": {
+          "cases": 41,
+          "trials": 1,
+          "outcomes": {
+            "accepted": 0.7805,
+            "no_change": 0.2195
+          },
+          "accepted_rate": 0.7804878048780488,
+          "accepted_ci95": [
+            0.6585365853658537,
+            0.9024390243902439
+          ],
+          "incorrect_returned_rate": 0.0,
+          "incorrect_ci95": [
+            0.0,
+            0.0
+          ],
+          "incorrect_returned_count": 0,
+          "wrong_candidates_caught": 3,
+          "geomean_speedup": 7.811106531328862,
+          "geomean_speedup_ci95": [
+            4.576489196450184,
+            13.630804461500796
+          ],
+          "decoy_safe_rate": null,
+          "trap_incorrect_rate": 0.0,
+          "latency_p50_ms": 2894.702416000655,
+          "latency_p95_ms": 8849.804832653415,
+          "optimizer_llm_p50_ms": 1903.1417919904925,
+          "optimizer_llm_p95_ms": 8195.640833665191,
+          "optimizer_verify_p50_ms": 200.03445800102782,
+          "optimizer_verify_p95_ms": 2838.957208005013,
+          "cost_per_case_usd": 0.001156997780487805,
+          "cost_known": true,
+          "calls_per_case": 3.2195121951219514,
+          "output_tokens_per_case": 2716.682926829268,
+          "errors_per_case": 0.0975609756097561,
+          "accepted_by_family": {
+            "aggregation": 0.75,
+            "correlation": 0.667,
+            "null_semantics": 0.5,
+            "redundancy": 1.0,
+            "sargability": 1.0,
+            "semijoin": 0.6
+          },
+          "expected_cases": 98,
+          "complete": false,
+          "record_count": 41,
+          "skipped_malformed_lines": 0,
+          "trace_path": "benchmarks/eval_v2/runs/oss20b-harness/dev_t0.jsonl",
+          "trace_sha256": "0a7420cf05bd687d7e215a24317514863cd68c21f9a0ce0b7968e4eb37f486a7",
+          "config_hashes": {
+            "23071ee49b279d6e": 28,
+            "fa0811f62ca6d02d": 13
+          },
+          "simulated_records": 0
+        },
+        "oss20b-raw": {
+          "cases": 98,
+          "trials": 1,
+          "outcomes": {
+            "accepted": 0.4184,
+            "incorrect": 0.0918,
+            "no_change": 0.2653,
+            "not_faster": 0.1429,
+            "regression": 0.0816
+          },
+          "accepted_rate": 0.41836734693877553,
+          "accepted_ci95": [
+            0.3163265306122449,
+            0.5204081632653061
+          ],
+          "incorrect_returned_rate": 0.09183673469387756,
+          "incorrect_ci95": [
+            0.04081632653061224,
+            0.15306122448979592
+          ],
+          "incorrect_returned_count": 9,
+          "wrong_candidates_caught": 0,
+          "geomean_speedup": 2.6059127036644356,
+          "geomean_speedup_ci95": [
+            1.8235334048190783,
+            3.871207518792674
+          ],
+          "decoy_safe_rate": 1.0,
+          "trap_incorrect_rate": 0.14285714285714285,
+          "latency_p50_ms": 1352.792874332711,
+          "latency_p95_ms": 2603.7315000139643,
+          "optimizer_llm_p50_ms": 1313.0025833282461,
+          "optimizer_llm_p95_ms": 2567.2943750105333,
+          "optimizer_verify_p50_ms": 0,
+          "optimizer_verify_p95_ms": 0,
+          "cost_per_case_usd": 0.00024387008163265304,
+          "cost_known": true,
+          "calls_per_case": 1,
+          "output_tokens_per_case": 657.3979591836735,
+          "errors_per_case": 0,
+          "accepted_by_family": {
+            "abstention": 0.0,
+            "aggregation": 0.25,
+            "calcite": 0.292,
+            "correlated_aggregate": 1.0,
+            "correlation": 0.3,
+            "disjunction": 0.0,
+            "null_semantics": 0.444,
+            "redundancy": 0.667,
+            "sargability": 1.0,
+            "semijoin": 0.286,
+            "set_semantics": 0.5
+          },
+          "expected_cases": 98,
+          "complete": true,
+          "record_count": 98,
+          "skipped_malformed_lines": 0,
+          "trace_path": "benchmarks/eval_v2/runs/oss20b-raw/dev_t0.jsonl",
+          "trace_sha256": "a47eb25745091dabe65309d11b3e97ba8106bed1bbbb75a2ef7fdcdec2dce773",
+          "config_hashes": {
+            "1f800ad1d183a57e": 98
+          },
+          "simulated_records": 0
+        },
+        "rules-only": {
+          "cases": 98,
+          "trials": 1,
+          "outcomes": {
+            "accepted": 0.1429,
+            "no_change": 0.8571
+          },
+          "accepted_rate": 0.14285714285714285,
+          "accepted_ci95": [
+            0.08163265306122448,
+            0.21428571428571427
+          ],
+          "incorrect_returned_rate": 0.0,
+          "incorrect_ci95": [
+            0.0,
+            0.0
+          ],
+          "incorrect_returned_count": 0,
+          "wrong_candidates_caught": 0,
+          "geomean_speedup": 1.6682660920373218,
+          "geomean_speedup_ci95": [
+            1.3079807919578341,
+            2.1882169966488134
+          ],
+          "decoy_safe_rate": 1.0,
+          "trap_incorrect_rate": 0.0,
+          "latency_p50_ms": 0.3643340023700148,
+          "latency_p95_ms": 362.3857080092421,
+          "optimizer_llm_p50_ms": 0,
+          "optimizer_llm_p95_ms": 0,
+          "optimizer_verify_p50_ms": 0,
+          "optimizer_verify_p95_ms": 355.39337500813417,
+          "cost_per_case_usd": 0,
+          "cost_known": true,
+          "calls_per_case": 0,
+          "output_tokens_per_case": 0,
+          "errors_per_case": 0,
+          "accepted_by_family": {
+            "abstention": 0.0,
+            "aggregation": 0.0,
+            "calcite": 0.0,
+            "correlated_aggregate": 0.0,
+            "correlation": 0.0,
+            "disjunction": 0.0,
+            "null_semantics": 0.0,
+            "redundancy": 0.0,
+            "sargability": 1.0,
+            "semijoin": 0.0,
+            "set_semantics": 0.0
+          },
+          "expected_cases": 98,
+          "complete": true,
+          "record_count": 98,
+          "skipped_malformed_lines": 0,
+          "trace_path": "benchmarks/eval_v2/runs/rules-only/dev_t0.jsonl",
+          "trace_sha256": "42649770dccb75928a8102a5aab0eb24e72adfcc67ed545e9fb4cdc7a7bdfb23",
+          "config_hashes": {
+            "835c070462062b37": 98
+          },
+          "simulated_records": 0
+        }
+      }
+    },
+    "heldout": {
+      "cases": 73,
+      "templates": 25,
+      "families": {
+        "sargability": 12,
+        "correlation": 8,
+        "null_semantics": 8,
+        "semijoin": 8,
+        "disjunction": 4,
+        "redundancy": 8,
+        "aggregation": 8,
+        "abstention": 8,
+        "calcite": 9
+      },
+      "under_10_ms_at_build": 54,
+      "cases_sha256": "288dd2b628a8c51935c90e07594cf43fc5bbee173f42fbf7c05ab5b1c12a003b",
+      "systems": {
+        "frontier-raw": {
+          "cases": 1,
+          "trials": 1,
+          "outcomes": {
+            "no_change": 1.0
+          },
+          "accepted_rate": 0.0,
+          "accepted_ci95": [
+            0.0,
+            0.0
+          ],
+          "incorrect_returned_rate": 0.0,
+          "incorrect_ci95": [
+            0.0,
+            0.0
+          ],
+          "incorrect_returned_count": 0,
+          "wrong_candidates_caught": 0,
+          "geomean_speedup": 1.0,
+          "geomean_speedup_ci95": [
+            1.0,
+            1.0
+          ],
+          "decoy_safe_rate": null,
+          "trap_incorrect_rate": null,
+          "latency_p50_ms": 9244.809541007271,
+          "latency_p95_ms": 9244.809541007271,
+          "optimizer_llm_p50_ms": 9025.1092910039,
+          "optimizer_llm_p95_ms": 9025.1092910039,
+          "optimizer_verify_p50_ms": 0,
+          "optimizer_verify_p95_ms": 0,
+          "cost_per_case_usd": 0.00325,
+          "cost_known": true,
+          "calls_per_case": 1,
+          "output_tokens_per_case": 234,
+          "errors_per_case": 0,
+          "accepted_by_family": {
+            "sargability": 0.0
+          },
+          "expected_cases": 73,
+          "complete": false,
+          "record_count": 1,
+          "skipped_malformed_lines": 0,
+          "trace_path": "benchmarks/eval_v2/runs/frontier-raw/heldout_t0.jsonl",
+          "trace_sha256": "5f930da53df7e826b07f3259d76381b355a1eb9e4d1b659fb1041bfbc8b7f045",
+          "config_hashes": {
+            "4f1958c3ad837c1c": 1
+          },
+          "simulated_records": 0
+        },
+        "rules-only": {
+          "cases": 73,
+          "trials": 1,
+          "outcomes": {
+            "accepted": 0.2055,
+            "no_change": 0.7945
+          },
+          "accepted_rate": 0.2054794520547945,
+          "accepted_ci95": [
+            0.1232876712328767,
+            0.3013698630136986
+          ],
+          "incorrect_returned_rate": 0.0,
+          "incorrect_ci95": [
+            0.0,
+            0.0
+          ],
+          "incorrect_returned_count": 0,
+          "wrong_candidates_caught": 0,
+          "geomean_speedup": 1.5363992765170926,
+          "geomean_speedup_ci95": [
+            1.252528895361554,
+            1.9413169078738928
+          ],
+          "decoy_safe_rate": 1.0,
+          "trap_incorrect_rate": 0.0,
+          "latency_p50_ms": 0.9884169994620606,
+          "latency_p95_ms": 2537.260208002408,
+          "optimizer_llm_p50_ms": 0,
+          "optimizer_llm_p95_ms": 0,
+          "optimizer_verify_p50_ms": 0,
+          "optimizer_verify_p95_ms": 2535.4097910021665,
+          "cost_per_case_usd": 0,
+          "cost_known": true,
+          "calls_per_case": 0,
+          "output_tokens_per_case": 0,
+          "errors_per_case": 0,
+          "accepted_by_family": {
+            "abstention": 0.0,
+            "aggregation": 0.0,
+            "calcite": 0.111,
+            "correlation": 0.0,
+            "disjunction": 0.0,
+            "null_semantics": 0.0,
+            "redundancy": 0.75,
+            "sargability": 0.667,
+            "semijoin": 0.0
+          },
+          "expected_cases": 73,
+          "complete": true,
+          "record_count": 73,
+          "skipped_malformed_lines": 0,
+          "trace_path": "benchmarks/eval_v2/runs/rules-only/heldout_t0.jsonl",
+          "trace_sha256": "c2bcfdb15f84c8b05d6851e16b2a3e21ffac790446eab8f8f0d22681fe1bd925",
+          "config_hashes": {
+            "835c070462062b37": 73
+          },
+          "simulated_records": 0
+        }
+      }
+    }
+  },
+  "comparisons_dev": {
+    "open-harness_vs_open-raw": {
+      "trial": 0,
+      "pairs": 98,
+      "expected_cases": 98,
+      "complete": true,
+      "missing_a": [],
+      "missing_baseline": [],
+      "warnings": [
+        "Development results are exploratory, including all p-values.",
+        "Per-case McNemar assumes independent pairs; parameter variants share templates. Use the template test as a sensitivity analysis.",
+        "P-values are unadjusted across metrics and systems; predeclare a primary held-out comparison.",
+        "Recorded config hashes do not fully pin evaluator code, workload caches or database state."
+      ],
+      "mcnemar": {
+        "accepted": {
+          "method": "exact_two_sided_binomial",
+          "pairs": 98,
+          "table": [
+            [
+              42,
+              0
+            ],
+            [
+              10,
+              46
+            ]
+          ],
+          "a_only": 10,
+          "baseline_only": 0,
+          "discordant": 10,
+          "p_value": 0.001953125,
+          "interpretation": "Tests equal marginal outcome rates; does not establish equivalence.",
+          "rate_difference_a_minus_baseline": 0.10204081632653061,
+          "difference_ci95_template_bootstrap": [
+            0.041237113402061855,
+            0.17525773195876287
+          ],
+          "template_sensitivity": {
+            "method": "exact_two_sided_binomial",
+            "pairs": 57,
+            "table": [
+              [
+                24,
+                0
+              ],
+              [
+                8,
+                25
+              ]
+            ],
+            "a_only": 8,
+            "baseline_only": 0,
+            "discordant": 8,
+            "p_value": 0.0078125,
+            "interpretation": "Tests equal marginal outcome rates; does not establish equivalence.",
+            "definition": "all instances accepted"
+          }
+        },
+        "incorrect_returned": {
+          "method": "exact_two_sided_binomial",
+          "pairs": 98,
+          "table": [
+            [
+              87,
+              11
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "a_only": 0,
+          "baseline_only": 11,
+          "discordant": 11,
+          "p_value": 0.0009765625,
+          "interpretation": "Tests equal marginal outcome rates; does not establish equivalence.",
+          "rate_difference_a_minus_baseline": -0.11224489795918367,
+          "difference_ci95_template_bootstrap": [
+            -0.18947368421052632,
+            -0.05154639175257732
+          ],
+          "template_sensitivity": {
+            "method": "exact_two_sided_binomial",
+            "pairs": 57,
+            "table": [
+              [
+                46,
+                11
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "a_only": 0,
+            "baseline_only": 11,
+            "discordant": 11,
+            "p_value": 0.0009765625,
+            "interpretation": "Tests equal marginal outcome rates; does not establish equivalence.",
+            "definition": "any instance incorrect"
+          }
+        }
+      },
+      "paired_metrics": {
+        "cost_usd": {
+          "pairs": 98,
+          "excluded_pairs": 0,
+          "mean_a": 0.0027505836734693875,
+          "mean_baseline": 0.0004242434693877551,
+          "mean_difference": 0.0023263402040816328,
+          "difference_ci95_template_bootstrap": [
+            0.0017032226470588235,
+            0.003071251188118812
+          ],
+          "ratio_of_means_a_over_baseline": 6.483502686414664,
+          "lower_is_better": true
+        },
+        "latency_ms": {
+          "pairs": 98,
+          "excluded_pairs": 0,
+          "mean_a": 10444.127540358453,
+          "mean_baseline": 2604.9405494584566,
+          "mean_difference": 7839.186990899996,
+          "difference_ci95_template_bootstrap": [
+            5522.121212509381,
+            10785.896232736779
+          ],
+          "ratio_of_means_a_over_baseline": 4.009353511937035,
+          "lower_is_better": true
+        },
+        "llm_ms": {
+          "pairs": 98,
+          "excluded_pairs": 0,
+          "mean_a": 8917.319730030966,
+          "mean_baseline": 2559.426782836565,
+          "mean_difference": 6357.8929471944,
+          "difference_ci95_template_bootstrap": [
+            4470.25319323512,
+            8656.090052050353
+          ],
+          "ratio_of_means_a_over_baseline": 3.4841081564943486,
+          "lower_is_better": true
+        },
+        "verify_ms": {
+          "pairs": 98,
+          "excluded_pairs": 0,
+          "mean_a": 1240.5541360414497,
+          "mean_baseline": 0.0,
+          "mean_difference": 1240.5541360414497,
+          "difference_ci95_template_bootstrap": [
+            339.68436420692933,
+            2996.116168569973
+          ],
+          "ratio_of_means_a_over_baseline": null,
+          "lower_is_better": true
+        },
+        "calls": {
+          "pairs": 98,
+          "excluded_pairs": 0,
+          "mean_a": 5.418367346938775,
+          "mean_baseline": 1,
+          "mean_difference": 4.418367346938775,
+          "difference_ci95_template_bootstrap": [
+            3.3980582524271843,
+            5.461538461538462
+          ],
+          "ratio_of_means_a_over_baseline": 5.418367346938775,
+          "lower_is_better": true
+        },
+        "output_tokens": {
+          "pairs": 98,
+          "excluded_pairs": 0,
+          "mean_a": 3752.3571428571427,
+          "mean_baseline": 545.5510204081633,
+          "mean_difference": 3206.8061224489797,
+          "difference_ci95_template_bootstrap": [
+            2327.550561797753,
+            4276.144444444444
+          ],
+          "ratio_of_means_a_over_baseline": 6.87810489301212,
+          "lower_is_better": true
+        },
+        "speedup": {
+          "pairs": 87,
+          "excluded_pairs": 11,
+          "mean_a": 29.830484303437885,
+          "mean_baseline": 30.462566514533002,
+          "mean_difference": -0.6320822110951168,
+          "difference_ci95_template_bootstrap": [
+            -2.7893691994863494,
+            1.3046495985975504
+          ],
+          "ratio_of_means_a_over_baseline": 0.9792505266818682,
+          "lower_is_better": false
+        }
+      }
+    },
+    "open-harness_vs_frontier-raw": {
+      "trial": 0,
+      "pairs": 98,
+      "expected_cases": 98,
+      "complete": true,
+      "missing_a": [],
+      "missing_baseline": [],
+      "warnings": [
+        "Development results are exploratory, including all p-values.",
+        "Per-case McNemar assumes independent pairs; parameter variants share templates. Use the template test as a sensitivity analysis.",
+        "P-values are unadjusted across metrics and systems; predeclare a primary held-out comparison.",
+        "Recorded config hashes do not fully pin evaluator code, workload caches or database state."
+      ],
+      "mcnemar": {
+        "accepted": {
+          "method": "exact_two_sided_binomial",
+          "pairs": 98,
+          "table": [
+            [
+              36,
+              6
+            ],
+            [
+              7,
+              49
+            ]
+          ],
+          "a_only": 7,
+          "baseline_only": 6,
+          "discordant": 13,
+          "p_value": 1.0,
+          "interpretation": "Tests equal marginal outcome rates; does not establish equivalence.",
+          "rate_difference_a_minus_baseline": 0.01020408163265306,
+          "difference_ci95_template_bootstrap": [
+            -0.06896551724137931,
+            0.08928571428571429
+          ],
+          "template_sensitivity": {
+            "method": "exact_two_sided_binomial",
+            "pairs": 57,
+            "table": [
+              [
+                19,
+                5
+              ],
+              [
+                4,
+                29
+              ]
+            ],
+            "a_only": 4,
+            "baseline_only": 5,
+            "discordant": 9,
+            "p_value": 1.0,
+            "interpretation": "Tests equal marginal outcome rates; does not establish equivalence.",
+            "definition": "all instances accepted"
+          }
+        },
+        "incorrect_returned": {
+          "method": "exact_two_sided_binomial",
+          "pairs": 98,
+          "table": [
+            [
+              98,
+              0
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "a_only": 0,
+          "baseline_only": 0,
+          "discordant": 0,
+          "p_value": 1.0,
+          "interpretation": "Tests equal marginal outcome rates; does not establish equivalence.",
+          "rate_difference_a_minus_baseline": 0,
+          "difference_ci95_template_bootstrap": [
+            0.0,
+            0.0
+          ],
+          "template_sensitivity": {
+            "method": "exact_two_sided_binomial",
+            "pairs": 57,
+            "table": [
+              [
+                57,
+                0
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "a_only": 0,
+            "baseline_only": 0,
+            "discordant": 0,
+            "p_value": 1.0,
+            "interpretation": "Tests equal marginal outcome rates; does not establish equivalence.",
+            "definition": "any instance incorrect"
+          }
+        }
+      },
+      "paired_metrics": {
+        "cost_usd": {
+          "pairs": 98,
+          "excluded_pairs": 0,
+          "mean_a": 0.0027505836734693875,
+          "mean_baseline": 0.002673326530612245,
+          "mean_difference": 7.725714285714274e-05,
+          "difference_ci95_template_bootstrap": [
+            -0.0005905366981132076,
+            0.0008312663541666666
+          ],
+          "ratio_of_means_a_over_baseline": 1.028899254158619,
+          "lower_is_better": true
+        },
+        "latency_ms": {
+          "pairs": 98,
+          "excluded_pairs": 0,
+          "mean_a": 10444.127540358453,
+          "mean_baseline": 4733.753047622467,
+          "mean_difference": 5710.374492735986,
+          "difference_ci95_template_bootstrap": [
+            3194.118458310953,
+            8545.770355436653
+          ],
+          "ratio_of_means_a_over_baseline": 2.206310180376652,
+          "lower_is_better": true
+        },
+        "llm_ms": {
+          "pairs": 98,
+          "excluded_pairs": 0,
+          "mean_a": 8917.319730030966,
+          "mean_baseline": 4637.0626747442175,
+          "mean_difference": 4280.257055286748,
+          "difference_ci95_template_bootstrap": [
+            2152.226842846986,
+            6786.201981874442
+          ],
+          "ratio_of_means_a_over_baseline": 1.9230535266644524,
+          "lower_is_better": true
+        },
+        "verify_ms": {
+          "pairs": 98,
+          "excluded_pairs": 0,
+          "mean_a": 1240.5541360414497,
+          "mean_baseline": 0.0,
+          "mean_difference": 1240.5541360414497,
+          "difference_ci95_template_bootstrap": [
+            339.68436420692933,
+            2996.116168569973
+          ],
+          "ratio_of_means_a_over_baseline": null,
+          "lower_is_better": true
+        },
+        "calls": {
+          "pairs": 98,
+          "excluded_pairs": 0,
+          "mean_a": 5.418367346938775,
+          "mean_baseline": 1,
+          "mean_difference": 4.418367346938775,
+          "difference_ci95_template_bootstrap": [
+            3.3980582524271843,
+            5.461538461538462
+          ],
+          "ratio_of_means_a_over_baseline": 5.418367346938775,
+          "lower_is_better": true
+        },
+        "output_tokens": {
+          "pairs": 98,
+          "excluded_pairs": 0,
+          "mean_a": 3752.3571428571427,
+          "mean_baseline": 157.68367346938774,
+          "mean_difference": 3594.673469387755,
+          "difference_ci95_template_bootstrap": [
+            2676.4607843137255,
+            4705.1612903225805
+          ],
+          "ratio_of_means_a_over_baseline": 23.79673849737915,
+          "lower_is_better": true
+        },
+        "speedup": {
+          "pairs": 97,
+          "excluded_pairs": 1,
+          "mean_a": 29.937030810628492,
+          "mean_baseline": 28.439217166634997,
+          "mean_difference": 1.4978136439934948,
+          "difference_ci95_template_bootstrap": [
+            -11.29432888660497,
+            13.26045388733964
+          ],
+          "ratio_of_means_a_over_baseline": 1.0526671896493247,
+          "lower_is_better": false
+        }
+      }
+    },
+    "open-harness_vs_rules-only": {
+      "trial": 0,
+      "pairs": 98,
+      "expected_cases": 98,
+      "complete": true,
+      "missing_a": [],
+      "missing_baseline": [],
+      "warnings": [
+        "Development results are exploratory, including all p-values.",
+        "Per-case McNemar assumes independent pairs; parameter variants share templates. Use the template test as a sensitivity analysis.",
+        "P-values are unadjusted across metrics and systems; predeclare a primary held-out comparison.",
+        "Recorded config hashes do not fully pin evaluator code, workload caches or database state."
+      ],
+      "mcnemar": {
+        "accepted": {
+          "method": "exact_two_sided_binomial",
+          "pairs": 98,
+          "table": [
+            [
+              42,
+              0
+            ],
+            [
+              42,
+              14
+            ]
+          ],
+          "a_only": 42,
+          "baseline_only": 0,
+          "discordant": 42,
+          "p_value": 4.547473508864641e-13,
+          "interpretation": "Tests equal marginal outcome rates; does not establish equivalence.",
+          "rate_difference_a_minus_baseline": 0.42857142857142855,
+          "difference_ci95_template_bootstrap": [
+            0.29,
+            0.57
+          ],
+          "template_sensitivity": {
+            "method": "exact_two_sided_binomial",
+            "pairs": 57,
+            "table": [
+              [
+                24,
+                0
+              ],
+              [
+                27,
+                6
+              ]
+            ],
+            "a_only": 27,
+            "baseline_only": 0,
+            "discordant": 27,
+            "p_value": 1.4901161193847656e-08,
+            "interpretation": "Tests equal marginal outcome rates; does not establish equivalence.",
+            "definition": "all instances accepted"
+          }
+        },
+        "incorrect_returned": {
+          "method": "exact_two_sided_binomial",
+          "pairs": 98,
+          "table": [
+            [
+              98,
+              0
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "a_only": 0,
+          "baseline_only": 0,
+          "discordant": 0,
+          "p_value": 1.0,
+          "interpretation": "Tests equal marginal outcome rates; does not establish equivalence.",
+          "rate_difference_a_minus_baseline": 0,
+          "difference_ci95_template_bootstrap": [
+            0.0,
+            0.0
+          ],
+          "template_sensitivity": {
+            "method": "exact_two_sided_binomial",
+            "pairs": 57,
+            "table": [
+              [
+                57,
+                0
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "a_only": 0,
+            "baseline_only": 0,
+            "discordant": 0,
+            "p_value": 1.0,
+            "interpretation": "Tests equal marginal outcome rates; does not establish equivalence.",
+            "definition": "any instance incorrect"
+          }
+        }
+      },
+      "paired_metrics": {
+        "cost_usd": {
+          "pairs": 98,
+          "excluded_pairs": 0,
+          "mean_a": 0.0027505836734693875,
+          "mean_baseline": 0,
+          "mean_difference": 0.0027505836734693875,
+          "difference_ci95_template_bootstrap": [
+            0.0020985123157894734,
+            0.0035130944210526316
+          ],
+          "ratio_of_means_a_over_baseline": null,
+          "lower_is_better": true
+        },
+        "latency_ms": {
+          "pairs": 98,
+          "excluded_pairs": 0,
+          "mean_a": 10444.127540358453,
+          "mean_baseline": 48.93804252119759,
+          "mean_difference": 10395.189497837255,
+          "difference_ci95_template_bootstrap": [
+            7836.12200487212,
+            13496.761164234782
+          ],
+          "ratio_of_means_a_over_baseline": 213.41531050888608,
+          "lower_is_better": true
+        },
+        "llm_ms": {
+          "pairs": 98,
+          "excluded_pairs": 0,
+          "mean_a": 8917.319730030966,
+          "mean_baseline": 0,
+          "mean_difference": 8917.319730030966,
+          "difference_ci95_template_bootstrap": [
+            6809.753980116839,
+            11454.96965648102
+          ],
+          "ratio_of_means_a_over_baseline": null,
+          "lower_is_better": true
+        },
+        "verify_ms": {
+          "pairs": 98,
+          "excluded_pairs": 0,
+          "mean_a": 1240.5541360414497,
+          "mean_baseline": 47.76787030648996,
+          "mean_difference": 1192.7862657349597,
+          "difference_ci95_template_bootstrap": [
+            283.01592152734213,
+            2964.2675646538587
+          ],
+          "ratio_of_means_a_over_baseline": 25.970471952836935,
+          "lower_is_better": true
+        },
+        "calls": {
+          "pairs": 98,
+          "excluded_pairs": 0,
+          "mean_a": 5.418367346938775,
+          "mean_baseline": 0,
+          "mean_difference": 5.418367346938775,
+          "difference_ci95_template_bootstrap": [
+            4.398058252427185,
+            6.461538461538462
+          ],
+          "ratio_of_means_a_over_baseline": null,
+          "lower_is_better": true
+        },
+        "output_tokens": {
+          "pairs": 98,
+          "excluded_pairs": 0,
+          "mean_a": 3752.3571428571427,
+          "mean_baseline": 0,
+          "mean_difference": 3752.3571428571427,
+          "difference_ci95_template_bootstrap": [
+            2825.5454545454545,
+            4860.408602150537
+          ],
+          "ratio_of_means_a_over_baseline": null,
+          "lower_is_better": true
+        },
+        "speedup": {
+          "pairs": 98,
+          "excluded_pairs": 0,
+          "mean_a": 31.624996818680724,
+          "mean_baseline": 9.893907347304303,
+          "mean_difference": 21.73108947137642,
+          "difference_ci95_template_bootstrap": [
+            5.783801120821174,
+            42.73930864004596
+          ],
+          "ratio_of_means_a_over_baseline": 3.196411256802125,
+          "lower_is_better": false
+        }
+      }
+    }
+  },
+  "artifact_notes": {
+    ".local/training/cache_ab_report.json": {
+      "cases": 98,
+      "positive_hits": 49,
+      "negative_hits": 12,
+      "misses": 37,
+      "hit_rate": 0.6224,
+      "estimated_speedup_factor": 2.65,
+      "note": "Estimated from fingerprint coverage \u00d7 open-harness median llm_ms; excludes verify time. Run cache-rules / open-harness-nocache for live A/B."
+    },
+    ".local/training/pg_stat_slice_report.json": {
+      "extension": {
+        "ok": true,
+        "created": true
+      },
+      "replayed_statements": 38,
+      "exported": 17,
+      "error": null
+    },
+    ".local/training/specialist_stats.json": {
+      "sft_rows": 109,
+      "dpo_pairs": 7,
+      "harness_wins_used": 56,
+      "note": "Dev-only; no held-out templates. Ready for Fireworks managed LoRA SFT."
+    },
+    ".local/training/specialist_model.json": {
+      "base_model": "accounts/fireworks/models/muse-glimmer-30b",
+      "surface": "serverless",
+      "train_rows": 69,
+      "holdout_rows": 40,
+      "sql_field_accuracy": {
+        "base": 0.05,
+        "tuned": 0.35
+      },
+      "note": "Promoted LoRA \u2014 needs dedicated deployment to serve; serverless chat of custom LoRA not available"
+    },
+    ".local/training/muse_summary.json": {
+      "steps": 5,
+      "exact_match_delta": 0.0,
+      "paired": {
+        "only_tuned_correct": 0,
+        "only_base_correct": 0,
+        "p_value": 1.0
+      }
+    }
+  },
+  "warnings": [
+    "Artifact snapshot, not a new model or database evaluation.",
+    "Current source hashes do not establish which code produced historical runs.",
+    "Active jobs may add records after capture. Partial records are disclosed.",
+    "Current verifier and judge share all eight fixtures; these are not independent hidden correctness tests."
+  ],
+  "specialist_split_audit": {
+    "files": {
+      "train.jsonl": {
+        "rows": 69,
+        "templates": [
+          "agg_fk_join_count",
+          "calcite:testAggregateMergeSum0",
+          "calcite:testAggregateRemove3",
+          "calcite:testAnyInProjectNonNullable",
+          "calcite:testPullConstantIntoFilter",
+          "calcite:testReduceConstantsNegated",
+          "calcite:testReduceConstantsNegatedInverted",
+          "calcite:testSome",
+          "corr_avg_salary_dept",
+          "corr_repeated_scalar",
+          "count_nonnull",
+          "dec_exists",
+          "dec_fk_lookup",
+          "dec_pk_lookup",
+          "month_range",
+          "null_notin_filtered",
+          "red_self_join_pk",
+          "red_union_disjoint",
+          "sarg_cast_date",
+          "sarg_extract_month",
+          "sarg_to_char_day",
+          "sarg_trunc_month",
+          "semi_count_distinct",
+          "testEmptyFilterProjectUnion",
+          "testEmptyMinus",
+          "tpch_q17"
+        ],
+        "path": ".local/cookbook/training/muse_starter_logs/sql-specialist-20261102-112625/train.jsonl"
+      },
+      "holdout.jsonl": {
+        "rows": 40,
+        "templates": [
+          "agg_fk_join_count",
+          "calcite:testAggregateJoinRemove5",
+          "calcite:testAggregateRemove1",
+          "calcite:testExistsWithAtLeastOneRowSubQuery",
+          "calcite:testReduceConstantsIsNull",
+          "calcite:testSelectAnyCorrelated",
+          "calcite:testWhereAnyCorrelatedInSelect",
+          "calcite:testWhereInCorrelated",
+          "corr_avg_salary_dept",
+          "corr_repeated_scalar",
+          "date_filter",
+          "dec_pk_lookup",
+          "distinct_customer",
+          "red_having_key",
+          "red_self_join_pk",
+          "red_union_disjoint",
+          "repeated_sum",
+          "sarg_cast_date",
+          "sarg_extract_month",
+          "sarg_to_char_day",
+          "sarg_trunc_month",
+          "semi_count_distinct",
+          "testWhereNotInCorrelated",
+          "tpch_q17"
+        ],
+        "path": ".local/cookbook/training/muse_starter_logs/sql-specialist-20261102-112625/holdout.jsonl"
+      }
+    },
+    "overlapping_templates": [
+      "agg_fk_join_count",
+      "corr_avg_salary_dept",
+      "corr_repeated_scalar",
+      "dec_pk_lookup",
+      "red_self_join_pk",
+      "red_union_disjoint",
+      "sarg_cast_date",
+      "sarg_extract_month",
+      "sarg_to_char_day",
+      "sarg_trunc_month",
+      "semi_count_distinct",
+      "tpch_q17"
+    ],
+    "overlap_count": 12,
+    "unresolved_rows": 0
+  }
+}

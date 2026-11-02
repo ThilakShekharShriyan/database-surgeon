@@ -39,7 +39,17 @@ export type ResearchSplit = {
   systems: ResearchSystem[]; cases: ResearchCase[];
   comparisons: Record<string, Record<string, Comparison>>;
 };
+export type PairedStatsComparison = {
+  system: string; baseline: string; split: string; pairs: number;
+  accept_rate_a: number; accept_rate_b: number;
+  incorrect_count_a: number; incorrect_count_b: number;
+  mcnemar_accepted: { a_only: number; baseline_only: number; discordant: number; p_value: number };
+  mcnemar_incorrect: { a_only: number; baseline_only: number; discordant: number; p_value: number };
+  bootstrap_accept_gap: { mean: number; ci95: [number, number]; clusters: number; iterations: number };
+};
 export type ResearchSnapshot = {
   generated_at: string; comparison_trial: number; source: string; warnings: string[];
+  forge_research?: string;
+  paired_stats?: { generated_by?: string; note?: string; comparisons: PairedStatsComparison[] } | null;
   splits: Record<"dev" | "heldout", ResearchSplit>;
 };

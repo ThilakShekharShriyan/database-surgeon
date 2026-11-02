@@ -1,5 +1,10 @@
 # Database Surgeon
 
+**Learning the project:** [end-to-end study packet](docs/STUDY_MATERIALS.md) ·
+[pipeline and remaining work](docs/PIPELINE_PLAYBOOK.md) ·
+[presentation Q&A](docs/STUDY_CHEATSHEET.md). The packet separates implemented
+features, captured measurements and claims that still need independent evidence.
+
 **Built during the hackathon — Nov 2, 2026 (from ~10:45am PT).** All product code,
 eval harness, Fireworks/NVIDIA stack, docs, and demo in this repo are from that day.
 
@@ -9,7 +14,9 @@ queries returned**. A harness is enough — fine-tuning is optional.
 
 Live demo (Judge pitch · Live surgery · Experiments ledger): **http://127.0.0.1:3100**
 
-Measured results: [docs/RESULTS.md](docs/RESULTS.md).
+**Judge research write-up:** [docs/FORGE_RESEARCH.md](docs/FORGE_RESEARCH.md) · scoreboard: [docs/ADVANTAGES.md](docs/ADVANTAGES.md) · measured results: [docs/RESULTS.md](docs/RESULTS.md) · research UI: `/research`
+
+**Demo video:** [docs/DEMO_VIDEO.md](docs/DEMO_VIDEO.md) · stage tabs `bash scripts/open_demo_for_recording.sh` · record `./scripts/record_demo.sh --project="DBSurgeon"` · pick take `--pick`
 
 ## Eval v2 — reproduce every benchmark (rubric 40% + 5% docs)
 
@@ -66,6 +73,8 @@ Open http://127.0.0.1:3100 or run `npm run dev` from `web/`. See [WORKBENCH.md](
 
 ## Research and build plan
 
+- [**Forge-style research write-up (judge packet)**](docs/FORGE_RESEARCH.md) — six-step narrative + McNemar/bootstrap
+- [Paired stats regenerator](scripts/compute_paired_stats.py) → `benchmarks/eval_v2/results/paired_stats.json`
 - [Research, repository reuse guide, and all references](docs/RESEARCH.md)
 - [Architecture, routing, data collection, training, and release gates](docs/ARCHITECTURE.md)
 - [Repository datasets, inspected SQL, and benchmark protocol](docs/BENCHMARKS.md)

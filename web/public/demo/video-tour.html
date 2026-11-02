@@ -1,0 +1,453 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Database Surgeon</title>
+<style>
+  :root{
+    --bg:#07080b; --panel:#101218; --ink:#f4f4f2; --muted:#8b8d97;
+    --line:#242732; --accent:#e8ff47; --good:#5eead4; --bad:#ff6b6b;
+    --warn:#fbbf24; --font:"IBM Plex Sans","Public Sans",system-ui,sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,monospace;
+  }
+  *{box-sizing:border-box;margin:0}
+  html,body{height:100%;background:var(--bg);color:var(--ink);font-family:var(--font);overflow:hidden}
+  body{display:grid;place-items:center}
+  .stage{width:min(1440px,100vw);height:min(900px,100vh);position:relative;
+    background:
+      radial-gradient(ellipse 70% 50% at 0% 0%,#1a2438 0%,transparent 55%),
+      radial-gradient(ellipse 50% 40% at 100% 100%,#14201a 0%,transparent 50%),
+      var(--bg);
+    border:1px solid var(--line); overflow:hidden}
+  .chrome{position:absolute;inset:0 0 auto 0;height:44px;display:flex;align-items:center;gap:10px;
+    padding:0 16px;border-bottom:1px solid var(--line);background:rgba(10,11,14,.92);z-index:5}
+  .dot{width:10px;height:10px;border-radius:50%;background:#3a3d46}
+  .dot:nth-child(1){background:#ff5f57}.dot:nth-child(2){background:#febc2e}.dot:nth-child(3){background:#28c840}
+  .url{margin-left:12px;flex:1;font:12px/1 var(--mono);color:var(--muted);background:#16181f;
+    border:1px solid var(--line);border-radius:8px;padding:7px 12px}
+  .clock{font:12px/1 var(--mono);color:var(--accent)}
+  .scene{position:absolute;inset:44px 0 0 0;opacity:0;pointer-events:none;padding:28px 36px;
+    display:flex;flex-direction:column;gap:18px;transition:opacity .45s ease, transform .45s ease;
+    transform:translateY(10px)}
+  .scene.on{opacity:1;pointer-events:auto;transform:none}
+  .eyebrow{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+  .eyebrow b{color:var(--accent);font-weight:500}
+  h1{font-size:clamp(34px,3.6vw,52px);letter-spacing:-.04em;line-height:1.05;font-weight:550;max-width:18ch}
+  .lede{color:var(--muted);font-size:18px;line-height:1.45;max-width:48ch}
+  .row{display:grid;gap:16px}
+  .row.kpis{grid-template-columns:repeat(4,1fr)}
+  .row.two{grid-template-columns:1.1fr .9fr}
+  .row.three{grid-template-columns:repeat(3,1fr)}
+  .card{background:rgba(16,18,24,.88);border:1px solid var(--line);border-radius:14px;padding:18px 18px 16px;
+    min-height:0;position:relative;overflow:hidden}
+  .card.active{border-color:#3a4a28;box-shadow:0 0 0 1px rgba(232,255,71,.18) inset}
+  .card.danger{border-color:#5a2a2a}
+  .card .label{font-size:12px;color:var(--muted);margin-bottom:8px}
+  .card .value{font-family:var(--mono);font-size:34px;letter-spacing:-.03em;line-height:1.1}
+  .card .value.bad{color:var(--bad)}.card .value.good{color:var(--good)}.card .value.accent{color:var(--accent)}
+  .card .sub{margin-top:8px;font-size:12px;color:var(--muted);line-height:1.4}
+  .bars{display:grid;gap:10px}
+  .bar{display:grid;grid-template-columns:140px 1fr 64px;gap:10px;align-items:center;font-size:13px}
+  .bar span{color:var(--muted)}
+  .bar b{font-family:var(--mono);font-weight:450;text-align:right}
+  .track{height:10px;background:#1a1d25;border-radius:999px;overflow:hidden}
+  .fill{height:100%;width:0;border-radius:inherit;background:linear-gradient(90deg,#3d4a28,var(--accent));
+    transition:width 1.1s cubic-bezier(.2,.8,.2,1)}
+  .fill.bad{background:linear-gradient(90deg,#5a2020,var(--bad))}
+  .fill.muted{background:#3a3d46}
+  .matrix{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:2px;margin-top:8px}
+  .matrix>div{padding:14px;background:#16181f;font-size:12px;color:var(--muted)}
+  .matrix strong{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:78px;
+    font-family:var(--mono);font-size:28px;font-weight:450;background:#1c1f28}
+  .matrix strong.hi{background:#222c37;color:var(--accent)}
+  .matrix strong.bad{background:#2a1a1a;color:var(--bad)}
+  .pipeline{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+  .step{padding:14px;border:1px solid var(--line);border-radius:12px;background:#12141a;opacity:.35;
+    transition:opacity .35s,border-color .35s,transform .35s}
+  .step.on{opacity:1;border-color:#3a4a28;transform:translateY(-2px)}
+  .step .n{font-family:var(--mono);font-size:11px;color:var(--accent)}
+  .step h3{font-size:14px;margin:6px 0 4px;font-weight:550}
+  .step p{font-size:12px;color:var(--muted);line-height:1.35}
+  .sql{font-family:var(--mono);font-size:13px;line-height:1.55;background:#0c0e13;border:1px solid var(--line);
+    border-radius:12px;padding:14px;white-space:pre-wrap;color:#d7d9e0}
+  .sql .hl{background:rgba(232,255,71,.12);color:var(--accent)}
+  .badge{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;
+    border:1px solid var(--line);font-size:12px;color:var(--muted)}
+  .badge.good{border-color:#24544c;color:var(--good);background:rgba(94,234,212,.06)}
+  .badge.bad{border-color:#5a2a2a;color:var(--bad);background:rgba(255,107,107,.06)}
+  .stack{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{padding:8px 12px;border-radius:999px;border:1px solid var(--line);font-size:12px;color:var(--muted);
+    background:#12141a;transition:all .35s}
+  .chip.on{color:#111;background:var(--accent);border-color:var(--accent)}
+  .foot{margin-top:auto;display:flex;justify-content:space-between;align-items:end;gap:16px}
+  .progress{position:absolute;left:0;right:0;bottom:0;height:3px;background:#15171d;z-index:6}
+  .progress>i{display:block;height:100%;width:0;background:var(--accent)}
+  .cursor{position:absolute;width:18px;height:18px;border:2px solid #fff;border-radius:50%;
+    box-shadow:0 0 0 4px rgba(232,255,71,.25);pointer-events:none;z-index:20;opacity:0;
+    transition:left .7s cubic-bezier(.2,.7,.2,1), top .7s cubic-bezier(.2,.7,.2,1), opacity .2s}
+  .cursor.on{opacity:1}
+  .cursor:after{content:"";position:absolute;left:50%;top:50%;width:4px;height:4px;margin:-2px;background:var(--accent);border-radius:50%}
+  .callout{position:absolute;z-index:15;padding:10px 14px;border-radius:10px;background:rgba(8,9,12,.92);
+    border:1px solid #3a4a28;color:var(--ink);font-size:14px;font-weight:500;opacity:0;
+    transform:translateY(6px);transition:opacity .3s,transform .3s;pointer-events:none;max-width:280px}
+  .callout.on{opacity:1;transform:none}
+  .brand-big{font-size:clamp(48px,6vw,84px);letter-spacing:-.05em;font-weight:550}
+  .pulse{animation:pulse 1.4s ease infinite}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,107,107,.35)}70%{box-shadow:0 0 0 14px transparent}}
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+  <div class="chrome">
+    <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+    <div class="url" id="url">database-surgeon · local lab</div>
+    <div class="clock" id="clock">00:00</div>
+  </div>
+  <div class="cursor" id="cursor"></div>
+  <div class="callout" id="callout"></div>
+  <div class="progress"><i id="prog"></i></div>
+
+  <!-- 0 cold open -->
+  <section class="scene" data-scene="0">
+    <p class="eyebrow"><b>Database Surgeon</b> · Fireworks · NVIDIA</p>
+    <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:18px">
+      <div class="brand-big">Verify or abstain.</div>
+      <p class="lede">Open models propose SQL rewrites. A surgical harness accepts only when they’re correct and faster — otherwise keep the original.</p>
+    </div>
+    <div class="stack">
+      <span class="chip">PostgreSQL 16</span>
+      <span class="chip">eval_v2 · 171 cases</span>
+      <span class="chip">0 wrong returned</span>
+    </div>
+  </section>
+
+  <!-- 1 problem -->
+  <section class="scene" data-scene="1">
+    <p class="eyebrow"><b>01</b> · The problem</p>
+    <h1>Wrong SQL is worse than slow SQL.</h1>
+    <p class="lede">Agent fleets dump SELECT traffic onto Postgres. Raw open models look cheap — until they corrupt results.</p>
+    <div class="row kpis" style="margin-top:8px">
+      <div class="card" id="c-raw">
+        <div class="label">open-raw · accept</div>
+        <div class="value" id="v-raw-acc">0.0%</div>
+        <div class="sub">Fireworks gpt-oss-120b · sealed 98-dev</div>
+      </div>
+      <div class="card danger pulse" id="c-wrong">
+        <div class="label">Incorrect returned</div>
+        <div class="value bad" id="v-wrong">0</div>
+        <div class="sub">Corruption cliff — FinOps can’t ship this</div>
+      </div>
+      <div class="card">
+        <div class="label">$/case</div>
+        <div class="value">$0.0004</div>
+        <div class="sub">Cheap… and wrong</div>
+      </div>
+      <div class="card">
+        <div class="label">Optimizer p50</div>
+        <div class="value">2.4s</div>
+        <div class="sub">Fast answers aren’t safe answers</div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:4px">
+      <div class="label">Outcome mix · open-raw</div>
+      <div class="bars" id="raw-bars"></div>
+    </div>
+  </section>
+
+  <!-- 2 stack / harness win -->
+  <section class="scene" data-scene="2">
+    <p class="eyebrow"><b>02</b> · Tech stack</p>
+    <div style="display:flex;justify-content:space-between;gap:24px;align-items:end">
+      <div>
+        <h1>Fireworks + a surgical harness.</h1>
+        <p class="lede" style="margin-top:10px">Flash → OSS-120B → Nemotron Ultra. Verify on all fixtures including nulls. Accept ≥20% faster — or abstain.</p>
+      </div>
+      <div class="stack" id="model-chips">
+        <span class="chip" data-chip="flash">glm flash</span>
+        <span class="chip" data-chip="oss">gpt-oss-120b</span>
+        <span class="chip" data-chip="nemo">nemotron ultra</span>
+        <span class="chip" data-chip="cache">fingerprint cache</span>
+      </div>
+    </div>
+    <div class="pipeline" id="pipeline">
+      <div class="step" data-step="0"><div class="n">01</div><h3>Context</h3><p>SQL · schema · EXPLAIN</p></div>
+      <div class="step" data-step="1"><div class="n">02</div><h3>Propose</h3><p>Rules + model sample</p></div>
+      <div class="step" data-step="2"><div class="n">03</div><h3>Verify</h3><p>All EVAL_SCHEMAS</p></div>
+      <div class="step" data-step="3"><div class="n">04</div><h3>Measure</h3><p>≥20% faster</p></div>
+      <div class="step" data-step="4"><div class="n">05</div><h3>Decide</h3><p>Accept or abstain</p></div>
+    </div>
+    <div class="row two">
+      <div class="card active">
+        <div class="label">Beneficial coverage · same sealed bench</div>
+        <div class="bars" id="sys-bars"></div>
+      </div>
+      <div class="card">
+        <div class="label">open-harness headline</div>
+        <div class="row three" style="margin-top:10px">
+          <div><div class="label">Accept</div><div class="value accent" id="v-har-acc">0%</div></div>
+          <div><div class="label">Wrong</div><div class="value good" id="v-har-wrong">—</div></div>
+          <div><div class="label">vs frontier</div><div class="value good">parity</div></div>
+        </div>
+        <div class="sub" style="margin-top:14px">Fine-tune optional. The product is verify-or-abstain.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 paired stats -->
+  <section class="scene" data-scene="3">
+    <p class="eyebrow"><b>02b</b> · Paired evidence</p>
+    <h1>The disagreements aren’t luck.</h1>
+    <p class="lede">McNemar on discordant cases · template-cluster bootstrap. Harness vs raw: accept lift and safety cliff both real.</p>
+    <div class="row two" style="margin-top:6px">
+      <div class="card active">
+        <div class="label">Accepted · open-harness vs open-raw</div>
+        <div class="matrix" id="mc-acc">
+          <div></div><div>Raw not</div><div>Raw yes</div>
+          <div>Harness not</div><strong>42</strong><strong class="bad">0</strong>
+          <div>Harness yes</div><strong class="hi">10</strong><strong>46</strong>
+        </div>
+        <div class="sub" style="margin-top:12px">Discordant <b style="color:var(--ink)">10 vs 0</b> · exact two-sided p ≈ 0.002</div>
+      </div>
+      <div class="card">
+        <div class="label">Incorrect returned</div>
+        <div class="matrix">
+          <div></div><div>Raw safe</div><div>Raw wrong</div>
+          <div>Harness safe</div><strong>87</strong><strong class="hi">11</strong>
+          <div>Harness wrong</div><strong>0</strong><strong>0</strong>
+        </div>
+        <div class="sub" style="margin-top:12px">Harness wrongs <b style="color:var(--good)">0</b> · raw wrongs <b style="color:var(--bad)">11</b> · p ≈ 0.001</div>
+        <div class="row three" style="margin-top:18px">
+          <div><div class="label">Bootstrap gap</div><div class="value accent" style="font-size:22px">+10.3 pp</div></div>
+          <div><div class="label">95% CI</div><div class="value" style="font-size:18px">[+4.1, +17.7]</div></div>
+          <div><div class="label">Cache A/B</div><div class="value" style="font-size:18px">~2.65×</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 live surgery -->
+  <section class="scene" data-scene="4">
+    <p class="eyebrow"><b>03</b> · Live demo</p>
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <h1>Live surgery.</h1>
+      <div class="stack">
+        <span class="badge" id="surg-badge">Running cascade…</span>
+      </div>
+    </div>
+    <div class="row two">
+      <div class="card">
+        <div class="label">Original · correlated AVG</div>
+        <pre class="sql" id="sql-orig">SELECT e.empno, e.ename
+FROM emp e
+WHERE e.job = 'MANAGER'
+  AND e.sal > (
+    SELECT avg(e2.sal) FROM emp e2
+    WHERE e2.deptno = e.deptno
+  )</pre>
+      </div>
+      <div class="card" id="sql-out-card">
+        <div class="label">Candidate · harness</div>
+        <pre class="sql" id="sql-out">Waiting for verified rewrite…</pre>
+      </div>
+    </div>
+    <div class="row three">
+      <div class="card" id="gate-eq"><div class="label">Equivalence</div><div class="value" id="v-eq">—</div><div class="sub">All EVAL_SCHEMAS incl. null/skew</div></div>
+      <div class="card" id="gate-sp"><div class="label">Speedup</div><div class="value" id="v-sp">—</div><div class="sub">Need ≥ 1.25× median</div></div>
+      <div class="card" id="gate-dec"><div class="label">Decision</div><div class="value" id="v-dec">—</div><div class="sub">Accept or keep original</div></div>
+    </div>
+  </section>
+
+  <!-- 5 null trap -->
+  <section class="scene" data-scene="5">
+    <p class="eyebrow"><b>03b</b> · Corruption stopped</p>
+    <h1>Nullable anti-join trap.</h1>
+    <p class="lede">NOT IN vs NULL semantics. Raw can rewrite into wrong rows. Harness verifies — then repairs or abstains.</p>
+    <div class="row two">
+      <div class="card danger">
+        <div class="label">open-raw · illustrative failure</div>
+        <pre class="sql">SELECT id FROM customers
+WHERE id NOT IN (
+  SELECT customer_id FROM orders
+)
+<span style="color:var(--bad)">-- NULL in customer_id → wrong empties</span></pre>
+        <div style="margin-top:12px"><span class="badge bad">Would return incorrect</span></div>
+      </div>
+      <div class="card active">
+        <div class="label">open-harness · gate</div>
+        <pre class="sql">Verifier.check(..., EVAL_SCHEMAS)
+→ stage=check · counterexample on null fixture
+→ <span class="hl">abstain · keep original</span></pre>
+        <div style="margin-top:12px"><span class="badge good">0 wrong returned</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6 end -->
+  <section class="scene" data-scene="6">
+    <p class="eyebrow"><b>Database Surgeon</b></p>
+    <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:22px">
+      <div class="brand-big">57% accept.<br/>0 wrong returned.</div>
+      <p class="lede">Open stack on Fireworks. Surgical harness. Frontier parity without shipping corruption.</p>
+      <div class="stack">
+        <span class="chip on">verify-or-abstain</span>
+        <span class="chip on">eval_v2 sealed</span>
+        <span class="chip on">Fireworks · Nemotron</span>
+      </div>
+    </div>
+  </section>
+</div>
+<script>
+const TOTAL_MS = 53000;
+const SCENES = [
+  {id:0, at:0,    url:'database-surgeon://pitch', callout:null},
+  {id:1, at:2800, url:'/research · open-raw', callout:'Open raw: 11 wrong'},
+  {id:2, at:16500,url:'/research · open-harness', callout:'Fireworks + harness'},
+  {id:3, at:28000,url:'/research · paired stats', callout:'McNemar p ≈ 0.002'},
+  {id:4, at:36000,url:'/demo · live surgery', callout:'Verify or abstain'},
+  {id:5, at:45000,url:'/demo · null trap', callout:'Corruption stopped'},
+  {id:6, at:50000,url:'database-surgeon://end', callout:'Database Surgeon'},
+];
+
+const systems = [
+  {name:'rules-only', accept:14.3, wrong:0},
+  {name:'open-raw', accept:46.9, wrong:11, bad:true},
+  {name:'frontier-raw', accept:56.1, wrong:0},
+  {name:'open-harness', accept:57.1, wrong:0, hi:true},
+  {name:'fw-fast-harness', accept:57.1, wrong:0},
+];
+
+function $(s, el=document){return el.querySelector(s)}
+function $$(s, el=document){return [...el.querySelectorAll(s)]}
+function clamp(n,a,b){return Math.max(a,Math.min(b,n))}
+
+function renderBars(el, rows, animate){
+  el.innerHTML = rows.map((r,i)=>`<div class="bar" data-i="${i}">
+    <span>${r.name}</span><div class="track"><div class="fill ${r.bad?'bad':r.muted?'muted':''}" data-w="${r.accept}"></div></div>
+    <b>${r.accept.toFixed(1)}%</b></div>`).join('');
+  if(animate) requestAnimationFrame(()=>$$('.fill', el).forEach(f=>f.style.width=f.dataset.w+'%'));
+}
+
+function countTo(el, target, opts={}){
+  const dur=opts.dur||900, prefix=opts.prefix||'', suffix=opts.suffix||'', decimals=opts.decimals??0;
+  const start=performance.now();
+  const from=0;
+  function frame(t){
+    const p=clamp((t-start)/dur,0,1);
+    const eased=1-Math.pow(1-p,3);
+    const v=from+(target-from)*eased;
+    el.textContent=prefix+(decimals?v.toFixed(decimals):Math.round(v))+suffix;
+    if(p<1) requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+}
+
+function showScene(id){
+  $$('.scene').forEach(s=>s.classList.toggle('on', +s.dataset.scene===id));
+  const sc=SCENES.find(s=>s.id===id);
+  if(sc){ $('#url').textContent=sc.url; setCallout(sc.callout); }
+  if(id===1){
+    countTo($('#v-raw-acc'),46.9,{suffix:'%',decimals:1});
+    countTo($('#v-wrong'),11);
+    renderBars($('#raw-bars'),[
+      {name:'accepted',accept:46.9},
+      {name:'incorrect',accept:11.2,bad:true},
+      {name:'abstain / other',accept:41.9,muted:true},
+    ],true);
+    moveCursor(72,38); clickPulse();
+  }
+  if(id===2){
+    $$('#model-chips .chip').forEach((c,i)=>setTimeout(()=>c.classList.add('on'), 200+i*280));
+    $$('#pipeline .step').forEach((s,i)=>setTimeout(()=>s.classList.add('on'), 400+i*320));
+    renderBars($('#sys-bars'), systems.map(s=>({name:s.name,accept:s.accept,bad:s.bad})), true);
+    countTo($('#v-har-acc'),57.1,{suffix:'%',decimals:1});
+    $('#v-har-wrong').textContent='0';
+    moveCursor(55,48);
+  }
+  if(id===3){ moveCursor(40,55); clickPulse(); }
+  if(id===4){ runSurgery(); }
+  if(id===5){ moveCursor(68,52); }
+  if(id===6){ $('#cursor').classList.remove('on'); $('#callout').classList.remove('on'); }
+}
+
+function runSurgery(){
+  const badge=$('#surg-badge');
+  badge.textContent='Running cascade…'; badge.className='badge';
+  $('#v-eq').textContent='—'; $('#v-sp').textContent='—'; $('#v-dec').textContent='—';
+  $('#sql-out').textContent='Sampling candidates…';
+  ['gate-eq','gate-sp','gate-dec','sql-out-card'].forEach(id=>$( '#'+id).classList.remove('active'));
+  moveCursor(70,40);
+  setTimeout(()=>{ $('#sql-out').innerHTML='SELECT e.empno, e.ename\nFROM emp e\nJOIN (\n  SELECT deptno, avg(sal) AS avg_sal\n  FROM emp GROUP BY deptno\n) d ON d.deptno = e.deptno\nWHERE e.job = <span class="hl">\'MANAGER\'</span>\n  AND e.sal > d.avg_sal'; }, 900);
+  setTimeout(()=>{ $('#v-eq').textContent='PASS'; $('#v-eq').className='value good'; $('#gate-eq').classList.add('active'); clickPulse(); }, 1800);
+  setTimeout(()=>{ $('#v-sp').textContent='2.4×'; $('#v-sp').className='value accent'; $('#gate-sp').classList.add('active'); }, 2600);
+  setTimeout(()=>{
+    $('#v-dec').textContent='ACCEPT'; $('#v-dec').className='value good';
+    $('#gate-dec').classList.add('active'); $('#sql-out-card').classList.add('active');
+    badge.textContent='Accepted · verified'; badge.className='badge good';
+  }, 3400);
+}
+
+function moveCursor(xPct,yPct){
+  const c=$('#cursor'), st=$('#stage').getBoundingClientRect();
+  c.classList.add('on');
+  c.style.left=(st.width*xPct/100)+'px';
+  c.style.top=(st.height*yPct/100)+'px';
+}
+function clickPulse(){
+  const c=$('#cursor');
+  c.style.transform='scale(.7)';
+  setTimeout(()=>c.style.transform='scale(1)',160);
+}
+function setCallout(text){
+  const el=$('#callout');
+  if(!text){ el.classList.remove('on'); return; }
+  el.textContent=text;
+  const c=$('#cursor');
+  el.style.left=(parseFloat(c.style.left||'100')+24)+'px';
+  el.style.top=(parseFloat(c.style.top||'100')-10)+'px';
+  el.classList.add('on');
+}
+
+const params=new URLSearchParams(location.search);
+const ONCE=params.get('once')!=='0';
+const HOLD_MS=Number(params.get('hold')||2500);
+
+let t0=null, scene=-1, raf=0, playing=false;
+function resetVisuals(){
+  $$('.chip').forEach(c=>c.classList.remove('on'));
+  $$('.step').forEach(s=>s.classList.remove('on'));
+  ['gate-eq','gate-sp','gate-dec','sql-out-card'].forEach(id=>{const el=$('#'+id); if(el) el.classList.remove('active');});
+}
+function tick(now){
+  if(t0==null) t0=now;
+  const elapsed=now-t0;
+  $('#clock').textContent=String(Math.floor(elapsed/60000)).padStart(2,'0')+':'+String(Math.floor(elapsed/1000)%60).padStart(2,'0');
+  $('#prog').style.width=clamp(elapsed/TOTAL_MS,0,1)*100+'%';
+  let next=SCENES[0].id;
+  for(const s of SCENES) if(elapsed>=s.at) next=s.id;
+  if(next!==scene){ scene=next; showScene(scene); }
+  if(elapsed<TOTAL_MS+600) raf=requestAnimationFrame(tick);
+  else if(!ONCE){ resetVisuals(); t0=now; scene=-1; raf=requestAnimationFrame(tick); }
+  else { playing=false; $('#url').textContent='database-surgeon · end'; }
+}
+function startTour(){
+  if(playing) return;
+  playing=true; resetVisuals(); t0=null; scene=-1;
+  raf=requestAnimationFrame(tick);
+}
+
+// Prefill static bars
+renderBars($('#raw-bars'),[{name:'accepted',accept:0},{name:'incorrect',accept:0,bad:true},{name:'abstain / other',accept:0,muted:true}],false);
+renderBars($('#sys-bars'), systems.map(s=>({name:s.name,accept:0,bad:s.bad})),false);
+showScene(0);
+
+document.addEventListener('keydown',e=>{
+  if(e.key===' '){ e.preventDefault(); if(playing){cancelAnimationFrame(raf);playing=false;} else startTour(); }
+  if(e.key==='r'){ cancelAnimationFrame(raf); playing=false; startTour(); }
+});
+
+// Hold on cold-open so the recorder catches the start, then play once.
+setTimeout(startTour, HOLD_MS);
+</script>
+</body>
+</html>

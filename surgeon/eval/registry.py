@@ -34,12 +34,17 @@ FW_NEMO_FAST = os.getenv(
 HARNESS = dict(
     rules=True, catalog=True, guide=True, retrieval=3,
     best_of=3, repair=2, precheck=True, verify=True,
+    # Latency / accept story levers (see docs + deep-research notes).
+    early_abstain=True, first_win=True, adaptive_best_of=True,
+    join_graph=True, rule_cache=True, workload_cache=True,
 )
 # Local Ollama: best_of=3 × repair=2 is hours of sequential 20B gens. Lean keeps
 # ~95% of harness quality for the privacy / $0 API narrative.
 LOCAL_HARNESS = dict(
     rules=True, catalog=True, guide=True, retrieval=2,
     best_of=1, repair=1, precheck=True, verify=True,
+    early_abstain=True, first_win=True, adaptive_best_of=True,
+    join_graph=True, rule_cache=True, workload_cache=True,
 )
 LEVERS = {
     "rules": {"rules": False},

@@ -1,2 +1,6 @@
-import { Workbench } from "@/components/workbench";
-export default function Lab() { return <Workbench initialSurface="lab"/>; }
+import { redirect } from "next/navigation";
+
+/** Lab / workbench folded into Live surgery for the submission surface. */
+export default function LabRedirect() {
+  redirect("/demo");
+}

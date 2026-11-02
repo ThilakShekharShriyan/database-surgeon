@@ -15,8 +15,12 @@ Start the existing local app with `npm --prefix web run dev` and open
 http://127.0.0.1:3100. The opening research screen reads saved evidence and
 does not need the Python evaluator, a database connection or model access.
 
+Judge narrative (Forge-inspired, original to this project): [FORGE_RESEARCH.md](FORGE_RESEARCH.md)
+— also served at `/research/FORGE_RESEARCH.md` after `scripts/export_research.py`.
+
 ## Suggested walkthrough
 
+0. **Write-up:** open `/research/FORGE_RESEARCH.md` (or `docs/FORGE_RESEARCH.md`) for the six-step story + McNemar tables.
 1. **Benchmark overview:** select Open · harness against Frontier · raw. Explain
    acceptance, observed incorrect returns, API cost and optimizer p50/p95 together.
    Switch the scatter between cost and latency. Partial runs remain labeled.

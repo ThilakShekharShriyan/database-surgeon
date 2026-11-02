@@ -61,6 +61,12 @@ class SystemConfig:
     precheck: bool = False
     verify: bool = False
     workload_cache: bool = True
+    # Latency / story levers (default on for harness systems).
+    early_abstain: bool = False
+    first_win: bool = True
+    adaptive_best_of: bool = True
+    join_graph: bool = True
+    rule_cache: bool = True
     max_output_tokens: int = 4096
     stages: List["SystemConfig"] = field(default_factory=list)
     router: Optional[str] = None
@@ -81,12 +87,17 @@ class Verifier:
     Earlier builds verified only on the five development schemas and let the
     judge catch null-edge failures — that produced incorrect *returns*. The
     product SLA is abstain-or-accept, so verify must match the judge contract.
+
+    Equivalence and timing run on separate Database connections in parallel so
+    wall-clock verify is closer to max(check, benchmark) than their sum.
     """
 
     def __init__(self):
         self.db = Database(5000)
         self.db.enforce_types = True
+        self.db_timing = Database(5000)
         self.expected = {}
+        self._expected_lock = threading.Lock()
         self.cache = {}
 
     def verify(self, case, sql):
@@ -105,18 +116,40 @@ class Verifier:
     def _verify(self, case, sql):
         try:
             sql = validate_sql(sql)
-            verdict = self.db.check(case["sql"], sql, EVAL_SCHEMAS, self.expected, case.get("ordered", False))
+            original = validate_sql(case["sql"])
         except Exception as exc:  # noqa: BLE001 - errors are feedback, not crashes
             return {"ok": False, "stage": "execute", "feedback": str(exc)[:300]}
-        if not verdict["equivalent"]:
-            return {"ok": False, "stage": "check", "feedback": json.dumps(
-                {k: verdict.get(k) for k in ("reason", "expected_rows", "actual_rows", "counterexample")},
-                default=str)[:700]}
-        timing = self.db.benchmark(case["sql"], sql, 3)
+
+        ordered = case.get("ordered", False)
+        # Speculative parallel: equivalence on db, EXPLAIN ANALYZE on db_timing.
+        # On mismatch we still pay timing CPU, but accept-path wall ≈ max(check, bench).
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            equiv_fut = pool.submit(self._check_equiv, original, sql, ordered)
+            time_fut = pool.submit(self._time_pair, original, sql)
+            try:
+                verdict = equiv_fut.result()
+            except Exception as exc:  # noqa: BLE001
+                return {"ok": False, "stage": "execute", "feedback": str(exc)[:300]}
+            if not verdict.get("equivalent"):
+                return {"ok": False, "stage": "check", "feedback": json.dumps(
+                    {k: verdict.get(k) for k in ("reason", "expected_rows", "actual_rows", "counterexample")},
+                    default=str)[:700]}
+            try:
+                timing = time_fut.result()
+            except Exception as exc:  # noqa: BLE001
+                return {"ok": False, "stage": "execute", "feedback": str(exc)[:300]}
+
         ok = timing["reduction"] >= THRESHOLD
         return {"ok": ok, "stage": "timing", "reduction": timing["reduction"],
                 "feedback": f"Equivalent on all eval fixtures, original {timing['original_ms']:.2f} ms, "
                             f"candidate {timing['candidate_ms']:.2f} ms" + ("" if ok else "; not at least 20% faster.")}
+
+    def _check_equiv(self, original, sql, ordered):
+        with self._expected_lock:
+            return self.db.check(original, sql, EVAL_SCHEMAS, self.expected, ordered)
+
+    def _time_pair(self, original, sql):
+        return self.db_timing.benchmark(original, sql, 3)
 
     def plan_text(self, sql):
         """(EXPLAIN text, ms spent inside the lock)."""
@@ -125,12 +158,41 @@ class Verifier:
             text = self.db.execute("EXPLAIN " + validate_sql(sql))
             return text, (time.perf_counter() - started) * 1000
 
+    def plan_json(self, sql):
+        """(EXPLAIN JSON plan root, ms spent inside the lock)."""
+        with DB_LOCK:
+            started = time.perf_counter()
+            plan = self.db.plan(sql)
+            return plan, (time.perf_counter() - started) * 1000
+
     def plan_cost(self, sql):
         """(planner total cost, ms spent inside the lock)."""
         with DB_LOCK:
             started = time.perf_counter()
             cost = self.db.plan(sql)["Plan"]["Total Cost"]
             return cost, (time.perf_counter() - started) * 1000
+
+    def looks_already_optimal(self, plan):
+        """Cheap PK/index lookups — skip LLM (safe early abstain).
+
+        Only Index Scan / Index Only Scan trees with tiny cost. Constant-fold /
+        Calcite rewrites often use Result/Values nodes and must still reach the model.
+        """
+        root = plan.get("Plan") or plan
+        nodes = set()
+
+        def walk(node):
+            nodes.add(node.get("Node Type") or "")
+            for child in node.get("Plans") or []:
+                walk(child)
+
+        walk(root)
+        allowed = {"Index Scan", "Index Only Scan", "Result", "Limit"}
+        if not nodes or (nodes - allowed):
+            return False
+        if "Index Scan" not in nodes and "Index Only Scan" not in nodes:
+            return False
+        return float(root.get("Total Cost") or 0) < 20.0 and int(root.get("Plan Rows") or 0) <= 5
 
 
 class System:
@@ -148,14 +210,19 @@ class System:
         if self.config.guide:
             parts.append(GUIDE)
         # Stable text first so provider prefix caching can reuse it across queries.
-        parts.append(catalog_text() if self.config.catalog else "Schema:\n" + case["schema_context"])
+        if self.config.catalog:
+            parts.append(catalog_text(join_graph=getattr(self.config, "join_graph", True)))
+        else:
+            parts.append("Schema:\n" + case["schema_context"])
         return "\n\n".join(parts)
 
-    def _user_prompt(self, case, plan, feedback):
+    def _user_prompt(self, case, plan, feedback, rule_hints=None):
         body = {"query": case["sql"], "plan": plan}
         examples = retrieve(self.memory, case["sql"], self.config.retrieval)
         if examples:
             body["verified_examples"] = examples
+        if rule_hints:
+            body["verified_rewrite_rules"] = rule_hints
         if feedback:
             body["previous_attempts"] = feedback
         return json.dumps(body)
@@ -180,7 +247,8 @@ class System:
         candidates = []
         feedback = []
         # Workload fingerprint cache: reuse verified rewrites for repeated shapes ($0 LLM).
-        # Negative hits skip straight to abstain (keep original) — efficiency + safety.
+        # Positives only. Negatives are NOT hard-abstains — fingerprints collide across
+        # templates (one open-raw incorrect can poison a whole family and kill accepts).
         if getattr(config, "workload_cache", True) and config.verify:
             try:
                 from .workload_cache import WorkloadCache
@@ -189,12 +257,6 @@ class System:
                     self._workload_cache = WorkloadCache()
                     cache = self._workload_cache
                 hit = cache.lookup(case["sql"])
-                if hit and hit.get("kind") == "negative":
-                    trace["candidates"].append({
-                        "origin": "workload_cache:negative", "sql": case["sql"],
-                        "verified": False, "stage": "cache_abstain",
-                    })
-                    return case["sql"]
                 if hit and hit.get("kind") == "positive" and hit.get("rewrite"):
                     candidates.append({
                         "sql": hit["rewrite"],
@@ -219,48 +281,95 @@ class System:
         if not self.client:
             return case["sql"]
         try:
-            plan, spent = self.verifier.plan_text(case["sql"])
+            plan_json, spent = self.verifier.plan_json(case["sql"])
             trace["_other_ms"] += spent
+            plan = json.dumps(plan_json.get("Plan") or plan_json, default=str)[:4000]
         except Exception:  # noqa: BLE001
-            plan = "unavailable"
+            plan_json, plan = None, "unavailable"
+        # Safe early abstain: tiny index-only lookups — no LLM dollars.
+        if config.verify and getattr(config, "early_abstain", False) and plan_json is not None:
+            try:
+                if self.verifier.looks_already_optimal(plan_json):
+                    trace["candidates"].append({
+                        "origin": "early_abstain", "sql": case["sql"],
+                        "verified": False, "stage": "early_abstain",
+                    })
+                    return case["sql"]
+            except Exception:  # noqa: BLE001
+                pass
+        rule_hints = None
+        if getattr(config, "rule_cache", True) and config.retrieval:
+            try:
+                from .rewrite_rules import RewriteRuleCache
+                rules = getattr(self, "_rewrite_rules", None)
+                if rules is None:
+                    self._rewrite_rules = RewriteRuleCache()
+                    rules = self._rewrite_rules
+                rule_hints = rules.retrieve(case["sql"], k=min(3, config.retrieval))
+            except Exception:  # noqa: BLE001
+                rule_hints = None
         original_cost = None
         for round_index in range(1 + (config.repair if config.verify else 0)):
-            samples = self._sample(case, plan, feedback, trial, round_index, trace)
-            if not config.verify:
-                first = next((s for s in samples if s.get("sql")), None)
-                return first["sql"] if first else case["sql"]
-            fresh = [{"sql": s["sql"], "origin": "model"} for s in samples if s.get("sql")]
-            if config.precheck and fresh:
-                if original_cost is None:
-                    original_cost, spent = self.verifier.plan_cost(case["sql"])
-                    trace["_other_ms"] += spent
-                fresh = self._precheck(fresh, original_cost, trace, feedback)
-            if self._accepts(case, fresh, trace, feedback):
-                self._maybe_cache_accept(case, trace)
-                return trace["accepted"]
+            adaptive = getattr(config, "adaptive_best_of", True) and config.best_of > 1 and config.verify
+            # Round 0..: try one sample (or full best_of if not adaptive); on miss, expand.
+            sample_counts = [1, config.best_of - 1] if adaptive else [config.best_of]
+            sample_offset = 0
+            for count in sample_counts:
+                if count <= 0:
+                    continue
+                samples = self._sample(
+                    case, plan, feedback, trial, round_index, trace, rule_hints,
+                    n=count, sample_offset=sample_offset,
+                )
+                sample_offset += count
+                if not config.verify:
+                    first = next((s for s in samples if s.get("sql")), None)
+                    return first["sql"] if first else case["sql"]
+                fresh = [{"sql": s["sql"], "origin": "model"} for s in samples if s.get("sql")]
+                if config.precheck and fresh:
+                    if original_cost is None:
+                        original_cost, spent = self.verifier.plan_cost(case["sql"])
+                        trace["_other_ms"] += spent
+                    fresh = self._precheck(fresh, original_cost, trace, feedback)
+                if self._accepts(case, fresh, trace, feedback):
+                    self._maybe_cache_accept(case, trace)
+                    return trace["accepted"]
         return case["sql"]
 
     def _maybe_cache_accept(self, case, trace):
         """Persist verified non-cache accepts so repeated shapes skip the LLM."""
         cache = getattr(self, "_workload_cache", None)
         accepted = trace.get("accepted")
-        if not cache or not accepted:
+        if not accepted:
             return
         # Don't re-store cache hits (would duplicate JSONL).
+        origin = ""
         for c in reversed(trace.get("candidates") or []):
             if c.get("sql") == accepted and c.get("verified"):
                 origin = c.get("origin") or ""
-                if origin.startswith("workload_cache:"):
-                    return
                 break
-        try:
-            cache.remember_accept(case["sql"], accepted, {"system": self.config.name})
-        except Exception:  # noqa: BLE001
-            pass
+        if origin.startswith("workload_cache:"):
+            return
+        if cache:
+            try:
+                cache.remember_accept(case["sql"], accepted, {"system": self.config.name})
+            except Exception:  # noqa: BLE001
+                pass
+        if getattr(self.config, "rule_cache", True):
+            try:
+                from .rewrite_rules import RewriteRuleCache
+                rules = getattr(self, "_rewrite_rules", None)
+                if rules is None:
+                    self._rewrite_rules = RewriteRuleCache()
+                    rules = self._rewrite_rules
+                rules.remember(case["sql"], accepted, {"system": self.config.name})
+            except Exception:  # noqa: BLE001
+                pass
 
     def _accepts(self, case, candidates, trace, feedback):
         best = None
         seen = {normalize(c["sql"]) for c in trace["candidates"]}
+        first_win = getattr(self.config, "first_win", True)
         for candidate in candidates:
             key = normalize(candidate["sql"])
             if key == normalize(case["sql"]) or key in seen:
@@ -276,6 +385,8 @@ class System:
             if outcome["ok"]:
                 if best is None or outcome["reduction"] > best[1]:
                     best = (candidate["sql"], outcome["reduction"])
+                if first_win:
+                    break
             else:
                 feedback.append({"sql": candidate["sql"][:1500], "result": outcome["feedback"]})
         if best:
@@ -301,9 +412,14 @@ class System:
                                  "result": f"Planner cost {cost:.0f} is not below the original {original_cost:.0f}."})
         return kept
 
-    def _sample(self, case, plan, feedback, trial, round_index, trace):
-        system, user = self._system_prompt(case), self._user_prompt(case, plan, feedback[-6:])
-        indexes = [trial * 1000 + round_index * 50 + i for i in range(self.config.best_of)]
+    def _sample(self, case, plan, feedback, trial, round_index, trace, rule_hints=None,
+                n=None, sample_offset=0):
+        system = self._system_prompt(case)
+        user = self._user_prompt(case, plan, feedback[-6:], rule_hints)
+        n = self.config.best_of if n is None else n
+        indexes = [trial * 1000 + round_index * 50 + sample_offset + i for i in range(n)]
+        if not indexes:
+            return []
         if len(indexes) == 1:
             results = [self.client.complete(system, user, indexes[0])]
         else:

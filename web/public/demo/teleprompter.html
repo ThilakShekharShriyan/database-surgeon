@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>DBSurgeon teleprompter</title>
+<style>
+  :root { --bg:#09090b; --ink:#f5f5f4; --muted:#a1a1aa; --accent:#e8ff47; --line:#27272a; }
+  * { box-sizing:border-box; margin:0; }
+  html,body { height:100%; background:var(--bg); color:var(--ink);
+    font-family:"IBM Plex Sans","Public Sans",system-ui,sans-serif; }
+  body { display:grid; grid-template-rows:auto 1fr auto; }
+  header { display:flex; justify-content:space-between; align-items:center; gap:16px;
+    padding:14px 22px; border-bottom:1px solid var(--line); }
+  header strong { letter-spacing:-.02em; }
+  header span { color:var(--muted); font-size:13px; }
+  .timer { font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:20px; color:var(--accent); }
+  main { overflow:auto; padding:28px clamp(18px,4vw,48px) 40px; }
+  .beat { display:none; max-width:920px; margin:0 auto; animation:in .4s ease; }
+  .beat.on { display:block; }
+  .eyebrow { color:var(--muted); letter-spacing:.16em; text-transform:uppercase; font-size:12px; margin-bottom:14px; }
+  .eyebrow b { color:var(--accent); }
+  h1 { font-size:clamp(28px,4vw,44px); letter-spacing:-.035em; line-height:1.15; margin-bottom:18px; font-weight:550; }
+  .say { font-size:clamp(20px,2.4vw,28px); line-height:1.45; white-space:pre-wrap; }
+  .click { margin-top:28px; padding:16px 18px; border:1px solid var(--line); border-left:3px solid var(--accent);
+    color:var(--muted); font-size:15px; line-height:1.5; }
+  .click b { color:var(--ink); font-weight:500; }
+  footer { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; padding:14px; border-top:1px solid var(--line); }
+  button { background:#18181b; color:var(--ink); border:1px solid var(--line); border-radius:999px;
+    padding:10px 16px; font:inherit; font-size:13px; cursor:pointer; }
+  button.active { background:var(--accent); color:#111; border-color:var(--accent); }
+  button.ghost { color:var(--muted); }
+  @keyframes in { from { opacity:0; transform:translateY(8px);} to { opacity:1; transform:none;} }
+</style>
+</head>
+<body>
+<header>
+  <div><strong>Database Surgeon</strong> <span>· submit teleprompter · ← → or 1–3</span></div>
+  <div class="timer" id="clock">00:00</div>
+</header>
+<main>
+  <section class="beat on" data-i="0">
+    <p class="eyebrow"><b>01 / 20s</b> · The problem</p>
+    <h1>Wrong SQL is worse than slow SQL.</h1>
+    <p class="say">Agent fleets dump SQL onto Postgres. Blind open models look cheap — then return wrong answers.
+
+On our sealed 98-case bench, Fireworks gpt-oss-120b raw accepts forty-seven percent but returns eleven incorrect rewrites.
+
+FinOps can’t ship that. We need faster SQL — or keep the original. Never corrupt.</p>
+    <p class="click"><b>On screen:</b> /research → system <b>open-raw</b> · point at <b>Wrong = 11</b>.</p>
+  </section>
+  <section class="beat" data-i="1">
+    <p class="eyebrow"><b>02 / 25s</b> · Tech stack</p>
+    <h1>Fireworks + a surgical harness.</h1>
+    <p class="say">Stack is Fireworks serverless — glm flash, gpt-oss-120b, NVIDIA Nemotron Ultra on escalate — plus a surgical harness: EXPLAIN, retrieve verified wins, verify on all fixtures including nulls, repair, abstain.
+
+Fingerprint cache makes repeats free. Fine-tune is optional; the product is verify-or-abstain.
+
+Without Fireworks and that gate, we’d burn frontier dollars or ship wrong SQL. With them, open-harness hits fifty-seven percent accept, zero wrong — matching frontier raw.</p>
+    <p class="click"><b>On screen:</b> switch system to <b>open-harness</b> · baseline frontier, then open-raw · show McNemar / 0 wrong.</p>
+  </section>
+  <section class="beat" data-i="2">
+    <p class="eyebrow"><b>03 / 35s</b> · Live demo + code</p>
+    <h1>Show the gate. Then the code.</h1>
+    <p class="say">Live surgery — correlated AVG preset — replay the recorded trace. Accepted means row-equivalent and at least twenty percent faster.
+
+Tier 3 nullable anti-join: raw can corrupt; harness repairs or abstains.
+
+Code that makes it real: Verifier over full EVAL_SCHEMAS in systems.py — same contract as the judge.</p>
+    <p class="click"><b>Clicks:</b> /demo → Live surgery → preset 2 (correlated) → Replay · then preset 3 (NULL trap) · then Cursor on <b>surgeon/eval/systems.py</b> Verifier · close: “Database Surgeon — zero wrong returned.”</p>
+  </section>
+</main>
+<footer>
+  <button type="button" class="active" data-go="0">1 Problem</button>
+  <button type="button" data-go="1">2 Stack</button>
+  <button type="button" data-go="2">3 Demo</button>
+  <button type="button" class="ghost" id="reset">Reset timer</button>
+</footer>
+<script>
+  const beats=[...document.querySelectorAll('.beat')];
+  const buttons=[...document.querySelectorAll('footer button[data-go]')];
+  let i=0, t0=Date.now();
+  const clock=document.getElementById('clock');
+  function show(n){ i=(n+beats.length)%beats.length; beats.forEach((el,idx)=>el.classList.toggle('on',idx===i)); buttons.forEach((b,idx)=>b.classList.toggle('active',idx===i)); }
+  buttons.forEach(b=>b.addEventListener('click',()=>show(+b.dataset.go)));
+  document.getElementById('reset').onclick=()=>{t0=Date.now();};
+  window.addEventListener('keydown',e=>{
+    if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();show(i+1);}
+    if(e.key==='ArrowLeft'){e.preventDefault();show(i-1);}
+    if(e.key>='1'&&e.key<='3')show(+e.key-1);
+  });
+  setInterval(()=>{const s=Math.floor((Date.now()-t0)/1000); clock.textContent=`${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;},250);
+</script>
+</body>
+</html>

@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>DBSurgeon — video title cards</title>
+<style>
+  :root {
+    --bg: #0b0c0f;
+    --ink: #f4f4f2;
+    --muted: #9a9aa3;
+    --accent: #e8ff47;
+    --line: #22242b;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { height: 100%; background: var(--bg); color: var(--ink);
+    font-family: "IBM Plex Sans", "Public Sans", system-ui, sans-serif; }
+  body { display: grid; place-items: center; overflow: hidden; }
+  .stage { width: min(1100px, 92vw); aspect-ratio: 16/9; border: 1px solid var(--line);
+    padding: 7% 8%; display: flex; flex-direction: column; justify-content: space-between;
+    background:
+      radial-gradient(ellipse 80% 60% at 10% 0%, #1a2030 0%, transparent 55%),
+      radial-gradient(ellipse 50% 40% at 100% 100%, #152018 0%, transparent 50%),
+      var(--bg);
+    position: relative; overflow: hidden; }
+  .eyebrow { font-size: 14px; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); }
+  .eyebrow b { color: var(--accent); font-weight: 500; }
+  h1 { font-size: clamp(40px, 6vw, 72px); letter-spacing: -.04em; line-height: 1.05;
+    max-width: 14ch; font-weight: 550; }
+  .lede { font-size: clamp(16px, 2vw, 22px); color: var(--muted); max-width: 36ch; line-height: 1.45; }
+  .foot { display: flex; justify-content: space-between; align-items: end; gap: 24px; }
+  .mark { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 13px; color: var(--muted); }
+  .nav { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+    display: flex; gap: 8px; z-index: 2; }
+  .nav button { background: #17181d; color: var(--ink); border: 1px solid var(--line);
+    padding: 8px 14px; border-radius: 999px; cursor: pointer; font: inherit; font-size: 13px; }
+  .nav button.active { background: var(--accent); color: #111; border-color: var(--accent); }
+  .beat { display: none; height: 100%; flex-direction: column; justify-content: space-between; animation: in .55s ease both; }
+  .beat.on { display: flex; }
+  @keyframes in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+  .stat { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: clamp(28px, 4vw, 44px);
+    color: var(--accent); letter-spacing: -.03em; }
+  .bar { height: 2px; width: 72px; background: var(--accent); margin: 18px 0 22px; }
+</style>
+</head>
+<body>
+  <div class="stage" id="stage" aria-live="polite">
+    <section class="beat on" data-beat="0">
+      <div>
+        <p class="eyebrow"><b>01</b> · The problem</p>
+        <div class="bar"></div>
+        <h1>Wrong SQL is worse than slow SQL.</h1>
+      </div>
+      <div class="foot">
+        <p class="lede">Open models rewrite queries cheaply — and corrupt results. Agent traffic makes that a FinOps + trust failure.</p>
+        <span class="stat">11 wrong<br/><span style="font-size:.45em;color:var(--muted)">open-raw / 98</span></span>
+      </div>
+    </section>
+    <section class="beat" data-beat="1">
+      <div>
+        <p class="eyebrow"><b>02</b> · Tech stack</p>
+        <div class="bar"></div>
+        <h1>Fireworks + a surgical harness.</h1>
+      </div>
+      <div class="foot">
+        <p class="lede">Flash → OSS-120B → Nemotron Ultra. Verify on all fixtures including nulls. Accept ≥20% faster — or abstain.</p>
+        <span class="mark">glm · gpt-oss · nemotron<br/>verify-or-abstain · cache</span>
+      </div>
+    </section>
+    <section class="beat" data-beat="2">
+      <div>
+        <p class="eyebrow"><b>03</b> · Live demo + code</p>
+        <div class="bar"></div>
+        <h1>57% accept.<br/>0 wrong returned.</h1>
+      </div>
+      <div class="foot">
+        <p class="lede">Same sealed judge for every system. Open harness matches frontier — without shipping corruption.</p>
+        <span class="mark">Database Surgeon</span>
+      </div>
+    </section>
+  </div>
+  <div class="nav" role="tablist">
+    <button type="button" class="active" data-go="0">Problem</button>
+    <button type="button" data-go="1">Stack</button>
+    <button type="button" data-go="2">Demo</button>
+  </div>
+<script>
+  const beats=[...document.querySelectorAll('.beat')];
+  const buttons=[...document.querySelectorAll('.nav button')];
+  let i=0;
+  function show(n){
+    i=(n+beats.length)%beats.length;
+    beats.forEach((el,idx)=>el.classList.toggle('on',idx===i));
+    buttons.forEach((b,idx)=>b.classList.toggle('active',idx===i));
+  }
+  buttons.forEach(b=>b.addEventListener('click',()=>show(+b.dataset.go)));
+  window.addEventListener('keydown',e=>{
+    if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();show(i+1);}
+    if(e.key==='ArrowLeft'){e.preventDefault();show(i-1);}
+    if(e.key>='1'&&e.key<='3')show(+e.key-1);
+  });
+</script>
+</body>
+</html>

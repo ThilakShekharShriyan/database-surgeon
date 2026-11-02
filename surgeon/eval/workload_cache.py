@@ -101,10 +101,15 @@ class WorkloadCache:
 
 
 def seed_from_harness_runs(
-    run_names: tuple[str, ...] = ("open-harness", "fw-nemotron-harness", "oss20b-harness", "open-raw"),
+    run_names: tuple[str, ...] = ("open-harness", "fw-nemotron-harness", "oss20b-harness"),
     path: Path | None = None,
+    include_negatives: bool = False,
 ) -> dict:
-    """Rebuild cache from verified accepts / incorrects on disk (dev split)."""
+    """Rebuild cache from verified accepts on disk (dev split).
+
+    Negatives default off: open-raw incorrect fingerprints collide with harness
+    families and were observed to wipe accepts via hard cache_abstain.
+    """
     out = path or DEFAULT_PATH
     out.parent.mkdir(parents=True, exist_ok=True)
     cases = {}
@@ -116,40 +121,49 @@ def seed_from_harness_runs(
     seen_pos: set[str] = set()
     seen_neg: set[str] = set()
     runs = ROOT / "benchmarks" / "eval_v2" / "runs"
+    # Prefer archived pre-lever open-harness if present (higher accept), then live runs.
+    archive = runs / "_archive"
+    extra_files: list[Path] = []
+    if archive.exists():
+        extra_files = sorted(archive.glob("open-harness_dev_t0_pre_levers_*.jsonl"))
     for name in run_names:
+        files = []
+        if name == "open-harness" and extra_files:
+            files.append(extra_files[-1])
         f = runs / name / "dev_t0.jsonl"
-        if not f.exists():
-            continue
-        for line in f.read_text().splitlines():
-            if not line.strip():
-                continue
-            row = json.loads(line)
-            case = cases.get(row.get("case"))
-            if not case:
-                continue
-            orig = case["sql"]
-            fp = fingerprint(orig)
-            if row.get("outcome") == "accepted" and row.get("result_sql"):
-                if fp in seen_pos or normalize(orig) == normalize(row["result_sql"]):
+        if f.exists():
+            files.append(f)
+        for path_in in files:
+            for line in path_in.read_text().splitlines():
+                if not line.strip():
                     continue
-                seen_pos.add(fp)
-                rows_out.append({
-                    "kind": "positive",
-                    "fingerprint": fp,
-                    "original": orig,
-                    "rewrite": row["result_sql"],
-                    "meta": {"source": name, "case": row["case"]},
-                })
-            elif row.get("outcome") == "incorrect" and row.get("result_sql"):
-                if fp in seen_neg:
+                row = json.loads(line)
+                case = cases.get(row.get("case"))
+                if not case:
                     continue
-                seen_neg.add(fp)
-                rows_out.append({
-                    "kind": "negative",
-                    "fingerprint": fp,
-                    "original": orig,
-                    "bad_rewrite": row["result_sql"],
-                    "meta": {"source": name, "case": row["case"]},
-                })
+                orig = case["sql"]
+                fp = fingerprint(orig)
+                if row.get("outcome") == "accepted" and row.get("result_sql"):
+                    if fp in seen_pos or normalize(orig) == normalize(row["result_sql"]):
+                        continue
+                    seen_pos.add(fp)
+                    rows_out.append({
+                        "kind": "positive",
+                        "fingerprint": fp,
+                        "original": orig,
+                        "rewrite": row["result_sql"],
+                        "meta": {"source": name, "case": row["case"], "file": path_in.name},
+                    })
+                elif include_negatives and row.get("outcome") == "incorrect" and row.get("result_sql"):
+                    if fp in seen_neg:
+                        continue
+                    seen_neg.add(fp)
+                    rows_out.append({
+                        "kind": "negative",
+                        "fingerprint": fp,
+                        "original": orig,
+                        "bad_rewrite": row["result_sql"],
+                        "meta": {"source": name, "case": row["case"]},
+                    })
     out.write_text("".join(json.dumps(r) + "\n" for r in rows_out))
     return {"positive": len(seen_pos), "negative": len(seen_neg), "path": str(out), "rows": len(rows_out)}

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Export a reproducible, credential-free UI snapshot. No DB or model calls."""
 import json
+import shutil
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -11,11 +12,20 @@ from surgeon.eval.cases import load_cases
 from surgeon.eval.comparison import compare
 from surgeon.eval.metrics import summarize
 
+PAIRED = ROOT / "benchmarks" / "eval_v2" / "results" / "paired_stats.json"
+FORGE_MD = ROOT / "docs" / "FORGE_RESEARCH.md"
+
 
 def main():
+    if not PAIRED.exists():
+        import runpy
+        runpy.run_path(str(ROOT / "scripts" / "compute_paired_stats.py"), run_name="__main__")
+    paired = json.loads(PAIRED.read_text()) if PAIRED.exists() else None
     snapshot = {"generated_at": datetime.now(timezone.utc).isoformat(), "splits": {},
                 "source": "benchmarks/eval_v2/runs/*/{split}_t*.jsonl",
-                "comparison_trial": 0, "warnings": []}
+                "comparison_trial": 0, "warnings": [],
+                "forge_research": "docs/FORGE_RESEARCH.md",
+                "paired_stats": paired}
     for split in ("dev", "heldout"):
         cases, digest = load_cases(split)
         expected = {c["id"] for c in cases}
@@ -65,6 +75,13 @@ def main():
         temp = path.with_suffix(".tmp")
         temp.write_text(body)
         temp.replace(path)
+    if FORGE_MD.exists():
+        for dest in (
+            ROOT / "web/public/research/FORGE_RESEARCH.md",
+            ROOT / "site/forge-research.md",
+        ):
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(FORGE_MD, dest)
     print(f"Exported research snapshot ({len(body):,} bytes); no inference or database calls.")
 
 

@@ -178,6 +178,8 @@ def main() -> None:
         "Sealed eval_v2 scoreboard across **quality · safety · cost · optimizer latency · cache · cascade**.",
         "Accepted = equivalent on all eval fixtures (incl. null/skew) and ≥20% faster.",
         "",
+        "**Narrative + paired tests:** [FORGE_RESEARCH.md](FORGE_RESEARCH.md) · regenerate stats: `scripts/compute_paired_stats.py`",
+        "",
         "## Why we win (auto)",
         "",
     ]

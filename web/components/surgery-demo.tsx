@@ -221,8 +221,8 @@ function usd(v: number | null | undefined) {
   return "$" + v.toFixed(4);
 }
 
-export function SurgeryDemo({ onOpenLab }: { onOpenLab: () => void }) {
-  const [tab, setTab] = useState<"surgery" | "pitch" | "ledger">("pitch");
+export function SurgeryDemo({ onOpenLab }: { onOpenLab?: () => void } = {}) {
+  const [tab, setTab] = useState<"surgery" | "pitch" | "ledger">("surgery");
   const [preset, setPreset] = useState(0);
   const [sql, setSql] = useState<string>(PRESETS[0].sql);
   const [busy, setBusy] = useState(false);
@@ -289,15 +289,17 @@ export function SurgeryDemo({ onOpenLab }: { onOpenLab: () => void }) {
   return (
     <div className="sd pitch-shell">
       <header className="sd-top">
-        <button className="sd-brand" type="button" onClick={() => { setTab("surgery"); setResult(null); }}>
+        <a className="sd-brand" href="/">
           <Mark /> Database Surgeon
-        </button>
+        </a>
         <nav className="pitch-tabs" aria-label="Demo sections">
-          <a className="sd-link" href="/research">Research</a>
-          <button type="button" className={tab === "pitch" ? "active" : ""} onClick={() => setTab("pitch")}>Judge pitch</button>
+          <a className="sd-link" href="/">Home</a>
+          <a className="sd-link" href="/research">Scoreboard</a>
           <button type="button" className={tab === "surgery" ? "active" : ""} onClick={() => setTab("surgery")}>Live surgery</button>
-          <button type="button" className={tab === "ledger" ? "active" : ""} onClick={() => setTab("ledger")}>Experiments</button>
-          <button type="button" className="sd-link" onClick={onOpenLab}>Lab</button>
+          <button type="button" className={tab === "pitch" ? "active" : ""} onClick={() => setTab("pitch")}>Evidence</button>
+          <button type="button" className={tab === "ledger" ? "active" : ""} onClick={() => setTab("ledger")}>Systems</button>
+          <a className="sd-link" href="/research/FORGE_RESEARCH.md" target="_blank" rel="noreferrer">Write-up</a>
+          {onOpenLab ? <button type="button" className="sd-link" onClick={onOpenLab}>Lab</button> : null}
         </nav>
       </header>
 
