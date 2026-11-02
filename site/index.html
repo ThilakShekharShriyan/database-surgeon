@@ -1,35 +1,196 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Measured PostgreSQL rewrite experiments: beneficial coverage, correctness, latency, API cost and paired statistical evidence.">
-<title>Database Surgeon — Research companion</title><link rel="stylesheet" href="styles.css"><script src="app.js" defer></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Database Surgeon — sealed eval_v2 research: accept rates, safety, latency, cost, McNemar and template-cluster bootstrap tests.">
+<title>Database Surgeon — Research</title>
+<link rel="stylesheet" href="styles.css">
+<script src="app.js" defer></script>
 </head>
 <body>
-<a class="skip" href="#results">Skip to research results</a>
-<header class="mast"><a class="brand" href="#"><svg viewBox="0 0 32 32" width="28" height="28" aria-hidden="true"><path d="M5 9c0-3 22-3 22 0v14c0 4-22 4-22 0V9Zm0 0c0 4 22 4 22 0M5 16c0 3 11 4 16 2m-6 7 11-13 3 3-11 13-4 1Z" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>Database Surgeon <span>Research companion</span></a><nav aria-label="Research navigation"><a href="#results">Results</a><a href="#statistics">Paired tests</a><a href="#protocol">Protocol</a><a href="forge-research.md">Judge write-up</a><a href="http://127.0.0.1:3101/research">Local app ↗</a></nav></header>
+<a class="skip" href="#results">Skip to results</a>
+<header class="mast">
+  <a class="brand" href="#">
+    <svg viewBox="0 0 32 32" width="28" height="28" aria-hidden="true"><path d="M5 9c0-3 22-3 22 0v14c0 4-22 4-22 0V9Zm0 0c0 4 22 4 22 0M5 16c0 3 11 4 16 2m-6 7 11-13 3 3-11 13-4 1Z" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+    Database Surgeon <span>Research</span>
+  </a>
+  <nav aria-label="Research navigation">
+    <a href="#headline">Headline</a>
+    <a href="#results">Graphs</a>
+    <a href="#statistics">Paired tests</a>
+    <a href="#bootstrap">Bootstrap</a>
+    <a href="forge.html">Write-up</a>
+    <a href="data/research.json" download>JSON ↓</a>
+  </nav>
+</header>
+
 <main>
-<section class="intro" aria-labelledby="title"><div><p class="eyebrow">PostgreSQL 16 · Experimental SQL rewriting</p><h1 id="title">Every rewrite earns its place.</h1><p class="lede">Open models propose. Database checks challenge. Execution measurements decide. Explore the quality, correctness and optimization overhead of each system.</p></div><div class="intro-actions"><a class="button primary" href="http://127.0.0.1:3101/demo">Open local demo ↗</a><a class="button" href="data/research.json" download>Download evidence ↓</a><small>Local app links require the production demo server on port 3101.</small></div></section>
-<section id="results" aria-labelledby="results-title"><div class="section-title"><div><p class="eyebrow">01 / Measured evidence</p><h2 id="results-title">Coverage before conclusions.</h2></div><div class="controls"><div class="segmented" role="group" aria-label="Dataset split"><button data-split="dev" class="active" aria-pressed="true">Development</button><button data-split="heldout" aria-pressed="false">Held-out</button></div><label class="check"><input id="partial" type="checkbox"> Include partial systems</label></div></div>
-<p id="snapshot-status" class="muted" role="status">Loading local evidence snapshot…</p><div id="finding" class="finding" aria-live="polite">Measured results appear after the snapshot loads.</div><div id="facts" class="facts"></div>
-<div class="figure-grid">
-<figure><div class="figure-title"><h3>Beneficial rewrite coverage</h3><span>01</span></div><div id="acceptance" class="bar-chart"></div><figcaption>Accepted = matching outputs on eight fixtures and at least 20% lower median execution time. Intervals shown are descriptive case-bootstrap 95% intervals.</figcaption></figure>
-<figure><div class="figure-title"><h3>Quality against API cost</h3><span>02</span></div><div id="cost-chart" class="svg-chart"></div><figcaption>Observed API dollars per 1,000 optimization cases. Filled marks: no incorrect returns observed; outlined marks: at least one incorrect return. Zero API charge excludes hardware cost.</figcaption></figure>
-<figure><div class="figure-title"><h3>Optimizer latency</h3><span>03</span></div><div id="latency" class="bar-chart"></div><figcaption>Median and 95th-percentile recorded optimizer time, in seconds. Includes model and verification work; excludes lock queueing and throttle waits. Simulated cascades reconstruct timing.</figcaption></figure>
-<figure><div class="figure-title"><h3>Returned-query outcomes</h3><span>04</span></div><div id="outcomes" class="bar-chart"></div><div class="legend"><span><i class="accepted"></i>Accepted</span><span><i class="no_change"></i>Original kept</span><span><i class="not_faster"></i>Not faster</span><span><i class="incorrect"></i>Incorrect / invalid</span><span><i class="regression"></i>Regression</span></div><figcaption>Outcome shares use all recorded trials for each system. An unchanged query is an abstention; it is not an accepted optimization.</figcaption></figure>
-</div>
-<figure class="family-figure"><div class="figure-title"><h3>Where systems find improvements</h3><span>05 / Family analysis</span></div><div id="families" class="table-wrap"></div><figcaption>Acceptance rate by query family. Abstention decoys can correctly remain unchanged, so low beneficial coverage alone is not evidence of poor safety.</figcaption></figure>
+<section class="intro" aria-labelledby="title">
+  <div>
+    <p class="eyebrow">Forge · Fireworks × NVIDIA · sealed eval_v2</p>
+    <h1 id="title">Agents ask models to “make SQL faster.” Without a harness, that’s a trap.</h1>
+    <p class="lede"><strong>The problem:</strong> coding agents and copilots don’t read plans — they call a model and ship the rewrite. Query volume keeps compounding as fleets grow, so blind rewrites burn warehouse CPU, API dollars, tokens, <em>and</em> accuracy. On our locked bench, open-raw still “accepts” 46.9% of rewrites and returns <strong>11 wrong</strong> answers. <strong>The fix:</strong> verify-or-abstain — same open model, accept only if fixtures match and SQL is ≥20% faster; else keep the original. Explore the graphs, McNemar tests, and bootstrap intervals below.</p>
+  </div>
+  <div class="intro-actions">
+    <a class="button primary" href="forge.html">Judge write-up</a>
+    <a class="button" href="data/research.json" download>Download snapshot ↓</a>
+    <small>Static site · no API keys · snapshot from local eval traces only.</small>
+  </div>
 </section>
-<section id="statistics" aria-labelledby="statistics-title"><div class="section-title"><div><p class="eyebrow">02 / Paired inference</p><h2 id="statistics-title">Ask the same cases.</h2></div><div class="controls"><label>System A <select id="system-a" aria-label="System A"></select></label><label>Baseline <select id="baseline" aria-label="Statistical baseline"><option value="frontier-raw">Frontier raw</option><option value="open-raw">Open raw</option></select></label></div></div><div id="paired-tests" class="paired-grid"></div><p class="method-note">Exact two-sided McNemar tests use preselected trial 0. Case-level p-values assume independent pairs; template variants are dependent. Template tests require all instances accepted for acceptance, or any incorrect instance for safety. P-values are unadjusted; development findings are exploratory. Non-significance does not establish equivalence or noninferiority.</p></section>
-<section aria-labelledby="systems-title"><div class="section-title"><div><p class="eyebrow">03 / Experiment ledger</p><h2 id="systems-title">The full system record.</h2></div><button id="download-csv" class="button" disabled>Export visible systems ↓</button></div><div id="systems" class="table-wrap"></div><p class="method-note">Rates describe observed cases. Completeness requires every expected case in every recorded trial. Trials may differ between systems; use paired trial-0 comparisons above. No ranking is certified by this table.</p></section>
-<section id="protocol" aria-labelledby="protocol-title"><div class="section-title"><div><p class="eyebrow">04 / Protocol & limitations</p><h2 id="protocol-title">Evidence has a boundary.</h2></div></div><div class="protocol-grid">
-<article><h3>The task</h3><p>Given a PostgreSQL SELECT, propose a beneficial rewrite while preserving result columns, types, duplicates, NULL values and any admitted ordering contract. Keep the original when no candidate passes.</p><h3>Separate gates</h3><p>The system verifies candidates on five development fixtures. The independent evaluator uses eight fixtures, including three withheld from the system verifier. Finite-instance agreement is not a proof of SQL equivalence.</p></article>
-<article><h3>Timing & resources</h3><p>Warmups precede alternating original/candidate EXPLAIN ANALYZE executions. The acceptance threshold is a 20% reduction in median server execution time. API cost excludes database compute, training and serving hardware.</p><h3>Generalization</h3><p>These are synthetic microfixtures, not benchmark-scale warehouses. Development cases exported to specialist training are training overlap. Fresh template/schema evaluation is required before claiming generalization.</p></article>
-<article><h3>Reproduce the evidence</h3><pre><code>.venv/bin/python scripts/compute_paired_stats.py
+
+<section id="headline" aria-labelledby="headline-title">
+  <div class="section-title">
+    <div>
+      <p class="eyebrow">00 / Headline board</p>
+      <h2 id="headline-title">Ours · Frontier · Open-raw</h2>
+    </div>
+  </div>
+  <div id="kpis" class="kpis" role="status">Loading headline metrics…</div>
+  <p id="finding" class="finding" aria-live="polite">Measured results appear after the snapshot loads.</p>
+</section>
+
+<section id="results" aria-labelledby="results-title">
+  <div class="section-title">
+    <div>
+      <p class="eyebrow">01 / Measured evidence</p>
+      <h2 id="results-title">Graphs across systems</h2>
+    </div>
+    <div class="controls">
+      <div class="segmented" role="group" aria-label="Dataset split">
+        <button data-split="dev" class="active" aria-pressed="true">Development</button>
+        <button data-split="heldout" aria-pressed="false">Held-out</button>
+      </div>
+      <label class="check"><input id="partial" type="checkbox"> Include partial systems</label>
+    </div>
+  </div>
+  <p id="snapshot-status" class="muted" role="status">Loading evidence snapshot…</p>
+  <div id="facts" class="facts"></div>
+  <div class="figure-grid">
+    <figure>
+      <div class="figure-title"><h3>Beneficial rewrite coverage</h3><span>01</span></div>
+      <div id="acceptance" class="bar-chart"></div>
+      <figcaption>Accepted = matching outputs on eight fixtures and ≥20% lower median execution time. Whiskers are descriptive case-bootstrap 95% intervals.</figcaption>
+    </figure>
+    <figure>
+      <div class="figure-title"><h3>Wrong returns (safety)</h3><span>02</span></div>
+      <div id="wrong-chart" class="bar-chart"></div>
+      <figcaption>Incorrect SQL returned to the caller. The harness product SLA is zero wrongs; open-raw is the corruption cliff.</figcaption>
+    </figure>
+    <figure>
+      <div class="figure-title"><h3>Quality against API cost</h3><span>03</span></div>
+      <div id="cost-chart" class="svg-chart"></div>
+      <figcaption>API dollars per 1,000 cases. Filled = 0 incorrect returns; outlined = ≥1 incorrect. Zero API excludes hardware.</figcaption>
+    </figure>
+    <figure>
+      <div class="figure-title"><h3>Optimizer latency</h3><span>04</span></div>
+      <div id="latency" class="bar-chart"></div>
+      <figcaption>Median and p95 optimizer wall time (seconds): model + verify. Excludes lock queueing and throttle waits.</figcaption>
+    </figure>
+    <figure>
+      <div class="figure-title"><h3>Returned-query outcomes</h3><span>05</span></div>
+      <div id="outcomes" class="bar-chart"></div>
+      <div class="legend">
+        <span><i class="accepted"></i>Accepted</span>
+        <span><i class="no_change"></i>Original kept</span>
+        <span><i class="not_faster"></i>Not faster</span>
+        <span><i class="incorrect"></i>Incorrect / invalid</span>
+        <span><i class="regression"></i>Regression</span>
+      </div>
+      <figcaption>Outcome shares over recorded trials. Unchanged query = abstention, not an accepted optimization.</figcaption>
+    </figure>
+    <figure>
+      <div class="figure-title"><h3>SQL geomean speedup</h3><span>06</span></div>
+      <div id="speedup-chart" class="bar-chart"></div>
+      <figcaption>Delivered portfolio geomean speedup (abstain counts as 1.0×). Not workload-weighted warehouse savings.</figcaption>
+    </figure>
+  </div>
+  <figure class="family-figure">
+    <div class="figure-title"><h3>Where systems find improvements</h3><span>07 / Family analysis</span></div>
+    <div id="families" class="table-wrap"></div>
+    <figcaption>Acceptance rate by query family. Decys can correctly stay unchanged.</figcaption>
+  </figure>
+</section>
+
+<section id="statistics" aria-labelledby="statistics-title">
+  <div class="section-title">
+    <div>
+      <p class="eyebrow">02 / McNemar paired tests</p>
+      <h2 id="statistics-title">Who wins the disagreements?</h2>
+    </div>
+    <div class="controls">
+      <label>System A <select id="system-a" aria-label="System A"></select></label>
+      <label>Baseline <select id="baseline" aria-label="Statistical baseline">
+        <option value="open-raw">Open raw</option>
+        <option value="frontier-raw">Frontier raw</option>
+      </select></label>
+    </div>
+  </div>
+  <div id="paired-tests" class="paired-grid"></div>
+  <p class="method-note">Exact two-sided McNemar on trial 0. Agreements are ignored; only discordant cases vote. Case-level p-values assume independent pairs — template variants are dependent, so also read the bootstrap below. P-values are unadjusted; development findings are exploratory.</p>
+</section>
+
+<section id="bootstrap" aria-labelledby="bootstrap-title">
+  <div class="section-title">
+    <div>
+      <p class="eyebrow">03 / Template-cluster bootstrap</p>
+      <h2 id="bootstrap-title">Would the gap survive another draw?</h2>
+    </div>
+  </div>
+  <div id="bootstrap-panel" class="bootstrap-panel"></div>
+  <p class="method-note">5,000 resamples of whole templates/families (not single cases). A gain is called real when McNemar and the bootstrap CI agree (CI excludes 0). Resampling templates avoids overconfidence from related variants.</p>
+</section>
+
+<section aria-labelledby="systems-title">
+  <div class="section-title">
+    <div>
+      <p class="eyebrow">04 / Experiment ledger</p>
+      <h2 id="systems-title">Full system record</h2>
+    </div>
+    <button id="download-csv" class="button" disabled>Export CSV ↓</button>
+  </div>
+  <div id="systems" class="table-wrap"></div>
+</section>
+
+<section id="protocol" aria-labelledby="protocol-title">
+  <div class="section-title">
+    <div>
+      <p class="eyebrow">05 / Protocol</p>
+      <h2 id="protocol-title">Evidence has a boundary</h2>
+    </div>
+  </div>
+  <div class="protocol-grid">
+    <article>
+      <h3>The task</h3>
+      <p>Given a PostgreSQL SELECT, propose a beneficial rewrite while preserving columns, types, duplicates, NULLs and admitted ordering. Keep the original when no candidate passes.</p>
+      <h3>Gates</h3>
+      <p>Harness verify uses the full EVAL_SCHEMAS set (incl. null/skew) — the same contract as the independent judge. Finite-instance agreement is not a proof of SQL equivalence.</p>
+    </article>
+    <article>
+      <h3>Timing & cost</h3>
+      <p>Warmups precede alternating EXPLAIN ANALYZE pairs. Acceptance needs ≥20% median execution reduction. API $ excludes DB compute and hardware.</p>
+      <h3>Generalization</h3>
+      <p>Synthetic microfixtures, not warehouse scale. Held-out templates exist; treat development as exploratory until held-out harness is complete.</p>
+    </article>
+    <article>
+      <h3>Reproduce</h3>
+      <pre><code>.venv/bin/python scripts/compute_paired_stats.py
 .venv/bin/python scripts/export_research.py
-.venv/bin/python -m surgeon.eval report \
-  --split dev --baseline frontier-raw \
-  --comparison-trial 0</code></pre><p>Snapshot export reads local artifacts only; it makes no database or model calls. Freeze hashes do not fully pin evaluator code, mutable caches or database state.</p><p><a href="forge-research.md">Judge research write-up ↗</a> · <a href="https://www.statsmodels.org/stable/generated/statsmodels.stats.contingency_tables.mcnemar.html">McNemar method reference ↗</a></p></article></div><details class="provenance"><summary>Snapshot provenance and export warnings</summary><div id="provenance"></div></details></section>
-<noscript><p class="finding">JavaScript is required to render the interactive graphs. The task and protocol remain readable; <a href="data/research.json" download>download the source JSON</a> to inspect recorded measurements.</p></noscript>
-</main><footer><span>Database Surgeon / Research companion</span><span>Local evidence. Explicit denominators. Reproducible questions.</span></footer>
-</body></html>
+bash scripts/site/sync.sh</code></pre>
+      <p><a href="forge.html">Full Forge write-up ↗</a> · <a href="https://www.statsmodels.org/stable/generated/statsmodels.stats.contingency_tables.mcnemar.html">McNemar reference ↗</a></p>
+    </article>
+  </div>
+  <details class="provenance"><summary>Snapshot provenance and export warnings</summary><div id="provenance"></div></details>
+</section>
+
+<noscript>
+  <p class="finding">JavaScript is required for interactive graphs. <a href="data/research.json" download>Download the JSON</a> or open <a href="forge.html">the write-up</a>.</p>
+</noscript>
+</main>
+
+<footer>
+  <span>Database Surgeon / Research companion</span>
+  <span><a href="https://github.com/ThilakShekharShriyan/database-surgeon">GitHub</a> · github.io static evidence</span>
+</footer>
+</body>
+</html>

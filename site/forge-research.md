@@ -1,34 +1,40 @@
 # Database Surgeon — Forge submission
 
-I built a **verify-or-abstain** PostgreSQL rewrite system on Fireworks. Open models propose faster SQL; a surgical harness accepts a rewrite only when it is **row-equivalent on sealed fixtures (including null/skew)** and **≥20% faster by paired EXPLAIN ANALYZE** — otherwise it returns the original. On the locked 98-case dev split, Fireworks `gpt-oss-120b` **raw** accepts **46.9%** but returns **11 wrong** rewrites; the same model **with the harness** accepts **62.2% with 0 wrong**. That is **+15.3 pp** accept and an **11 → 0** safety cliff vs the required open baseline. Against an optional closed **frontier-raw** baseline we sit at **62.2% / 0 wrong / $0.0020 / 2.9s p50** vs **56.1% / 0 / $0.0027 / 3.8s** — ahead on the board for accept, cost, and optimizer latency; McNemar on accept vs frontier is not significant (honest caveat below). Two statistical tests agree the harness vs raw gains are real.
+## The problem (obvious version)
 
-This page is the playbook for **our** stack: how we chose the task, locked the bench, tried cheap ideas first, measured losses, and proved the wins. Code and traces live in this repo; regenerate stats with `scripts/compute_paired_stats.py`.
+**Agents are a bit dumb about databases.** Coding agents, BI copilots, and ORM helpers don’t open `EXPLAIN`. They call a model with the prompt every team ships by default: *“make this query faster.”* No fixtures. No speedup gate. No abstain. Whatever the model prints gets run.
 
-Live brief: `/` · Scoreboard charts: `/research` · Demo: `/demo`
+**That would be fine if query volume were flat.** It isn’t. Every new agent multiplies `SELECT`s — retries, tool loops, “try another rewrite,” overnight jobs. Warehouse CPU and LLM tokens compound together. Industry FinOps surveys already put a large slice of cloud spend in the waste bucket; agent SQL is a multiplier on top of that baseline, not a side quest.
 
-**Disclosure:** Built during the Nov 2, 2026 hackathon. Material use of a Cursor agent for implementation and research synthesis, pointed at Fireworks docs, our eval harness, and industry SQL-rewrite literature. Pre-existing work: none for this submission (see `docs/HACKATHON.md`).
+**Without a harness, “faster” is speed theater.** On our locked 98-case bench, Fireworks `gpt-oss-120b` **raw** still “accepts” **46.9%** of rewrites — and returns **11 wrong** answers. Looks quicker. Corrupts results. Then the agent retries → more **tokens**, more **API $**, more **DB load**, worse **accuracy**.
+
+**The harness is the product.** Same open model, verify-or-abstain: accept only if sealed fixtures (incl. null/skew) match **and** paired EXPLAIN ANALYZE is ≥20% faster; else keep the original. Result: **62.2% accept / 0 wrong / $0.0020/case / 2.9s** optimizer p50 — vs frontier-raw **56.1% / 0 / $0.0027 / 3.8s**. One stack, four knobs: **latency · cost · tokens · accuracy**.
+
+Two statistical tests (McNemar + template-cluster bootstrap) agree the harness-vs-raw gains are real. McNemar vs frontier accept is not significant (honest caveat in Step 6).
+
+Live brief: `/` · Scoreboard: `/research` · Demo: `/demo` · Regenerate: `scripts/compute_paired_stats.py`
+
+**Disclosure:** Built during the Nov 2, 2026 hackathon. Material use of a Cursor agent. Pre-existing work: none (`docs/HACKATHON.md`).
 
 ---
 
 ## Step 1 — Find a task worth doing
 
-I picked **safe SQL rewrite for agent-generated PostgreSQL**: emit a faster equivalent `SELECT`, or abstain. That is a job platform DBAs / FinOps owners already feel when coding agents and BI copilots flood warehouses with expensive queries.
+I picked **safe SQL rewrite for agent-generated PostgreSQL** because the failure mode is already in production habits: agents ask models to optimize SQL **without a gate**. The job is emit a faster equivalent `SELECT`, or abstain — not “teach the agent SQL theory.”
 
-I compared two hackathon-shaped options before committing:
-
-|  | SQL rewrite (this project) | Knob / index tuning |
+|  | Blind “make it faster” (status quo) | Harnessed rewrite (this project) |
 | --- | --- | --- |
-| The job | Emit faster equivalent SQL, or keep the original | Change configs / indexes |
-| Who feels the pain | Platform DBAs under agent traffic | Same, plus capacity planning |
-| Why “just ask GPT” fails | Open raw is cheap **and wrong** (11/98 incorrect on our bench) | Different failure mode |
-| Why a harnessed open stack | 0-wrong SLA + private fingerprint flywheel | Complementary, not a substitute |
-| The data | Sealed eval_v2: 171 cases (98 dev / 73 held-out), 11 families, 8 Postgres fixtures | `pg_stat_statements` for production fingerprints |
+| What the agent does | One model call, ship the rewrite | Propose → verify → time → accept or keep original |
+| Accuracy | Open-raw: **11/98 wrong** on our bench | **0 wrong** returned |
+| DB latency | “Faster” SQL that is wrong still burns CPU + retries | ≥20% measured speedup or abstain |
+| API $ / tokens | Retries and long prompts on every shape | Fingerprint cache + early abstain cut repeats |
+| Who feels the pain | FinOps / platform DBAs as agent fleets grow | Same people, with a 0-wrong SLA |
 
-**Why rewrite won:** we can lock a **public, reproducible** correctness contract (bag equality + EXPLAIN ANALYZE speedup) and show a **corruption cliff** judges can re-run in one day. Knob tuning is valuable but harder to demo as a sealed A/B under the Forge clock.
+**Why rewrite won for the hackathon:** we can lock a public correctness contract (bag equality + EXPLAIN ANALYZE) and show the corruption cliff judges can re-run in one day.
 
-**Size the value with assumptions written out.** Suppose an agent fleet adds 10k slow SELECTs/day against a warehouse that costs $0.02 of DB CPU per slow query-minute, and the average offender burns 30s. Cutting 20% of that CPU with safe rewrites is on the order of **$1.2k/day** in infrastructure — before LLM API spend. Replace the $0.02 and 30s with your FinOps numbers; the lever is DB + inference, not “cooler SQL.”
+**Size the value with assumptions written out.** Suppose agent traffic adds 10k slow SELECTs/day, each burning 30s of warehouse CPU at $0.02 per slow query-minute. A safe 20% cut is on the order of **$1.2k/day** in DB infra — *before* LLM spend. Double the agent fleet next quarter and that line doubles with it. Replace the $0.02 / 30s with your FinOps numbers; the point is the lever is **DB + inference**, not cooler prose.
 
-**Check the contract before you trust the eval.** Early harness versions verified only on five development schemas; the judge also used null/skew fixtures — and that gap let a few accepts become incorrect returns. We closed it: harness verify now uses the **full** `EVAL_SCHEMAS` set. Accept means the same thing the judge checks.
+**Check the contract before you trust the eval.** Early harness versions verified only on five development schemas; null/skew fixtures in the judge leaked incorrect returns. Closed: harness verify uses the full `EVAL_SCHEMAS` set. Accept means what the judge means.
 
 ---
 

@@ -220,10 +220,11 @@ export function ResearchDashboard({
           <div className="r-title">
             <div>
               <div className="r-breadcrumb">Research · sealed eval_v2</div>
-              <h1>Quality · safety · speed · cost</h1>
+              <h1>Agents ask “make it faster.” Measure what ships.</h1>
               <p>
-                Open-harness (Fireworks + verify-or-abstain) vs closed frontier-raw — and vs blind open-raw —
-                on the same {current?.expected_cases ?? 98} locked cases.
+                Blind open-raw “optimizes” SQL with no gate — and returns wrong answers. Open-harness
+                verify-or-abstain vs frontier-raw and open-raw on the same{" "}
+                {current?.expected_cases ?? 98} locked cases: accept · wrong · latency · cost · tokens.
               </p>
             </div>
             <div className="r-title-actions">

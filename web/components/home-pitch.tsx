@@ -51,18 +51,18 @@ export function HomePitch({ data }: { data: ResearchSnapshot | null }) {
           <p className="ps-kicker">FORGE SUBMISSION · NOV 2, 2026 · FIREWORKS × NVIDIA</p>
           <h1>Database Surgeon</h1>
           <p className="ps-abstract">
-            I built a verify-or-abstain PostgreSQL rewrite system on Fireworks. Open models propose
-            faster SQL; the harness accepts only when sealed fixtures (incl. null/skew) match{" "}
-            <em>and</em> median SQL runtime improves by ≥20% — otherwise it returns the original. On
-            locked eval_v2 (98 dev), Fireworks <code>gpt-oss-120b</code> raw accepts {acceptR} but
-            returns <strong className="bad">{wrongR} wrong</strong>; the same model under the harness
-            accepts <strong className="good">{acceptH} with 0 wrong</strong>
-            {vsRaw ? ` (+${gapRaw} pp; bootstrap CI ${ciRaw})` : ""}. Versus closed frontier-raw:{" "}
-            {acceptH} / 0 wrong / {harness ? money(harness.cost_per_case_usd, 4) : "$0.0020"} /{" "}
-            {harness ? seconds(harness.latency_p50_ms) : "2.9s"} p50 against {acceptF} / 0 /{" "}
-            {frontier ? money(frontier.cost_per_case_usd, 4) : "$0.0027"} /{" "}
-            {frontier ? seconds(frontier.latency_p50_ms) : "3.8s"}. Two statistical tests agree the
-            harness-vs-raw gains are real.
+            Agents are getting <em>dumber about the database</em>, not smarter: they dump SQL onto
+            Postgres, then ask a model “make this query faster” with <strong>no check</strong>. As
+            agent fleets scale, query volume keeps compounding — more copilots, more retries, more
+            slow <code>SELECT</code>s — so blind rewrites burn <strong>DB latency, API $, tokens, and
+            accuracy</strong> at once. I built a verify-or-abstain harness on Fireworks: accept only
+            when sealed fixtures match <em>and</em> SQL is ≥20% faster; else keep the original. On
+            locked eval_v2, raw open accepts {acceptR} with{" "}
+            <strong className="bad">{wrongR} wrong</strong>; harness accepts{" "}
+            <strong className="good">{acceptH} / 0 wrong</strong>
+            {vsRaw ? ` (+${gapRaw} pp)` : ""}, at {harness ? money(harness.cost_per_case_usd, 4) : "$0.0020"}
+            /case and {harness ? seconds(harness.latency_p50_ms) : "2.9s"} opt p50 — beating frontier
+            on the board for accept, cost, and optimizer time.
           </p>
           <p className="ps-links-inline">
             <Link href="/research">Multi-stat scoreboard</Link>
@@ -77,13 +77,75 @@ export function HomePitch({ data }: { data: ResearchSnapshot | null }) {
           </p>
         </header>
 
+        <section className="ps-block ps-problem">
+          <h2><span>00</span> The problem (read this first)</h2>
+          <div className="ps-problem-callout" role="note">
+            <p className="ps-problem-line">
+              <strong>Agents are a bit dumb about SQL.</strong> They don’t tune indexes or read plans.
+              They call a model: <em>“rewrite this so it’s faster.”</em> No fixtures. No speedup gate.
+              No abstain.
+            </p>
+            <p className="ps-problem-line">
+              <strong>Query traffic is compounding.</strong> Every new coding agent / BI copilot /
+              ORM helper multiplies <code>SELECT</code>s. Slow queries don’t stay flat — they stack.
+              FinOps already fights cloud waste (~a third of spend in industry surveys); agent SQL is
+              the next multiplier on warehouse CPU <em>and</em> LLM tokens.
+            </p>
+            <p className="ps-problem-line">
+              <strong>Without a harness, “faster” is a lie you ship.</strong> On our sealed bench,
+              blind Fireworks open-raw still “accepts” {acceptR} of rewrites — and returns{" "}
+              <strong className="bad">{wrongR} incorrect</strong> answers. Looks quicker. Corrupts
+              results. Then agents retry → more tokens, more $, more load.
+            </p>
+            <p className="ps-problem-line">
+              <strong>The harness is the product.</strong> Same open model + verify-or-abstain →{" "}
+              {acceptH} accept, <strong className="good">0 wrong</strong>, lower API $ than frontier,
+              faster optimizer p50, fingerprint cache to cut repeat tokens. Latency · cost · tokens ·
+              accuracy — all four, or keep the original.
+            </p>
+          </div>
+          <div className="ps-table-wrap">
+            <table className="ps-table">
+              <thead>
+                <tr>
+                  <th>What agents do today</th>
+                  <th>What breaks</th>
+                  <th>What the harness does</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Ask the model to “make it faster”</td>
+                  <td>Wrong rows / null semantics ({wrongR} wrongs raw)</td>
+                  <td>Verify on all fixtures or abstain</td>
+                </tr>
+                <tr>
+                  <td>Ship every rewrite that looks cheap</td>
+                  <td>DB CPU + bad dashboards at scale</td>
+                  <td>Require ≥20% measured SQL speedup</td>
+                </tr>
+                <tr>
+                  <td>Retry when answers look weird</td>
+                  <td>Token + API $ spiral</td>
+                  <td>Fingerprint cache · early abstain · lean sampling</td>
+                </tr>
+                <tr>
+                  <td>Trust confidence / prose</td>
+                  <td>No sealed contract</td>
+                  <td>Same judge for every system (McNemar + bootstrap)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
         <section className="ps-block">
           <h2><span>01</span> Find a task worth doing</h2>
           <div className="ps-prose">
             <p>
-              Agentic apps emit floods of <code>SELECT</code>s. Platform DBAs need faster SQL without
-              corrupted answers. Soft confidence scores fail on null semantics; a sealed bench with
-              the same judge for every system does not.
+              The job is not “teach agents SQL.” The job is: when an agent already emitted a bad or
+              slow <code>SELECT</code>, either return a <em>proven</em> faster rewrite or leave it
+              alone. Soft confidence scores fail on nulls; a sealed bench does not.
             </p>
           </div>
           <div className="ps-table-wrap">
