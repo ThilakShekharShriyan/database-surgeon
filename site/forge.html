@@ -7,39 +7,66 @@
 <title>Database Surgeon — Write-up</title>
 <link rel="stylesheet" href="styles.css">
 <style>
-  .writeup { padding: 48px 0 24px; }
-  .writeup h1 { font-size: clamp(26px, 4vw, 34px); letter-spacing: -0.03em; line-height: 1.2; margin: 0 0 16px; max-width: 20ch; }
-  .writeup h2 { font-size: 15px; margin: 36px 0 10px; padding-top: 28px; border-top: 1px solid var(--line); }
-  .writeup h3 { font-size: 14px; color: var(--ink); margin: 20px 0 8px; }
-  .writeup p, .writeup li { color: var(--mute); font-size: 15px; line-height: 1.65; margin: 0 0 12px; }
-  .writeup strong { color: var(--ink); font-weight: 600; }
-  .writeup ul, .writeup ol { padding-left: 1.2em; margin: 0 0 14px; }
-  .writeup hr { border: 0; border-top: 1px solid var(--line); margin: 28px 0; }
-  .writeup a { color: var(--ink); }
-  .writeup code { font: 12px/1.4 var(--mono); background: #f0f0ec; padding: 1px 5px; border-radius: 3px; color: var(--ink); }
-  .writeup pre { margin: 0 0 16px; padding: 14px; background: #f0f0ec; border-radius: 4px; overflow: auto; font: 12px/1.7 var(--mono); color: var(--ink); }
+  .writeup { margin-top: 0.5rem; }
+  .writeup h1 {
+    font: 700 16pt/1.25 var(--font);
+    text-align: center;
+    margin: 0 0 1rem;
+  }
+  .writeup h2 {
+    font: 700 11pt/1.3 var(--font);
+    margin: 1.35rem 0 0.5rem;
+  }
+  .writeup h3 {
+    font: 700 10.5pt/1.3 var(--font);
+    margin: 0.9rem 0 0.35rem;
+    color: #000;
+  }
+  .writeup p, .writeup li {
+    font: 11pt/1.35 var(--font);
+    color: #000;
+    text-align: justify;
+    margin: 0 0 0.55rem;
+  }
+  .writeup ul, .writeup ol { padding-left: 1.25rem; margin: 0 0 0.75rem; }
+  .writeup hr { border: 0; border-top: 1px solid #ccc; margin: 1.25rem 0; }
+  .writeup a { color: #000; }
+  .writeup code {
+    font: 9pt/1.3 var(--mono);
+    background: #f5f5f5;
+    padding: 0 0.2rem;
+  }
+  .writeup pre {
+    margin: 0 0 0.75rem;
+    padding: 0.65rem 0.75rem;
+    background: #f5f5f5;
+    overflow: auto;
+    font: 9pt/1.45 var(--mono);
+  }
   .writeup pre code { background: none; padding: 0; }
-  .writeup table { width: 100%; border-collapse: collapse; margin: 0 0 18px; font-size: 13px; }
-  .writeup th, .writeup td { text-align: left; padding: 10px 10px 10px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
-  .writeup th { font: 11px var(--mono); color: var(--mute); font-weight: 500; text-transform: uppercase; letter-spacing: 0.04em; }
-  .writeup td { color: var(--ink); }
+  .writeup table { width: 100%; border-collapse: collapse; margin: 0 0 0.85rem; font: 10pt/1.3 var(--font); }
+  .writeup th, .writeup td {
+    text-align: left;
+    padding: 0.3rem 0.35rem;
+    border-top: 1px solid #000;
+    border-bottom: 1px solid #000;
+    vertical-align: top;
+  }
+  .writeup th { font-weight: 700; border-top: 2px solid #000; }
+  .writeup tr:last-child td { border-bottom: 2px solid #000; }
+  .back { margin-top: 1.5rem; font: 9pt/1.4 var(--sans); }
 </style>
 </head>
 <body>
-<header class="top">
-  <a class="brand" href="index.html">Database Surgeon</a>
-  <nav>
-    <a href="index.html">Scoreboard</a>
-    <a href="forge-research.md" download>Markdown</a>
-  </nav>
-</header>
-<main>
-  <article id="writeup" class="writeup">Loading…</article>
-  <section class="foot-links">
+<article class="paper">
+  <p class="conf" style="text-align:center;margin-bottom:1rem">
     <a href="index.html">← Scoreboard</a>
-    <a href="https://github.com/ThilakShekharShriyan/database-surgeon">GitHub</a>
-  </section>
-</main>
+    &nbsp;·&nbsp;
+    <a href="forge-research.md" download>Markdown</a>
+  </p>
+  <article id="writeup" class="writeup">Loading…</article>
+  <p class="back"><a href="index.html">← Back to scoreboard</a></p>
+</article>
 <script>
 (function () {
   const root = document.getElementById('writeup');
@@ -90,7 +117,7 @@
   }
   fetch('forge-research.md').then((r) => { if (!r.ok) throw new Error(r.status); return r.text(); })
     .then((md) => { root.innerHTML = render(md); })
-    .catch((e) => { root.innerHTML = '<p class="empty">Could not load write-up. <a href="forge-research.md">Open markdown</a> (' + esc(e.message) + ')</p>'; });
+    .catch((e) => { root.innerHTML = '<p class="empty">Could not load write-up. <a href="forge-research.md">Open markdown</a>.</p>'; });
 })();
 </script>
 </body>

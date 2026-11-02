@@ -3,31 +3,28 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Database Surgeon — agents ask models to make SQL faster; a verify harness wins on latency, cost, tokens, and accuracy.">
+<meta name="description" content="Database Surgeon — verified SQL rewrite harness for coding agents.">
 <title>Database Surgeon</title>
 <link rel="stylesheet" href="styles.css">
 <script src="app.js" defer></script>
 </head>
 <body>
-<header class="top">
-  <a class="brand" href="#">Database Surgeon</a>
-  <nav>
-    <a href="forge.html">Write-up</a>
-    <a href="https://github.com/ThilakShekharShriyan/database-surgeon">GitHub</a>
-  </nav>
-</header>
+<article class="paper">
+  <header class="titleblock">
+    <p class="conf">Forge · Fireworks × NVIDIA · sealed eval_v2</p>
+    <h1>Database Surgeon: A Verify-or-Abstain Harness for Agent SQL Rewrites</h1>
+    <p class="meta"><a href="https://github.com/ThilakShekharShriyan/database-surgeon">github.com/ThilakShekharShriyan/database-surgeon</a></p>
+  </header>
 
-<main>
-  <section class="hero">
-    <h1>Agents ask models to “make SQL faster.” Without a harness, that’s a trap.</h1>
-    <p class="lede">They don’t read plans — they ship the rewrite. Query volume keeps compounding, so blind rewrites burn latency, cost, tokens, and accuracy. Open-raw accepts <strong>46.9%</strong> and returns <strong>11 wrong</strong>. The harness verifies first: same open model, <strong>62.2% accept · 0 wrong</strong>.</p>
+  <section>
+    <h2>I. Problem</h2>
+    <p>Coding agents ask models to “make this SQL faster” and ship the rewrite. They do not read plans. As agent fleets grow, query volume compounds—retries, tool loops, overnight jobs—so blind rewrites burn warehouse latency, API cost, tokens, and accuracy together.</p>
+    <p>On a locked 98-case PostgreSQL bench, open-raw accepts 46.9% of rewrites and returns <strong>11 wrong</strong> answers. The harness uses the same open model but accepts only when sealed fixtures match and paired timing shows ≥20% speedup; otherwise it keeps the original.</p>
   </section>
 
-  <section class="board" aria-labelledby="board-title">
-    <div class="row-head">
-      <h2 id="board-title">98-case scoreboard</h2>
-      <p class="note" id="stamp">Loading…</p>
-    </div>
+  <section>
+    <h2>II. Results</h2>
+    <p class="caption" id="table-caption">TABLE I<br>Development split (n = 98). Accept = fixture-equivalent and ≥20% faster. Opt p50 = optimizer wall time.</p>
     <div class="table-wrap">
       <table id="scoreboard">
         <thead>
@@ -42,29 +39,38 @@
         <tbody></tbody>
       </table>
     </div>
+    <p class="note" id="stamp"></p>
   </section>
 
-  <section class="charts" aria-label="Key charts">
-    <figure>
-      <h3>Accept rate</h3>
-      <div id="accept" class="bars"></div>
-    </figure>
-    <figure>
-      <h3>Wrong returns</h3>
-      <div id="wrong" class="bars"></div>
-    </figure>
+  <section>
+    <p class="caption">Fig. 1. Beneficial acceptance rate by system.</p>
+    <div id="accept" class="bars" aria-label="Accept rate chart"></div>
   </section>
 
-  <section class="stats" aria-labelledby="stats-title">
-    <h2 id="stats-title">Does the gap hold?</h2>
-    <div id="stats" class="stats-grid"></div>
+  <section>
+    <p class="caption">Fig. 2. Incorrect queries returned to the caller.</p>
+    <div id="wrong" class="bars" aria-label="Wrong returns chart"></div>
   </section>
 
-  <section class="foot-links">
-    <a href="forge.html">Full write-up</a>
-    <a href="data/research.json" download>Snapshot JSON</a>
-    <a href="https://github.com/ThilakShekharShriyan/database-surgeon">Source</a>
+  <section>
+    <h2>III. Statistical checks</h2>
+    <p>Paired open-harness vs open-raw on trial 0. A gain is treated as real when McNemar and the template-cluster bootstrap agree.</p>
+    <div id="stats" class="stats"></div>
   </section>
-</main>
+
+  <section>
+    <h2>IV. Takeaway</h2>
+    <p>A harness is enough: higher accept than open-raw, <strong>0 wrong</strong> returns, and lower measured API $/case and optimizer p50 than frontier-raw on this board. Fine-tuning is optional.</p>
+  </section>
+
+  <footer class="refs">
+    <h2>References</h2>
+    <ol>
+      <li><a href="forge.html">Full Forge write-up</a> (method, McNemar detail, caveats).</li>
+      <li><a href="data/research.json" download>Evidence snapshot</a> (JSON traces used above).</li>
+      <li><a href="https://github.com/ThilakShekharShriyan/database-surgeon">Source repository</a>.</li>
+    </ol>
+  </footer>
+</article>
 </body>
 </html>

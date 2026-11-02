@@ -4,17 +4,14 @@ const SHOW = ['open-raw', 'frontier-raw', 'open-harness'];
 const NAMES = {
   'open-raw': 'Open-raw',
   'frontier-raw': 'Frontier-raw',
-  'open-harness': 'Open-harness',
+  'open-harness': 'Open-harness (ours)',
 };
 
 const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => (
   { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
 ));
 const pct = (v) => (typeof v === 'number' && Number.isFinite(v) ? (v * 100).toFixed(1) + '%' : '—');
-const money = (v) => {
-  if (!(typeof v === 'number' && Number.isFinite(v))) return '—';
-  return '$' + v.toFixed(v < 0.01 ? 4 : 4);
-};
+const money = (v) => (typeof v === 'number' && Number.isFinite(v) ? '$' + v.toFixed(4) : '—');
 const sec = (ms) => (typeof ms === 'number' && Number.isFinite(ms) ? (ms / 1000).toFixed(1) + 's' : '—');
 const pval = (v) => {
   if (!(typeof v === 'number' && Number.isFinite(v))) return '—';
@@ -27,12 +24,11 @@ function pick(systems) {
 }
 
 function scoreboard(rows) {
-  const body = document.querySelector('#scoreboard tbody');
-  body.innerHTML = rows.map((r) => {
+  document.querySelector('#scoreboard tbody').innerHTML = rows.map((r) => {
     const ours = r.system === 'open-harness' ? ' class="ours"' : '';
-    const wrongClass = r.incorrect_returned_count > 0 ? ' bad' : ' good';
+    const wrongClass = r.incorrect_returned_count > 0 ? ' bad' : '';
     return `<tr${ours}>
-      <td>${esc(NAMES[r.system] || r.system)}${r.system === 'open-harness' ? '<span class="sub">ours · verify-or-abstain</span>' : ''}</td>
+      <td>${esc(NAMES[r.system] || r.system)}</td>
       <td class="num">${pct(r.accepted_rate)}</td>
       <td class="num${wrongClass}">${r.incorrect_returned_count}</td>
       <td class="num">${money(r.cost_per_case_usd)}</td>
@@ -65,23 +61,16 @@ function stats(data) {
   const gap = hit.bootstrap_accept_gap;
   const ci = gap?.ci95;
   const gapPp = typeof gap?.mean === 'number' ? '+' + (gap.mean * 100).toFixed(1) + ' pp' : '—';
-  el.innerHTML = `
-    <article class="stat">
-      <strong>${esc(pval(hit.mcnemar_accepted?.p_value))}</strong>
-      <p>McNemar p — harness vs open-raw accept (n=${hit.pairs})</p>
-    </article>
-    <article class="stat">
-      <strong>${esc(gapPp)}</strong>
-      <p>Accept gap · bootstrap 95% CI [${esc(pct(ci?.[0]))}, ${esc(pct(ci?.[1]))}]</p>
-    </article>
-    <article class="stat">
-      <strong>${esc(String(hit.incorrect_count_b))}→${esc(String(hit.incorrect_count_a))}</strong>
-      <p>Wrong returns: open-raw → harness</p>
-    </article>
-    <article class="stat">
-      <strong>${esc(pval(hit.mcnemar_incorrect?.p_value))}</strong>
-      <p>McNemar p — incorrect returns</p>
-    </article>`;
+  el.innerHTML = [
+    ['McNemar p (accept)', pval(hit.mcnemar_accepted?.p_value), `harness vs open-raw, n=${hit.pairs}`],
+    ['Accept gap', gapPp, `bootstrap 95% CI [${pct(ci?.[0])}, ${pct(ci?.[1])}]`],
+    ['Wrong returns', `${hit.incorrect_count_b} → ${hit.incorrect_count_a}`, 'open-raw → harness'],
+    ['McNemar p (incorrect)', pval(hit.mcnemar_incorrect?.p_value), 'fewer incorrect is better'],
+  ].map(([k, v, note]) => `
+    <div class="stat">
+      <strong>${esc(v)}</strong>
+      <p>${esc(k)}. ${esc(note)}.</p>
+    </div>`).join('');
 }
 
 function render(data) {
@@ -89,11 +78,13 @@ function render(data) {
   if (!dev) throw new Error('No development split');
   const rows = pick(dev.systems || []);
   document.getElementById('stamp').textContent =
-    new Date(data.generated_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-    + ' · sealed eval_v2';
+    'Snapshot ' + new Date(data.generated_at).toLocaleDateString('en-US', {
+      month: 'short', day: 'numeric', year: 'numeric',
+    }) + '.';
   scoreboard(rows);
   bars('accept', rows, (r) => r.accepted_rate, (r) => pct(r.accepted_rate));
-  bars('wrong', rows, (r) => r.incorrect_returned_count, (r) => String(r.incorrect_returned_count), (r) => r.incorrect_returned_count > 0);
+  bars('wrong', rows, (r) => r.incorrect_returned_count, (r) => String(r.incorrect_returned_count),
+    (r) => r.incorrect_returned_count > 0);
   stats(data);
 }
 
@@ -101,6 +92,6 @@ fetch('data/research.json', { cache: 'no-store' })
   .then((r) => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
   .then(render)
   .catch((err) => {
-    document.getElementById('stamp').textContent = 'Snapshot unavailable';
+    document.getElementById('stamp').textContent = 'Snapshot unavailable.';
     document.getElementById('stats').innerHTML = `<p class="empty">${esc(err.message)}</p>`;
   });
