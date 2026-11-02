@@ -8,6 +8,9 @@ results/
 
 # Editor / local agent state
 .cursor/
+.agents/
+.DS_Store
+/node_modules/
 
 # Local workbench
 web/node_modules/
