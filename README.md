@@ -11,7 +11,7 @@ On our locked 98-case bench, open-raw still “accepts” **46.9%** of rewrites 
 | System | Accept | Wrong | $/case | Optimizer p50 |
 | --- | ---: | ---: | ---: | ---: |
 | open-raw (baseline) | 46.9% | **11** | $0.0004 | 2.4s |
-| frontier-raw | 56.1% | 0 | $0.0027 | 3.8s |
+| frontier-raw (3-trial mean) | 57.1% | 0 | $0.0027 | 3.7s |
 | **open-harness** | **62.2%** | **0** | **$0.0020** | **2.9s** |
 
 One stack, four knobs: **latency · cost · tokens · accuracy**.

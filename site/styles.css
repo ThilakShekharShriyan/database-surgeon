@@ -135,6 +135,17 @@ th.num, td.num {
   font-variant-numeric: tabular-nums;
 }
 tr.ours td { font-weight: 700; }
+tr.group td {
+  font-style: italic;
+  border-bottom: 0;
+  padding-top: 0.55rem;
+}
+td.indent { padding-left: 1.1rem; }
+td.mono { font: 8.5pt/1.3 var(--mono); word-break: break-word; }
+td.best { text-decoration: underline; text-underline-offset: 2px; }
+.sub-inline { font: 8pt var(--sans); color: var(--mute); }
+.keywords { font-size: 10pt; }
+.bar-row .track + .track { margin-top: 2px; }
 td .sub {
   display: block;
   font: 8pt/1.3 var(--sans);

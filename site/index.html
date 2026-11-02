@@ -19,102 +19,105 @@
 
   <section>
     <h2>Abstract</h2>
-    <p>Coding agents, BI copilots, and ORM helpers ask language models to “make this SQL faster” and ship the rewrite without reading plans, without fixture checks, and without an abstain path. As agent fleets grow, query volume compounds—retries, tool loops, overnight jobs—so blind rewrites burn warehouse latency, API dollars, tokens, and accuracy together. We treat the harness as the product. On a locked 98-case PostgreSQL development bench, Fireworks <code>gpt-oss-120b</code> run raw (“open-raw”) still accepts 46.9% of rewrites and returns <strong>11 wrong</strong> answers. The same open model behind a verify-or-abstain gate (“open-harness”) reaches <strong>62.2% accept with 0 wrong</strong>, at $0.0020/case and 2.9&nbsp;s optimizer p50—competitive with an optional closed frontier-raw baseline (57.1% / 0 / $0.0027 / 3.7&nbsp;s on the measured board). Exact two-sided McNemar and a 5,000-iteration template-cluster bootstrap agree that the harness-versus-raw gains are real. Accept versus frontier is <em>not</em> significant at α=0.05; we report the point estimate and do not overclaim the p-value. Fine-tuning is optional.</p>
+    <p>Coding agents, BI copilots, and ORM helpers ask language models to “make this SQL faster” and ship the rewrite without reading plans, without fixture checks, and without an abstain path. As agent fleets grow, query volume compounds—retries, tool loops, overnight jobs—so blind rewrites burn warehouse latency, API dollars, tokens, and accuracy together. We treat the harness as the product. On a locked 98-case PostgreSQL 16 development bench, Fireworks <code>gpt-oss-120b</code> run raw (“open-raw”) accepts 46.9% of rewrites and returns <strong>11 wrong</strong> answers. The same model behind a verify-or-abstain gate (“open-harness”) reaches <strong>62.2% accept with 0 wrong</strong>, at $0.0020/case and 2.9&nbsp;s optimizer p50. Of the 11 queries raw got wrong, the harness turned 8 into verified faster rewrites and safely kept the original on the other 3. The same gate removes every wrong return for each of the five model pairs we measured, including a local 20B model at $0. Exact McNemar and a 5,000-iteration template-cluster bootstrap agree the gains over raw are real. Against an optional closed frontier-raw baseline (57.1% mean over three trials), the accept lead is <em>not</em> significant at α=0.05; we report it and do not overclaim it.</p>
+    <p class="keywords"><strong>Index Terms</strong>—SQL rewrite, query optimization, LLM agents, verification, McNemar test, cluster bootstrap, PostgreSQL.</p>
   </section>
 
   <section>
     <h2>I. Introduction and Problem</h2>
     <p>Agents are a bit dumb about databases. They do not open <code>EXPLAIN</code>. They call a model with the prompt every team ships by default—“make this query faster”—and run whatever comes back. No fixtures. No speedup gate. No abstain.</p>
-    <p>That habit would be tolerable if query volume were flat. It is not. Every new coding agent multiplies <code>SELECT</code>s. Retries and “try another rewrite” loops stack on overnight jobs. Warehouse CPU and LLM tokens compound together. Industry FinOps surveys already put a large slice of cloud spend in the waste bucket; agent SQL is a multiplier on that baseline, not a side quest.</p>
-    <p>Without a harness, “faster” is speed theater. On our locked bench, open-raw still looks “okay” on accept rate until you count wrongs: 46.9% accept, <strong>11/98 incorrect</strong> returned to the caller. Looks quicker. Corrupts results. Then the agent retries—more tokens, more API spend, more database load, worse accuracy.</p>
-    <p>The job is therefore not “teach the agent SQL theory.” It is emit a faster equivalent <code>SELECT</code>, or keep the original. Accept means sealed fixtures (including null/skew) match <em>and</em> paired <code>EXPLAIN ANALYZE</code> shows ≥20% median execution reduction. Anything else abstains.</p>
-    <p class="caption">TABLE 0<br>Status quo versus harnessed rewrite (qualitative contract).</p>
+    <p>That habit would be tolerable if query volume were flat. It is not. Every new coding agent multiplies <code>SELECT</code>s. Retries and “try another rewrite” loops stack on overnight jobs. Warehouse CPU and LLM tokens compound together. FinOps surveys already put a large slice of cloud spend in the waste bucket; agent SQL multiplies that baseline.</p>
+    <p>Without a harness, “faster” is speed theater. Open-raw looks fine on accept rate until you count wrongs: 11 of 98 results returned to the caller were incorrect, and another 6 rewrites were slower than the original. Each wrong answer triggers retries—more tokens, more API spend, more database load, worse accuracy.</p>
+    <p>The job is therefore not “teach the agent SQL theory.” It is: emit a faster equivalent <code>SELECT</code>, or keep the original.</p>
+    <p class="caption">TABLE I<br>Status quo versus harnessed rewrite.</p>
     <div class="table-wrap">
       <table>
         <thead>
-          <tr>
-            <th></th>
-            <th>Blind “make it faster”</th>
-            <th>Harnessed rewrite</th>
-          </tr>
+          <tr><th></th><th>Blind “make it faster”</th><th>Harnessed rewrite</th></tr>
         </thead>
         <tbody>
-          <tr>
-            <td>Agent behavior</td>
-            <td>One model call, ship rewrite</td>
-            <td>Propose → verify → time → accept or keep original</td>
-          </tr>
-          <tr>
-            <td>Accuracy on our bench</td>
-            <td>Open-raw: 11/98 wrong</td>
-            <td>0 wrong returned</td>
-          </tr>
-          <tr>
-            <td>DB latency</td>
-            <td>Wrong “faster” SQL still burns CPU + retries</td>
-            <td>≥20% measured speedup or abstain</td>
-          </tr>
-          <tr>
-            <td>API $ / tokens</td>
-            <td>Retries and long prompts on every shape</td>
-            <td>Fingerprint cache + early abstain cut repeats</td>
-          </tr>
-          <tr>
-            <td>Who feels the pain</td>
-            <td>FinOps / platform DBAs as fleets grow</td>
-            <td>Same people, with a 0-wrong SLA</td>
-          </tr>
+          <tr><td>Agent behavior</td><td>One model call, ship rewrite</td><td>Propose → verify → time → accept or keep original</td></tr>
+          <tr><td>Accuracy on our bench</td><td>Open-raw: 11/98 wrong</td><td>0 wrong returned</td></tr>
+          <tr><td>DB latency</td><td>Wrong or slower SQL still burns CPU + retries</td><td>≥20% measured speedup or abstain</td></tr>
+          <tr><td>API $ / tokens</td><td>Retries and long prompts on every shape</td><td>Fingerprint cache + early abstain cut repeats</td></tr>
+          <tr><td>Who feels the pain</td><td>FinOps / platform DBAs as fleets grow</td><td>Same people, with a 0-wrong SLA</td></tr>
         </tbody>
       </table>
     </div>
-    <p>Directional value math (assumptions written out): suppose agent traffic adds 10k slow <code>SELECT</code>s/day, each burning 30&nbsp;s of warehouse CPU at $0.02 per slow query-minute. A safe 20% cut is on the order of <strong>$1.2k/day</strong> in database infra—before LLM spend. Double the agent fleet next quarter and that line doubles with it. Replace the unit costs with your FinOps numbers; the lever is database plus inference, not cooler prose.</p>
+    <p>Directional value math (assumptions written out): suppose agent traffic adds 10k slow <code>SELECT</code>s/day, each burning 30&nbsp;s of warehouse CPU at $0.02 per slow query-minute. A safe 20% cut is on the order of <strong>$1.2k/day</strong> in database infrastructure—before LLM spend. Double the agent fleet and that line doubles. Replace the unit costs with your own; the lever is database plus inference.</p>
+    <p><strong>Contributions.</strong> (1) A sealed, reproducible rewrite benchmark with traps and decoys; (2) a verify-or-abstain harness that reaches 0 wrong returns across five model pairs; (3) paired statistics (McNemar + template-cluster bootstrap) separating real gains from noise; (4) an honest negative result: no significant accept win over a closed frontier model.</p>
   </section>
 
   <section>
-    <h2>II. Systems Under Test</h2>
-    <p>One registry (<code>surgeon/eval/registry.py</code>), one runner, one judge. Cases and freeze hashes live under <code>benchmarks/eval_v2/</code> (<code>cases.jsonl</code>, <code>FROZEN.json</code>). Development = 98 cases; held-out templates = 73. Primary evidence below is trial 0 on the development split.</p>
+    <h2>II. Benchmark and Protocol</h2>
+    <h3>A. Cases</h3>
+    <p>Cases and freeze hashes live under <code>benchmarks/eval_v2/</code> (<code>cases.jsonl</code>, <code>FROZEN.json</code>). The development split holds <span id="n-dev">98</span> cases from <span id="n-tpl">57</span> templates; the held-out split holds <span id="n-held">73</span> cases from <span id="n-held-tpl">25</span> unseen templates. Each case has a kind:</p>
+    <ul>
+      <li><strong>Rewrite</strong>—a faster equivalent exists.</li>
+      <li><strong>Trap</strong>—a tempting rewrite changes semantics (NULLs, duplicates, empty groups).</li>
+      <li><strong>Decoy</strong>—already near-optimal; the right answer is to leave it alone.</li>
+    </ul>
+    <p class="caption">TABLE II<br>Development cases by family and kind.</p>
+    <div class="table-wrap">
+      <table id="composition">
+        <thead>
+          <tr><th>Family</th><th class="num">Rewrite</th><th class="num">Trap</th><th class="num">Decoy</th><th class="num">Total</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <h3>B. Acceptance contract</h3>
+    <p id="contract-note">A rewrite is <em>accepted</em> only if it returns the same rows on all 8 fixture databases (3 hidden from the optimizer), including null-heavy, skewed, and empty-group instances, and its median paired <code>EXPLAIN ANALYZE</code> time is ≥20% lower after warmups. Bag equality checks column names, order, duplicates, and NULLs. Any other outcome is classified as <em>no change</em> (abstain), <em>not faster</em>, <em>regression</em>, <em>incorrect</em>, or <em>invalid</em>.</p>
+    <h3>C. Trials and fairness</h3>
+    <p>All systems see identical case IDs and the same judge. Raw baselines get catalog, guide, and <code>EXPLAIN</code> context but no system-side verify; they are never weakened to flatter the harness. Paired tests use trial 0. Frontier-raw was run for three trials: Table III reports its three-trial mean (57.1%); the paired tests use trial 0 (56.1%).</p>
+  </section>
+
+  <section>
+    <h2>III. Systems Under Test</h2>
     <h3>A. Baselines</h3>
     <ul>
-      <li><strong>open-raw</strong> — Fireworks <code>accounts/fireworks/models/gpt-oss-120b</code>, one sample, catalog + guide + EXPLAIN context, <em>no</em> system-side verify. Required open baseline.</li>
-      <li><strong>frontier-raw</strong> — optional closed model, same case IDs, same judge. Fairness check, not the required prize comparison.</li>
-      <li><strong>rules-only</strong> — mechanical rewrites (sargability, UNION ALL, …) at $0. Safe floor, low coverage.</li>
-      <li><strong>fw-fast-raw / fw-fast-harness</strong> — cheaper Fireworks stage, with and without the gate.</li>
-      <li><strong>oss20b-raw / oss20b-harness</strong> — smaller open weight; harness incomplete on held coverage († in tables).</li>
+      <li><strong>open-raw</strong>—Fireworks <code>accounts/fireworks/models/gpt-oss-120b</code>, one sample, no verify. Required open baseline.</li>
+      <li><strong>frontier-raw</strong>—optional closed model, same cases and judge.</li>
+      <li><strong>rules-only</strong>—mechanical rewrites (sargability, UNION ALL, …) at $0.</li>
+      <li><strong>fw-fast</strong>, <strong>fw-nemotron</strong>, <strong>oss20b</strong>, <strong>ollama-gpt-oss-20b</strong>—additional raw/harness pairs to test whether the gate generalizes across models.</li>
+      <li><strong>ollama-qwen3-8b</strong>, <strong>ollama-qwen25-coder-7b</strong>—small local models run raw.</li>
     </ul>
     <h3>B. Product system: open-harness</h3>
     <p>Same open model as open-raw, plus:</p>
     <ul>
-      <li>Strict verify on the full <code>EVAL_SCHEMAS</code> set (including null/skew)—early harness versions that verified only five schemas leaked incorrects; that bug is closed.</li>
-      <li>Paired timing gate: ≥20% median reduction on alternating <code>EXPLAIN ANALYZE</code> after warmups.</li>
-      <li>Repair / best-of with adaptive sampling, first-win accept, and early abstain on tiny index-only lookups.</li>
-      <li>Workload fingerprint cache for <em>positives only</em> (negative caching poisoned families via fingerprint collision and was removed).</li>
-      <li>Join-graph catalog and rewrite-rule hints in the prompt for multi-table near-misses.</li>
+      <li>Strict verify on the full <code>EVAL_SCHEMAS</code> set (including null/skew). Early versions verified only five schemas and leaked incorrects; that is fixed.</li>
+      <li>Paired timing gate: ≥20% median reduction on alternating <code>EXPLAIN ANALYZE</code> runs.</li>
+      <li>Repair loop and adaptive best-of sampling, first-win accept, early abstain on tiny index-only lookups, and parallel verify.</li>
+      <li>Workload fingerprint cache that stores <em>verified positives only</em>.</li>
+      <li>Join-graph catalog and rewrite-rule hints in the prompt.</li>
     </ul>
-    <h3>C. Ideas that lost or only partially helped</h3>
+    <h3>C. Ideas that lost or only partly helped</h3>
     <ul>
-      <li>Raw open models win on $/case and lose on safety—unacceptable for agent traffic.</li>
-      <li>Rules-only is necessary as a floor, not the product.</li>
-      <li>Negative fingerprint cache looked clever and wiped accepts—removed.</li>
-      <li>Nemotron raw / pre-strict harness could raise accept while leaking incorrects when verify omitted null fixtures—archived.</li>
-      <li>Fine-tune (Muse Glimmer LoRA) remains optional; only verified accepts become SFT.</li>
+      <li>Raw open models win on $/case and lose on safety.</li>
+      <li>Rules-only is a safe floor, not the product.</li>
+      <li>A negative fingerprint cache wiped accepts through fingerprint collisions; removed (accept fell to 53.1% mid-rebench before the fix).</li>
+      <li>Nemotron raw leaked 3 incorrects; the pre-strict harness leaked when verify skipped null fixtures.</li>
+      <li>Fine-tuning (Muse Glimmer LoRA) stays optional; only verified accepts become training data.</li>
     </ul>
   </section>
 
   <section>
-    <h2>III. Scoreboard</h2>
-    <p>Table I reports the sealed development board. Accept means fixture-equivalent bags (column names, duplicates, NULLs) and ≥20% faster median execution. Opt p50 is optimizer wall time (model + verify where applicable), excluding lock queueing and throttle waits. API $ excludes database compute.</p>
-    <p class="caption">TABLE I<br>Development split systems. † = incomplete case coverage.</p>
+    <h2>IV. Results</h2>
+    <h3>A. Main scoreboard</h3>
+    <p>Table III shows the development board. Opt p50 is optimizer wall time (model + verify), excluding lock queueing and throttle waits. API $ excludes database compute. The 95% interval on accept is a case bootstrap.</p>
+    <p class="caption">TABLE III<br>Main development scoreboard. † incomplete coverage.</p>
     <div class="table-wrap">
       <table id="scoreboard">
         <thead>
           <tr>
             <th>System</th>
             <th class="num">Accept</th>
+            <th class="num">95% CI</th>
             <th class="num">Wrong</th>
-            <th class="num">Gap vs raw</th>
+            <th class="num">Δ vs raw</th>
             <th class="num">$/case</th>
-            <th class="num">Opt p50</th>
-            <th class="num">Cases</th>
+            <th class="num">p50</th>
+            <th class="num">n</th>
           </tr>
         </thead>
         <tbody></tbody>
@@ -124,17 +127,17 @@
   </section>
 
   <section>
-    <p class="caption">Fig. 1. Beneficial acceptance rate (complete core systems).</p>
+    <p class="caption">Fig. 1. Beneficial acceptance rate.</p>
     <div id="accept" class="bars"></div>
   </section>
 
   <section>
-    <p class="caption">Fig. 2. Incorrect queries returned to the caller (corruption cliff).</p>
+    <p class="caption">Fig. 2. Incorrect queries returned to the caller.</p>
     <div id="wrong" class="bars"></div>
   </section>
 
   <section>
-    <p class="caption">Fig. 3. API cost per case (USD).</p>
+    <p class="caption">Fig. 3. API cost per 1,000 cases (USD).</p>
     <div id="cost" class="bars"></div>
   </section>
 
@@ -144,25 +147,55 @@
   </section>
 
   <section>
-    <p class="caption">TABLE I-B<br>Acceptance rate by query family — open-harness (dev).</p>
+    <h3>B. Safety and quality</h3>
+    <p><em>Caught</em> counts wrong candidates the harness generated internally and rejected before they reached the caller. <em>Decoy safe</em> is the share of decoys left untouched or correctly handled. <em>Trap wrong</em> is the share of traps where an incorrect rewrite was returned. Geomean speedup is over all cases, with abstentions counted as 1.0×.</p>
+    <p class="caption">TABLE IV<br>Safety and quality metrics.</p>
     <div class="table-wrap">
-      <table id="families">
+      <table id="safety">
         <thead>
           <tr>
-            <th>Family</th>
-            <th class="num">Accept</th>
-            <th>Family</th>
-            <th class="num">Accept</th>
+            <th>System</th>
+            <th class="num">Wrong</th>
+            <th class="num">Wrong 95% CI</th>
+            <th class="num">Caught</th>
+            <th class="num">Decoy safe</th>
+            <th class="num">Trap wrong</th>
+            <th class="num">Geomean</th>
+            <th class="num">Geo 95% CI</th>
           </tr>
         </thead>
         <tbody></tbody>
       </table>
     </div>
-    <p class="note">Decoys and hard shapes may correctly stay unchanged (abstention is not a wrong).</p>
   </section>
 
   <section>
-    <p class="caption">TABLE I-C<br>Returned-query outcome shares — open-harness vs open-raw vs frontier-raw.</p>
+    <h3>C. Latency, calls, and tokens</h3>
+    <p>The harness spends more model calls than raw (best-of, repair), but the positive cache and early abstain keep its median low. Its tail (p95) is longer because hard cases go through repair.</p>
+    <p>Open-harness shows an LLM p50 of 0.0&nbsp;s because half of its cases (49 of 98) are served by the verified cache, rules, or early abstain without a model call; its verify p50 is the cost of re-checking those answers. Raw systems never verify, so their verify time is 0.</p>
+    <p class="caption">TABLE V<br>Efficiency metrics per case.</p>
+    <div class="table-wrap">
+      <table id="efficiency">
+        <thead>
+          <tr>
+            <th>System</th>
+            <th class="num">p50</th>
+            <th class="num">p95</th>
+            <th class="num">LLM p50</th>
+            <th class="num">Verify p50</th>
+            <th class="num">Calls</th>
+            <th class="num">Out tokens</th>
+            <th class="num">$/1k</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h3>D. Outcomes</h3>
+    <p class="caption">TABLE VI<br>Share of returned-query outcomes.</p>
     <div class="table-wrap">
       <table id="outcomes">
         <thead>
@@ -171,7 +204,69 @@
             <th class="num">Accepted</th>
             <th class="num">No change</th>
             <th class="num">Not faster</th>
-            <th class="num">Incorrect / invalid</th>
+            <th class="num">Regression</th>
+            <th class="num">Incorrect</th>
+            <th class="num">Invalid</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <p class="caption">TABLE VII<br>Outcome counts by case kind (trial 0).</p>
+    <div class="table-wrap">
+      <table id="by-kind">
+        <thead>
+          <tr>
+            <th>System</th>
+            <th class="num">Rewrite acc.</th>
+            <th class="num">Rewrite wrong</th>
+            <th class="num">Trap acc.</th>
+            <th class="num">Trap wrong</th>
+            <th class="num">Decoy kept</th>
+            <th class="num">Slower</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <p class="note">A trap is “accepted” only when the rewrite still matched every fixture—the harness found a safe variant of a tempting shape. Slower = not faster + regression.</p>
+  </section>
+
+  <section>
+    <h3>E. Results by family</h3>
+    <p class="caption">TABLE VIII<br>Acceptance rate by query family.</p>
+    <div class="table-wrap">
+      <table id="families">
+        <thead>
+          <tr>
+            <th>Family</th>
+            <th class="num">n</th>
+            <th class="num">Rules</th>
+            <th class="num">Open-raw</th>
+            <th class="num">Frontier</th>
+            <th class="num">Harness</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <p class="note">The abstention family is designed so that no rewrite should be accepted; 0% is the correct score there.</p>
+  </section>
+
+  <section>
+    <h2>V. Ablations: Does the Gate Generalize?</h2>
+    <p>Each row pair runs the same model raw and then behind the harness. If the gate is the product, wrong returns should drop to zero regardless of the model.</p>
+    <p class="caption">TABLE IX<br>Raw versus harness for each model. † incomplete coverage.</p>
+    <div class="table-wrap">
+      <table id="ablation">
+        <thead>
+          <tr>
+            <th>Model / variant</th>
+            <th class="num">Accept</th>
+            <th class="num">Wrong</th>
+            <th class="num">$/case</th>
+            <th class="num">p50</th>
+            <th class="num">Calls</th>
           </tr>
         </thead>
         <tbody></tbody>
@@ -180,36 +275,41 @@
   </section>
 
   <section>
-    <h2>IV. Statistical Tests</h2>
-    <p>Luck moves a 98-case score. We use the same two ideas as the Forge sample playbook: <strong>McNemar on discordant cases</strong> and a <strong>bootstrap that resamples templates/families</strong> (cases from one template share structure and are not independent).</p>
-    <h3>A. McNemar (who wins the disagreements?)</h3>
-    <p>Exact two-sided test via binomial on discordant pairs only. Agreements are ignored. System A is always open-harness unless noted. Case-level p-values assume independent pairs; we therefore also report template sensitivity (one vote per complete template, n = 57).</p>
-    <p class="caption">TABLE II<br>McNemar 2×2 for acceptance — open-harness vs open-raw (n = 98, trial 0).</p>
+    <p class="caption">Fig. 5. Wrong returns, raw (top bar) versus harness (bottom bar), per model.</p>
+    <div id="pairs-fig" class="bars"></div>
+  </section>
+
+  <section>
+    <h3>A. Cache ablation</h3>
+    <p id="cache-text">Loading…</p>
+  </section>
+
+  <section>
+    <h2>VI. Statistical Tests</h2>
+    <p>Luck moves a 98-case score. We use <strong>McNemar on discordant cases</strong> and a <strong>bootstrap that resamples whole templates</strong>, because cases from one template share structure and are not independent.</p>
+    <h3>A. McNemar</h3>
+    <p>Exact two-sided test via binomial on discordant pairs. Agreements are ignored. System A is open-harness. Case-level p-values assume independent pairs, so we also report template sensitivity (one vote per complete template).</p>
+    <p class="caption">TABLE X<br>McNemar 2×2 for acceptance—open-harness vs open-raw (n = 98).</p>
     <div class="table-wrap">
       <table id="contingency-accept">
         <thead>
-          <tr>
-            <th></th>
-            <th class="num">Harness accepted</th>
-            <th class="num">Harness not</th>
-          </tr>
+          <tr><th></th><th class="num">Harness accepted</th><th class="num">Harness not</th></tr>
         </thead>
         <tbody></tbody>
       </table>
     </div>
     <p id="contingency-note" class="note"></p>
 
-    <p class="caption">TABLE III<br>McNemar on acceptance across baselines (A = open-harness).</p>
+    <p class="caption">TABLE XI<br>McNemar on acceptance across baselines.</p>
     <div class="table-wrap">
       <table id="mcnemar-accept">
         <thead>
           <tr>
-            <th>Baseline</th>
+            <th>A vs baseline</th>
             <th class="num">A only</th>
             <th class="num">Base only</th>
             <th class="num">Both</th>
             <th class="num">Neither</th>
-            <th class="num">Discordant</th>
             <th class="num">p</th>
             <th>Call</th>
           </tr>
@@ -218,12 +318,12 @@
       </table>
     </div>
 
-    <p class="caption">TABLE IV<br>McNemar on incorrect returns — fewer incorrect is better.</p>
+    <p class="caption">TABLE XII<br>McNemar on incorrect returns (fewer is better).</p>
     <div class="table-wrap">
       <table id="mcnemar-wrong">
         <thead>
           <tr>
-            <th>Baseline</th>
+            <th>A vs baseline</th>
             <th class="num">A only</th>
             <th class="num">Base only</th>
             <th class="num">Discordant</th>
@@ -236,24 +336,24 @@
     </div>
 
     <h3>B. Template-cluster bootstrap</h3>
-    <p>5,000 resamples of whole templates/families (57 clusters). Report the mean accept-rate gap (A − baseline) and a percentile 95% CI. Call a gain <em>real</em> only when McNemar (p&nbsp;&lt;&nbsp;0.05) and the bootstrap CI agree (interval excludes 0).</p>
-    <p class="caption">TABLE V<br>Bootstrap accept-rate gap (A − baseline), 5,000 iterations.</p>
+    <p>5,000 resamples of whole templates. A gain is called <em>real</em> only when McNemar (p&nbsp;&lt;&nbsp;0.05) and the bootstrap 95% CI agree (interval excludes 0).</p>
+    <p class="caption">TABLE XIII<br>Bootstrap accept-rate gap (A − baseline).</p>
     <div class="table-wrap">
       <table id="bootstrap">
         <thead>
           <tr>
-            <th>Baseline</th>
+            <th>A vs baseline</th>
             <th class="num">Mean gap</th>
             <th class="num">95% CI</th>
             <th class="num">Clusters</th>
-            <th>Agrees McNemar?</th>
+            <th>Verdict</th>
           </tr>
         </thead>
         <tbody></tbody>
       </table>
     </div>
 
-    <p class="caption">TABLE VI<br>Template sensitivity (McNemar on complete templates) — open-harness vs open-raw.</p>
+    <p class="caption">TABLE XIV<br>Template sensitivity—open-harness vs open-raw.</p>
     <div class="table-wrap">
       <table id="template-sens">
         <thead>
@@ -261,9 +361,9 @@
             <th>Outcome</th>
             <th class="num">A only</th>
             <th class="num">Base only</th>
-            <th class="num">Discordant</th>
+            <th class="num">Templates</th>
             <th class="num">p</th>
-            <th>Definition</th>
+            <th>Template counts as positive if</th>
           </tr>
         </thead>
         <tbody></tbody>
@@ -272,9 +372,9 @@
   </section>
 
   <section>
-    <h2>V. Paired Resources</h2>
-    <p>Table VII compares matched means on the same 98 cases. Mean optimizer time includes verification and therefore can exceed open-raw even when median p50 (Table I) stays competitive with frontier. API dollars exclude database compute. SQL speedup excludes incorrect/invalid pairs and is not workload-weighted warehouse savings.</p>
-    <p class="caption">TABLE VII<br>Paired resource means — open-harness vs open-raw and vs frontier-raw.</p>
+    <h2>VII. Paired Resources</h2>
+    <p>Matched means on the same 98 cases (trial 0). Mean optimizer time includes verification and repair, so it exceeds open-raw even though median p50 (Table III) stays below frontier. The Δ interval is a template bootstrap on (harness − open-raw).</p>
+    <p class="caption">TABLE XV<br>Paired resource means.</p>
     <div class="table-wrap">
       <table id="resources">
         <thead>
@@ -285,7 +385,7 @@
             <th class="num">Frontier</th>
             <th class="num">H / raw</th>
             <th class="num">H / frontier</th>
-            <th class="num">Δ CI vs raw</th>
+            <th class="num">Δ 95% CI vs raw</th>
           </tr>
         </thead>
         <tbody></tbody>
@@ -294,85 +394,183 @@
   </section>
 
   <section>
-    <h2>VI. Reading the Board</h2>
+    <h2>VIII. Case Studies</h2>
+    <p id="cases-text">Every query open-raw got wrong, and what the harness returned for the same case:</p>
+    <p class="caption">TABLE XVI<br>Open-raw incorrect returns and the harness outcome on the same case.</p>
+    <div class="table-wrap">
+      <table id="raw-wrong">
+        <thead>
+          <tr>
+            <th>Case</th>
+            <th>Family</th>
+            <th>Harness outcome</th>
+            <th class="num">Harness speedup</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <h3>A. Semijoin: renamed column, dropped join</h3>
+    <pre><code>-- original
+SELECT DISTINCT c.id FROM customers c
+JOIN orders o ON o.customer_id = c.id WHERE o.amount &gt; 50
+-- open-raw (incorrect)
+SELECT DISTINCT o.customer_id FROM orders o
+WHERE o.amount &gt; 50 AND o.customer_id IS NOT NULL;
+-- open-harness (accepted, 4.4x)
+SELECT c.id FROM customers c WHERE EXISTS (
+  SELECT 1 FROM orders o WHERE o.customer_id = c.id AND o.amount &gt; 50);</code></pre>
+    <p>Raw renames the output column (<code>id</code> → <code>customer_id</code>) and drops the join that guarantees each id exists in <code>customers</code>. Bag equality rejects both. The harness keeps the shape and switches to <code>EXISTS</code>.</p>
+
+    <h3>B. NULL semantics: count(*) is not count(col)</h3>
+    <pre><code>-- original
+SELECT coalesce(sum(count_comm), 0) FROM (
+  SELECT deptno, count(comm) AS count_comm
+  FROM emp GROUP BY deptno, mgr) t
+-- open-raw (incorrect)
+SELECT count(*) FROM emp;
+-- open-harness (accepted, 1.8x)
+SELECT COALESCE(COUNT(comm)::numeric, 0) FROM emp;</code></pre>
+    <p>Raw counts every row, including rows where <code>comm</code> is NULL. The null-heavy fixture exposes it. The harness keeps <code>COUNT(comm)</code> and the numeric output type.</p>
+
+    <h3>C. Empty-set semantics: ANY versus MIN</h3>
+    <pre><code>-- original
+SELECT name, deptno &gt; ANY (SELECT deptno FROM emp) FROM dept
+-- open-raw (incorrect)
+SELECT d.name, d.deptno &gt; (SELECT min(deptno) FROM emp) FROM dept d;
+-- open-harness (accepted, 2.6x)
+SELECT d.name, EXISTS (SELECT 1 FROM emp e WHERE d.deptno &gt; e.deptno)
+FROM dept d;</code></pre>
+    <p>On an empty <code>emp</code>, <code>&gt; ANY</code> returns false while <code>&gt; (SELECT min…)</code> returns NULL. The empty fixture catches it. The harness rewrite uses <code>EXISTS</code>, which is false on empty input.</p>
+  </section>
+
+  <section>
+    <h2>IX. Small and Local Models</h2>
+    <p>Small local models are free to run but unsafe raw. The harness makes the local 20B model usable at $0 API cost, at a large latency cost.</p>
+    <p class="caption">TABLE XVII<br>Local and small models (Ollama, $0 API).</p>
+    <div class="table-wrap">
+      <table id="local">
+        <thead>
+          <tr>
+            <th>System</th>
+            <th class="num">Accept</th>
+            <th class="num">Wrong</th>
+            <th class="num">Invalid</th>
+            <th class="num">Trap wrong</th>
+            <th class="num">p50</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>X. Held-Out Split</h2>
+    <p id="heldout-text">Loading…</p>
+    <p class="caption">TABLE XVIII<br>Held-out templates (unseen during development).</p>
+    <div class="table-wrap">
+      <table id="heldout">
+        <thead>
+          <tr>
+            <th>System</th>
+            <th class="num">Accept</th>
+            <th class="num">Wrong</th>
+            <th class="num">Geomean</th>
+            <th class="num">n</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>XI. Discussion</h2>
     <div id="reading"></div>
   </section>
 
   <section>
-    <h2>VII. Rubric Mapping</h2>
-    <p class="caption">TABLE VIII<br>Forge rubric — what this packet shows and where a judge can still push.</p>
+    <h2>XII. Limitations</h2>
+    <ul>
+      <li><strong>Held-out coverage.</strong> The harness has not yet been run on the held-out split; claims are development-split claims.</li>
+      <li><strong>Single primary trial.</strong> Most systems have one trial; frontier and the 20B/120B raw baselines have three.</li>
+      <li><strong>Synthetic scale.</strong> Fixtures are microfixtures on PostgreSQL 16, not warehouse scale. Speedups are not workload-weighted savings.</li>
+      <li><strong>Finite equivalence.</strong> Matching 8 fixtures is strong evidence, not a proof of SQL equivalence.</li>
+      <li><strong>Simulated cascades.</strong> Systems marked ‡ in the appendix replay recorded stage outputs and are not independent runs.</li>
+      <li><strong>Frontier.</strong> No significant accept win over the closed baseline.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>XIII. Rubric Mapping</h2>
+    <p class="caption">TABLE XIX<br>Forge rubric—evidence and open caveats.</p>
     <div class="table-wrap">
       <table>
         <thead>
-          <tr>
-            <th>Criterion</th>
-            <th class="num">Weight</th>
-            <th>Evidence in this packet</th>
-            <th>Open caveats</th>
-          </tr>
+          <tr><th>Criterion</th><th class="num">Weight</th><th>Evidence</th><th>Open caveats</th></tr>
         </thead>
         <tbody>
-          <tr>
-            <td>Benchmark</td>
-            <td class="num">40%</td>
-            <td>Locked 98-dev traces; +15.3 pp accept vs open-raw; 11→0 wrong; McNemar + cluster bootstrap; losses reported</td>
-            <td>Held-out harness still thin; one primary trial (t0)</td>
-          </tr>
-          <tr>
-            <td>Business</td>
-            <td class="num">25%</td>
-            <td>Agentic SELECT boom; FinOps math with assumptions; private fingerprint flywheel</td>
-            <td>No customer interview; value math is directional</td>
-          </tr>
-          <tr>
-            <td>Technical</td>
-            <td class="num">20%</td>
-            <td>Fireworks/NVIDIA path; strict verify; cache; latency levers; eval CLI</td>
-            <td>Specialist LoRA deploy optional</td>
-          </tr>
-          <tr>
-            <td>Demo</td>
-            <td class="num">10%</td>
-            <td>Live workbench + this research page</td>
-            <td>≤60s video: raw wrong → harness gate</td>
-          </tr>
-          <tr>
-            <td>Docs</td>
-            <td class="num">5%</td>
-            <td>Forge write-up, ADVANTAGES, reproduce commands</td>
-            <td>Regenerate scoreboard after rebench</td>
-          </tr>
+          <tr><td>Benchmark</td><td class="num">40%</td><td>Locked 98-dev; +15.3 pp vs open-raw; 11→0 wrong; gate generalizes across 5 models; McNemar + bootstrap</td><td>Held-out harness not run; one primary trial</td></tr>
+          <tr><td>Business</td><td class="num">25%</td><td>Agent SELECT growth; FinOps math with assumptions; private fingerprint flywheel</td><td>No customer interview; value math directional</td></tr>
+          <tr><td>Technical</td><td class="num">20%</td><td>Fireworks/NVIDIA path; strict verify; cache; latency levers; eval CLI</td><td>Specialist LoRA optional</td></tr>
+          <tr><td>Demo</td><td class="num">10%</td><td>Live workbench + this page</td><td>≤60 s video: raw wrong → harness gate</td></tr>
+          <tr><td>Docs</td><td class="num">5%</td><td>Write-up, scoreboard, reproduce commands</td><td>Regenerate after rebench</td></tr>
         </tbody>
       </table>
     </div>
   </section>
 
   <section>
-    <h2>VIII. Reproduce</h2>
+    <h2>XIV. Reproduce</h2>
     <pre><code>.venv/bin/python -m surgeon.eval run open-raw --split dev --trials 1
 .venv/bin/python -m surgeon.eval run open-harness --split dev --trials 1
 .venv/bin/python scripts/compute_paired_stats.py
 .venv/bin/python scripts/export_research.py
 bash scripts/site/sync.sh</code></pre>
-    <p>Traces: <code>benchmarks/eval_v2/runs/&lt;system&gt;/</code>. Paired stats: <code>benchmarks/eval_v2/results/paired_stats.json</code>. Snapshot on this page: <a href="data/research.json" download>data/research.json</a>.</p>
+    <p>Traces: <code>benchmarks/eval_v2/runs/&lt;system&gt;/</code>. Paired stats: <code>benchmarks/eval_v2/results/paired_stats.json</code>. Snapshot used on this page: <a href="data/research.json" download>data/research.json</a> (case SHA-256 <code id="sha">…</code>).</p>
   </section>
 
   <section>
-    <h2>IX. Conclusion</h2>
-    <p>A harness is enough. On the sealed open-stack comparison that the rules require, verify-or-abstain turns a corruption cliff (46.9% accept / 11 wrong) into a product SLA (62.2% / 0 wrong), with McNemar and template-cluster bootstrap in agreement. The board also leads frontier-raw on point-estimate accept, API $/case, and optimizer p50, but the accept confidence interval versus frontier still includes zero—report the numbers, do not dress a non-significant McNemar as a sealed win. Fine-tuning can wait; the gate is the product.</p>
-    <p><strong>Disclosure.</strong> Built during the November 2, 2026 hackathon. Material use of a Cursor agent. Pre-existing work: none.</p>
+    <h2>XV. Conclusion</h2>
+    <p>A harness is enough. Verify-or-abstain turns a corruption cliff (46.9% accept / 11 wrong) into a product SLA (62.2% / 0 wrong), and the same gate zeroes wrong returns for every model we paired. McNemar and the template-cluster bootstrap agree on the gain over raw. The board also leads frontier-raw on point-estimate accept, API $/case, and optimizer p50, but the accept interval versus frontier includes zero. Fine-tuning can wait; the gate is the product.</p>
+    <p><strong>Disclosure.</strong> Built during the November 2, 2026 hackathon with material use of a Cursor agent. No pre-existing work.</p>
+  </section>
+
+  <section>
+    <h2>Appendix A. All Recorded Systems</h2>
+    <p class="caption">TABLE XX<br>Every system in the development snapshot. † incomplete, ‡ simulated replay.</p>
+    <div class="table-wrap">
+      <table id="all-systems">
+        <thead>
+          <tr>
+            <th>System</th>
+            <th class="num">Accept</th>
+            <th class="num">Wrong</th>
+            <th class="num">Geomean</th>
+            <th class="num">$/case</th>
+            <th class="num">p50</th>
+            <th class="num">n</th>
+            <th class="num">Trials</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <p class="note" id="pareto-note"></p>
   </section>
 
   <footer class="refs">
     <h2>References</h2>
     <ol>
-      <li><a href="forge.html">Database Surgeon — Forge submission write-up</a> (six-step narrative).</li>
-      <li><a href="data/research.json" download>Sealed eval_v2 evidence snapshot</a> (JSON backing every table above).</li>
-      <li><a href="https://github.com/ThilakShekharShriyan/database-surgeon">Source repository</a> — <code>surgeon/eval/</code>, <code>benchmarks/eval_v2/</code>.</li>
-      <li>McNemar, Q. “Note on the sampling error of the difference between correlated proportions or percentages.” <em>Psychometrika</em>, 1947. Exact two-sided binomial on discordant pairs.</li>
-      <li>Template-cluster bootstrap: 5,000 resamples of template/family clusters (57 clusters on this bench).</li>
-      <li>Fireworks docs: inference + Muse Glimmer / serverless training.</li>
-      <li>Forge sample playbook structure (Notion): Forge Deploy Sample Submission.</li>
+      <li><a href="forge.html">Database Surgeon—Forge submission write-up</a>.</li>
+      <li><a href="data/research.json" download>Sealed eval_v2 evidence snapshot</a> (JSON backing every table).</li>
+      <li><a href="https://github.com/ThilakShekharShriyan/database-surgeon">Source repository</a>—<code>surgeon/eval/</code>, <code>benchmarks/eval_v2/</code>.</li>
+      <li>Q. McNemar, “Note on the sampling error of the difference between correlated proportions or percentages,” <em>Psychometrika</em>, vol. 12, no. 2, pp. 153–157, 1947.</li>
+      <li>B. Efron and R. J. Tibshirani, <em>An Introduction to the Bootstrap</em>. Chapman &amp; Hall, 1993.</li>
+      <li>Apache Calcite rule tests—source of the <code>calcite</code> family cases.</li>
+      <li>Fireworks AI documentation—inference and Muse Glimmer serverless training.</li>
     </ol>
   </footer>
 </article>
